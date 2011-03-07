@@ -3,7 +3,6 @@ package com.gamefreezer.applet.galaga;
 import java.io.InputStream;
 
 import com.gamefreezer.galaga.AbstractFileOpener;
-import com.gamefreezer.galaga.Game;
 
 public class AppletFileOpener extends AbstractFileOpener {
 
