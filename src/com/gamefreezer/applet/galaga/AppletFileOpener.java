@@ -9,7 +9,8 @@ public class AppletFileOpener extends AbstractFileOpener {
 
     @Override
     public InputStream open(String name) {
-	InputStream in = Game.class.getResourceAsStream("data/" + name);
+	InputStream in = AppletFileOpener.class.getResourceAsStream("data/"
+		+ name);
 	assert in != null : "Could not open file at data/" + name;
 	return in;
     }

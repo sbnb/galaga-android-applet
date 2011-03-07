@@ -1,15 +1,14 @@
 package com.gamefreezer.applet.galaga;
 
-import com.gamefreezer.galaga.AbstractBitmapReader;
-import com.gamefreezer.galaga.AbstractBitmap;
-import com.gamefreezer.galaga.Game;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+
+import com.gamefreezer.galaga.AbstractBitmap;
+import com.gamefreezer.galaga.AbstractBitmapReader;
 
 public class AppletBitmapReader extends AbstractBitmapReader {
 
@@ -22,7 +21,6 @@ public class AppletBitmapReader extends AbstractBitmapReader {
     private BufferedImage loadImage(String name) {
 	URL urlObject = getUrlObject(name);
 	assert urlObject != null : "url cannot be null";
-
 	BufferedImage image = null;
 	image = readImageFromUrlObject(urlObject);
 	assert image != null : "image cannot be null";
@@ -43,7 +41,7 @@ public class AppletBitmapReader extends AbstractBitmapReader {
 	URL urlObject = null;
 	try {
 	    // TODO imgs/ should be set in constants - magic string
-	    urlObject = new URL(Game.class.getResource("imgs/" + name)
+	    urlObject = new URL(this.getClass().getResource("imgs/" + name)
 		    .toString());
 	} catch (MalformedURLException e) {
 	    throw (new IllegalArgumentException(name + " " + e));
