@@ -1,0 +1,7 @@
+#
+# specify files and directories that should be ignored by git and not tracked
+
+# ignore everything under ~project/bin (class files rebuilt by Eclipse on builds)
+bin/
+.externalToolBuilders
+.pmd

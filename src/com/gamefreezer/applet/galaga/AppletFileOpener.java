@@ -1,0 +1,17 @@
+package com.gamefreezer.applet.galaga;
+
+import java.io.InputStream;
+
+import com.gamefreezer.galaga.AbstractFileOpener;
+import com.gamefreezer.galaga.Game;
+
+public class AppletFileOpener extends AbstractFileOpener {
+
+    @Override
+    public InputStream open(String name) {
+	InputStream in = Game.class.getResourceAsStream("data/" + name);
+	assert in != null : "Could not open file at data/" + name;
+	return in;
+    }
+
+}

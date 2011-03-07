@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="appletgalaga" default="dist" basedir=".">
+	<property name="SRC_IMGS" value="../galaga/src/com/gamefreezer/galaga/imgs" />
+	<property name="DEST_IMGS" value="../androidgalaga/res/drawable" />
+	<property name="SRC_CONFIG" value="../galaga/src/com/gamefreezer/galaga/data" />
+	<property name="DEST_CONFIG" value="../androidgalaga/assets/data" />
+
+	<target name="dist" depends="copy-imgs,copy-config">
+		<echo>"Distributing assets to androidgalaga"</echo>
+	</target>
+
+	<!-- Copy img files -->
+	<target name="copy-imgs" depends="clean-imgs" description="copy images from galaga to androidgalaga">
+		<echo>"Copying *.png from ${SRC_IMGS} to ${DEST_IMGS}"</echo>
+		<copy todir="${DEST_IMGS}">
+			<fileset dir="${SRC_IMGS}">
+				<include name="*.png" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Copy config files -->
+	<target name="copy-config" depends="clean-config" description="copy config files from galaga to androidgalaga">
+		<echo>"Copying *.* from ${SRC_CONFIG} to ${DEST_CONFIG}"</echo>
+		<copy todir="${DEST_CONFIG}">
+			<fileset dir="${SRC_CONFIG}">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Delete img files -->
+	<target name="clean-imgs" description="clean imgs dir">
+		<echo>"Deleting *.png in ${DEST_IMGS}"</echo>
+		<delete>
+			<fileset dir="${DEST_IMGS}" includes="*.png" />
+		</delete>
+	</target>
+
+	<!-- Delete config files -->
+	<target name="clean-config" description="clean raw dir">
+		<echo>"Deleting *.* in ${DEST_CONFIG}"</echo>
+		<delete>
+			<fileset dir="${DEST_CONFIG}" includes="*.*" />
+		</delete>
+	</target>
+
+</project>
