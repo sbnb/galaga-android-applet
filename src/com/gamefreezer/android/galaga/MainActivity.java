@@ -14,7 +14,6 @@ public class MainActivity extends Activity {
     public static DisplayMetrics metrics;
 
     public MainActivity() {
-	// TODO Auto-generated constructor stub
 	super();
 	Log.i("GALAGA", "MainActivity(): constructor.");
     }
