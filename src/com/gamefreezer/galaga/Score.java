@@ -3,8 +3,22 @@ package com.gamefreezer.galaga;
 import static com.gamefreezer.galaga.Constants.*;
 
 public class Score extends AllocGuard {
-    public Score() {
+
+    private SpriteCache spriteStore;
+    private int lives = 0;
+    private int health = 100;
+    private int totalScore = 0;
+    private int levelScore = 0;
+    private int totalShotsFired = 0;
+    private int levelShotsFired = 0;
+    private int levelHitsMade = 0;
+    private int totalHitsMade = 0;
+    private int bonus;
+    private int bonusDecrement;
+
+    public Score(SpriteCache spriteStore) {
 	super();
+	this.spriteStore = spriteStore;
     }
 
     public int getScore() {
@@ -116,36 +130,25 @@ public class Score extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-	Util.drawNumber(graphics, SCORE_LEFT, SCORE_TOP, SCORE_SPACING,
-		SCORE_COMMAS, totalScore);
+	Util.drawNumber(spriteStore, graphics, SCORE_LEFT, SCORE_TOP,
+		SCORE_SPACING, SCORE_COMMAS, totalScore);
     }
 
     public void drawBonuses(AbstractGraphics graphics) {
 	// TODO replace magic numbers for bonus details placement
 	// shots fired
 	// System.out.println("draw levelShotsFired: " + levelShotsFired);
-	Util.drawNumber(graphics, 170, 168, SCORE_SPACING, SCORE_COMMAS,
-		levelShotsFired);
+	Util.drawNumber(spriteStore, graphics, 170, 168, SCORE_SPACING,
+		SCORE_COMMAS, levelShotsFired);
 	// hits made
-	Util.drawNumber(graphics, 170, 191, SCORE_SPACING, SCORE_COMMAS,
-		levelHitsMade);
+	Util.drawNumber(spriteStore, graphics, 170, 191, SCORE_SPACING,
+		SCORE_COMMAS, levelHitsMade);
 	// accuracy
-	Util.drawNumber(graphics, 170, 214, SCORE_SPACING, SCORE_COMMAS,
-		(int) (accuracy() * 100));
+	Util.drawNumber(spriteStore, graphics, 170, 214, SCORE_SPACING,
+		SCORE_COMMAS, (int) (accuracy() * 100));
 	// bonus
-	Util.drawNumber(graphics, 170, 237, SCORE_SPACING, SCORE_COMMAS, bonus);
+	Util.drawNumber(spriteStore, graphics, 170, 237, SCORE_SPACING,
+		SCORE_COMMAS, bonus);
 
     }
-
-    private int lives = 0;
-    private int health = 100;
-    private int totalScore = 0;
-    private int levelScore = 0;
-    private int totalShotsFired = 0;
-    private int levelShotsFired = 0;
-    private int levelHitsMade = 0;
-    private int totalHitsMade = 0;
-    private int bonus;
-    private int bonusDecrement;
-
 }

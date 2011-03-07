@@ -6,8 +6,8 @@ import static com.gamefreezer.galaga.Constants.SHIP_MOVEMENT;
 
 public class Ship extends Entity {
 
-    public Ship(Location location) {
-	super(location, 0, 0, SHIP_IMAGE, "", "");
+    public Ship(SpriteCache spriteStore, Location location) {
+	super(spriteStore, location, 0, 0, SHIP_IMAGE, "", "");
     }
 
     /* The start location for bullets fired by the ship. */

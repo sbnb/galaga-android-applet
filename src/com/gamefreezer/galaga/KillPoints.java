@@ -3,8 +3,12 @@ package com.gamefreezer.galaga;
 import static com.gamefreezer.galaga.Constants.*;
 
 public class KillPoints extends AllocGuard {
-    public KillPoints() {
+    private Alien[] aliens = new Alien[KILLPOINTS_TRACKED];
+    private SpriteCache spriteStore;
+
+    public KillPoints(SpriteCache spriteStore) {
 	super();
+	this.spriteStore = spriteStore;
     }
 
     public void preload() {
@@ -21,7 +25,7 @@ public class KillPoints extends AllocGuard {
 	    if (aliens[i] != null) {
 		// TODO find the sprite needed for these points
 		// draw the sprite at alien.location if alien.exploding
-		Sprite sprite = SpriteStore.instance().get(Constants.NUM_9);
+		Sprite sprite = spriteStore.get(Constants.NUM_9);
 		int x = aliens[i].getX() + aliens[i].getWidth() / 2
 			- sprite.getWidth() / 2;
 		int y = aliens[i].getY() + aliens[i].getHeight() / 2
@@ -52,6 +56,4 @@ public class KillPoints extends AllocGuard {
 	}
 
     }
-
-    private Alien[] aliens = new Alien[KILLPOINTS_TRACKED];
 }

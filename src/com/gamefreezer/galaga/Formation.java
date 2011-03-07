@@ -14,8 +14,9 @@ import java.util.SortedMap;
 
 public class Formation extends AllocGuard {
 
-    public Formation(String propertiesFileName) {
+    public Formation(SpriteCache spriteStore, String propertiesFileName) {
 	super();
+	this.spriteStore = spriteStore;
 	this.propertiesFileName = propertiesFileName;
 	loadProperties();
 	initializeFromProperties();
@@ -150,8 +151,8 @@ public class Formation extends AllocGuard {
 	String imagePath = getAlienImagePath(c);
 	String renderTimes = props.getString(c + "RenderTimes", "");
 	String renderTicks = props.getString(c + "RenderTicks", "");
-	int width = Util.widthFromSprite(imagePath);
-	int height = Util.heightFromSprite(imagePath);
+	int width = Util.widthFromSprite(spriteStore, imagePath);
+	int height = Util.heightFromSprite(spriteStore, imagePath);
 	int points = props.getInt(c + "Points");
 
 	xLocations[last] = x;
@@ -203,6 +204,7 @@ public class Formation extends AllocGuard {
 		|| "ABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(String.valueOf(c));
     }
 
+    SpriteCache spriteStore;
     private MyProperties props;
     private String propertiesFileName;
     private String layoutFile;

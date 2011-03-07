@@ -10,9 +10,9 @@ public class Sandbox extends AllocGuard {
     // 400);
     private Location target = new Location(200, 200);
 
-    public Sandbox() {
+    public Sandbox(SpriteCache spriteStore) {
 	super();
-	alien = getAlien(start);
+	alien = getAlien(spriteStore, start);
     }
 
     public void update(int delta) {
@@ -26,7 +26,7 @@ public class Sandbox extends AllocGuard {
 		.translateY(target.getY()), 1, 1);
     }
 
-    public static Alien getAlien(Location location) {
+    public static Alien getAlien(SpriteCache spriteStore, Location location) {
 	int dx = 0;
 	int dy = 0;
 	int baseDx = 100;
@@ -36,7 +36,7 @@ public class Sandbox extends AllocGuard {
 	String renderTimes = "";
 	String renderTicks = "";
 
-	return new Alien(location, dx, dy, baseDx, baseDy, imgPath, points,
-		renderTimes, renderTicks);
+	return new Alien(spriteStore, location, dx, dy, baseDx, baseDy,
+		imgPath, points, renderTimes, renderTicks);
     }
 }

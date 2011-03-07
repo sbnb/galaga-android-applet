@@ -5,12 +5,13 @@ import java.util.Iterator;
 
 public class Bullets extends AllocGuard implements Iterable<Bullet> {
 
-    public Bullets(int numBulletsOnScreen, String bulletImage) {
+    public Bullets(SpriteCache spriteStore, int numBulletsOnScreen,
+	    String bulletImage) {
 	super();
 	this.bulletsArray = new Bullet[numBulletsOnScreen];
 
 	for (int i = 0; i < bulletsArray.length; i++) {
-	    bulletsArray[i] = new Bullet(bulletImage);
+	    bulletsArray[i] = new Bullet(spriteStore, bulletImage);
 	}
 	bulletWidth = bulletsArray[0].width;
     }

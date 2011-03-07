@@ -9,14 +9,14 @@ public class FormationsFactory {
 
     // return a list<Formation> scanned from a directory
     // containing files formatted: formation??properties.dat
-    public static List<Formation> createFormations() {
+    public static List<Formation> createFormations(SpriteCache spriteStore) {
 	List<Formation> formations = new ArrayList<Formation>();
 	List<String> names = Arrays.asList(Game.listFiles());
 	Collections.sort(names);
 
 	for (String name : names) {
 	    if (fileNameOk(name)) {
-		formations.add(new Formation(name));
+		formations.add(new Formation(spriteStore, name));
 	    }
 	}
 	return formations;

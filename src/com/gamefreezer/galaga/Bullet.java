@@ -2,13 +2,14 @@ package com.gamefreezer.galaga;
 
 public class Bullet extends Entity {
 
-    public Bullet(Location location, int movement, String bulletImage) {
-	super(location, 0, movement, bulletImage, "", "");
+    public Bullet(SpriteCache spriteStore, Location location, int movement,
+	    String bulletImage) {
+	super(spriteStore, location, 0, movement, bulletImage, "", "");
     }
 
-    public Bullet(String bulletImage) {
+    public Bullet(SpriteCache spriteStore, String bulletImage) {
 	// create a dead bullet - effectively a null object
-	this(new Location(0, 0), 0, bulletImage);
+	this(spriteStore, new Location(0, 0), 0, bulletImage);
 	this.kill();
     }
 

@@ -9,26 +9,66 @@ import com.gamefreezer.utilities.Profiler;
 
 public class Game extends AllocGuard {
 
+    // TODO investigate making this instance variables, not static
     private static AbstractLog log = null;
     private static AbstractBitmapReader bitmapReader = null;
     private static AbstractColor colorDecoder = null;
     private static AbstractFileOpener fileOpener = null;
     private static AbstractFileLister fileLister = null;
 
+    // objects used in the game
+    private SpriteCache spriteCache;
+    private List<Formation> formations;
+    private Ship ship = null;
+    private Bullets playerBullets = null;
+    private Bullets alienBullets = null;
+    private Aliens aliens;
+    private CollisionDetector collisionDetector;
+    private Sandbox sandbox;
+    private Score score;
+    private long cycles = 0; // elapsed cycles during game
+    private int formationsIndex = 0;
+    private long lastTime = 0;
+    private AnimationFrames textFx;
+    private AnimationFrames countDown;
+    private AnimationFrames shipExplosion;
+    private KillPoints killPoints;
+
+    private static final int LEFT_ARROW = 37;
+    private static final int RIGHT_ARROW = 39;
+    private static final int SPACE_BAR = 32;
+    private int state = READY_STATE;
+
+    private long stateTimer;
+
     public Game() {
 	super();
 	Game.log("Game(): constructor.");
-	formations = FormationsFactory.createFormations();
-	aliens = new Aliens();
+
+	spriteCache = new SpriteCache(bitmapReader);
+	collisionDetector = new CollisionDetector();
+	sandbox = new Sandbox(spriteCache);
+	score = new Score(spriteCache);
+	textFx = new AnimationFrames(spriteCache);
+	countDown = new AnimationFrames(spriteCache);
+	shipExplosion = new AnimationFrames(spriteCache);
+	killPoints = new KillPoints(spriteCache);
+
+	formations = FormationsFactory.createFormations(spriteCache);
+	aliens = new Aliens(spriteCache);
 	changeFormation();
-	ship = new Ship(SHIP_START_LOCATION);
-	playerBullets = new Bullets(BULLETS_ON_SCREEN, BULLET_IMAGE);
-	alienBullets = new Bullets(ALIEN_BULLETS_ON_SCREEN, ALIEN_BULLET_IMAGE);
-	cycles = 0;
+
+	ship = new Ship(spriteCache, SHIP_START_LOCATION);
+	playerBullets = new Bullets(spriteCache, BULLETS_ON_SCREEN,
+		BULLET_IMAGE);
+	alienBullets = new Bullets(spriteCache, ALIEN_BULLETS_ON_SCREEN,
+		ALIEN_BULLET_IMAGE);
+
 	setStateTimer(LEVEL_DELAY);
 	preloadImages();
 	AllocGuard.guardOn = true;
-	Game.log("SpriteStore.size(): " + SpriteStore.instance().size());
+
+	Game.log("SpriteStore.size(): " + spriteCache.size());
     }
 
     public static void setAbstractInterfaceVars(AbstractLog log,
@@ -49,11 +89,6 @@ public class Game extends AllocGuard {
     public static InputStream openFile(String name) {
 	assert fileOpener != null : "Game.fileOpener is null!";
 	return fileOpener.open(name);
-    }
-
-    public static AbstractBitmap readBitmap(String name) {
-	assert bitmapReader != null : "Game.bitmapReader is null!";
-	return bitmapReader.read(name);
     }
 
     public static AbstractColor decodeColor(String property) {
@@ -222,8 +257,7 @@ public class Game extends AllocGuard {
 	// text messages drawn last based on state
 	if (state == READY_STATE) {
 	    // TODO magic string
-	    SpriteStore.instance().get("text_get_ready.png").draw(graphics, 70,
-		    200);
+	    spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
 	    countDown.draw(graphics, 160, 270);
 	}
 
@@ -232,8 +266,7 @@ public class Game extends AllocGuard {
 	}
 
 	if (state == BONUS_MESSAGE_STATE || state == BONUS_PAYOUT_STATE) {
-	    SpriteStore.instance().get("text_bonus_details.png").draw(graphics,
-		    50, 160);
+	    spriteCache.get("text_bonus_details.png").draw(graphics, 50, 160);
 	    score.drawBonuses(graphics);
 	}
 	// sandbox.draw(graphics);
@@ -304,25 +337,25 @@ public class Game extends AllocGuard {
     }
 
     private void preloadImages() {
-	AnimationFrames explosion = new AnimationFrames();
+	AnimationFrames explosion = new AnimationFrames(spriteCache);
 	explosion.reset(EXPL_IMGS, EXPL_TIMES, "", true);
 	shipExplosion.reset(EXPL_IMGS, EXPL_TIMES, "", true);
-	SpriteStore.instance().get(NUM_0);
-	SpriteStore.instance().get(NUM_1);
-	SpriteStore.instance().get(NUM_2);
-	SpriteStore.instance().get(NUM_3);
-	SpriteStore.instance().get(NUM_4);
-	SpriteStore.instance().get(NUM_5);
-	SpriteStore.instance().get(NUM_6);
-	SpriteStore.instance().get(NUM_7);
-	SpriteStore.instance().get(NUM_8);
-	SpriteStore.instance().get(NUM_9);
+	spriteCache.get(NUM_0);
+	spriteCache.get(NUM_1);
+	spriteCache.get(NUM_2);
+	spriteCache.get(NUM_3);
+	spriteCache.get(NUM_4);
+	spriteCache.get(NUM_5);
+	spriteCache.get(NUM_6);
+	spriteCache.get(NUM_7);
+	spriteCache.get(NUM_8);
+	spriteCache.get(NUM_9);
 	// TODO magic strings here are also hard-coded elsewhere, fix
-	SpriteStore.instance().get("text_get_ready.png");
-	SpriteStore.instance().get("text_level_complete.png");
+	spriteCache.get("text_get_ready.png");
+	spriteCache.get("text_level_complete.png");
 	textFx.reset(LEVEL_COMPLETE_IMGS, LEVEL_COMPLETE_TIMES, "", true);
 	countDown.reset(COUNTDOWN_IMGS, COUNTDOWN_TIMES, "", true);
-	SpriteStore.instance().get("text_bonus_details.png");
+	spriteCache.get("text_bonus_details.png");
 	killPoints.preload();
     }
 
@@ -377,27 +410,4 @@ public class Game extends AllocGuard {
 		.width() + 1, BOTTOM_MASK_HEIGHT);
     }
 
-    // objects used in the game
-    private List<Formation> formations;
-    private Ship ship = null;
-    private Bullets playerBullets = null;
-    private Bullets alienBullets = null;
-    private Aliens aliens;
-    private CollisionDetector collisionDetector = new CollisionDetector();
-    private Sandbox sandbox = new Sandbox();
-    private Score score = new Score();
-    private long cycles = 0; // elapsed cycles during game
-    private int formationsIndex = 0;
-    private long lastTime = 0;
-    AnimationFrames textFx = new AnimationFrames();
-    AnimationFrames countDown = new AnimationFrames();
-    AnimationFrames shipExplosion = new AnimationFrames();
-    KillPoints killPoints = new KillPoints();
-
-    private static final int LEFT_ARROW = 37;
-    private static final int RIGHT_ARROW = 39;
-    private static final int SPACE_BAR = 32;
-    private int state = READY_STATE;
-
-    private long stateTimer;
 }

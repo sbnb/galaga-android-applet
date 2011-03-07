@@ -3,23 +3,20 @@ package com.gamefreezer.galaga;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpriteStore {
+public class SpriteCache {
 
-    // enforce Singleton pattern - no public instantiation allowed
-    private SpriteStore() {
-	// NOP
-    }
+    private Map<String, Sprite> cache = new HashMap<String, Sprite>();
+    private AbstractBitmapReader bitmapReader;
 
-    public static SpriteStore instance() {
-	return myInstance;
+    public SpriteCache(AbstractBitmapReader bitmapReader) {
+	this.bitmapReader = bitmapReader;
     }
 
     // TODO optimization check how often this is being called, reduce if
     // possible
     public Sprite get(String name) {
-	// Game.log("SpriteStore.get(): " + name);
 	if (spriteIsInCache(name)) {
-	    return spritesCache.get(name);
+	    return cache.get(name);
 	}
 	Sprite sprite = createSpriteFromName(name);
 	storeSpriteInCache(name, sprite);
@@ -27,28 +24,26 @@ public class SpriteStore {
     }
 
     public int size() {
-	return spritesCache.size();
+	return cache.size();
     }
 
     public void clear() {
-	spritesCache.clear();
+	cache.clear();
     }
 
     private boolean spriteIsInCache(String name) {
-	return spritesCache.containsKey(name);
+	return cache.containsKey(name);
     }
 
     private void storeSpriteInCache(String name, Sprite sprite) {
-	spritesCache.put(name, sprite);
-	assert spritesCache.size() > 0 : "sprites cannot be empty";
+	cache.put(name, sprite);
+	assert cache.size() > 0 : "sprites cannot be empty";
     }
 
     private Sprite createSpriteFromName(String name) {
-	AbstractBitmap image = Game.readBitmap(name);
+	assert bitmapReader != null : "SpriteStore.bitmapReader is null!";
+	AbstractBitmap image = bitmapReader.read(name);
 	Sprite sprite = new Sprite(image);
 	return sprite;
     }
-
-    private static SpriteStore myInstance = new SpriteStore();
-    private Map<String, Sprite> spritesCache = new HashMap<String, Sprite>();
 }

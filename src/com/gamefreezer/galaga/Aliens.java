@@ -7,11 +7,35 @@ import java.util.SortedMap;
 public class Aliens extends AllocGuard {
 
     public static Alien FIRST = null;
+    private Alien[] aliens = new Alien[MAX_FORMATION];
+    private Formation formation;
+    private Speed speed = new Speed();
+    private Location moveDist = new Location();
+    private int currentMaxSpeed = 0;
+    private float rightMost;
+    private float leftMost;
+    private float bottomMost;
+    private float distRight;
+    private float distLeft;
+    private boolean movingLeft;
+    private boolean movingRight;
+    private boolean movingDown;
+    private int livingAliens;
+    private int inFormationAliens;
 
-    public Aliens() {
+    private static final int RIGHT = 1;
+    private static final int LEFT = -1;
+    private float targetY;
+    private Controller controller = new Controller();
+    private SoloAliens freeMovingAliens;
+    private Gun gun = new Gun(MIN_TIME_BETWEEN_ALIEN_BULLETS,
+	    ALIEN_BULLET_MOVEMENT);
+    private Location anchor = new Location();
+
+    public Aliens(SpriteCache spriteStore) {
 	super();
 	for (int i = 0; i < MAX_FORMATION; i++) {
-	    aliens[i] = new Alien();
+	    aliens[i] = new Alien(spriteStore);
 	    aliens[i].kill();
 	}
 	this.freeMovingAliens = new SoloAliens();
@@ -100,9 +124,6 @@ public class Aliens extends AllocGuard {
 	for (int i = 0; i < formation.size(); i++) {
 	    aliens[i].draw(graphics);
 	}
-	// graphics.fillRect(Screen.translateX(anchor.getX()), Screen
-	// .translateY(anchor.getY()), 5, 5);
-
     }
 
     public void setFreeMovingAllowed(boolean freeMovingAllowed) {
@@ -127,10 +148,6 @@ public class Aliens extends AllocGuard {
 	}
 	float dtw = distanceToWall();
 	float dc = distanceCovered(delta);
-	// System.out.println("dc: " + dc + " dtw: " + dtw + " rightMost: "
-	// + rightMost + " movingRight: " + movingRight + " movingDown: "
-	// + movingDown + " movingLeft: " + movingLeft + " distRight: "
-	// + distRight + " distLeft: " + distLeft + "");
 
 	if (dc <= dtw) {
 	    setMoveDistance(dc);
@@ -187,15 +204,12 @@ public class Aliens extends AllocGuard {
 	distRight = Screen.width() - rightMost - 2;
 	distLeft = leftMost - Screen.left() - 2;
 	bottomMost = lowest;
-	// topMost = highest;
 	movingLeft = speed.getDx() < 0;
 	movingRight = speed.getDx() > 0;
 	movingDown = speed.getDy() < 0;
     }
 
     private float distBottomTarget() {
-	// assert targetY <= bottomMost : "aliens moved past targetY! ty: "
-	// + targetY + " bm: " + bottomMost;
 	return (bottomMost - targetY - 2);
     }
 
@@ -221,7 +235,6 @@ public class Aliens extends AllocGuard {
 		}
 	    }
 	}
-	// update anchor
 	anchor.moveBy(moveDist);
     }
 
@@ -369,30 +382,4 @@ public class Aliens extends AllocGuard {
 	}
 	return sb.toString();
     }
-
-    private Alien[] aliens = new Alien[MAX_FORMATION];
-    private Formation formation;
-    private Speed speed = new Speed();
-    private Location moveDist = new Location();
-    private int currentMaxSpeed = 0;
-    private float rightMost;
-    private float leftMost;
-    private float bottomMost;
-    // private float topMost;
-    private float distRight;
-    private float distLeft;
-    private boolean movingLeft;
-    private boolean movingRight;
-    private boolean movingDown;
-    private int livingAliens;
-    private int inFormationAliens;
-
-    private static final int RIGHT = 1;
-    private static final int LEFT = -1;
-    private float targetY;
-    private Controller controller = new Controller();
-    private SoloAliens freeMovingAliens;
-    private Gun gun = new Gun(MIN_TIME_BETWEEN_ALIEN_BULLETS,
-	    ALIEN_BULLET_MOVEMENT);
-    private Location anchor = new Location();
 }

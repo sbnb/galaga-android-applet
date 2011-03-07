@@ -7,19 +7,20 @@ public class Alien extends Entity {
     public Alien next;
     public Alien prev;
 
-    public Alien(Location location, int dx, int dy, int baseDx, int baseDy,
-	    String imgPath, int points, String renderTimes, String renderTicks) {
-	super(location, dx, dy, imgPath, renderTimes, renderTicks);
+    public Alien(SpriteCache spriteStore, Location location, int dx, int dy,
+	    int baseDx, int baseDy, String imgPath, int points,
+	    String renderTimes, String renderTicks) {
+	super(spriteStore, location, dx, dy, imgPath, renderTimes, renderTicks);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
     }
 
-    public Alien() {
-	super();
+    public Alien(SpriteCache spriteStore) {
+	super(spriteStore);
     }
 
     // @SuppressWarnings("hiding")
-    public static final Alien NULL = new Alien();
+    public static final Alien NULL = new Alien(null);
 
     @Override
     public void kill() {

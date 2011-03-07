@@ -11,9 +11,6 @@ import static com.gamefreezer.galaga.Constants.NUM_7;
 import static com.gamefreezer.galaga.Constants.NUM_8;
 import static com.gamefreezer.galaga.Constants.NUM_9;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,17 +35,17 @@ public class Util {
     }
 
     // static function to return sprite width from imgUrl
-    public static int widthFromSprite(String aImageUrl) {
+    public static int widthFromSprite(SpriteCache spriteStore, String aImageUrl) {
 	// TODO don't use List - it will need to be GC'd
 	String firstImage = Util.getStringAsList(aImageUrl).get(0);
-	Sprite aSprite = SpriteStore.instance().get(firstImage);
+	Sprite aSprite = spriteStore.get(firstImage);
 	return aSprite.getWidth();
     }
 
     // static function to return sprite height from imgUrl
-    public static int heightFromSprite(String aImageUrl) {
+    public static int heightFromSprite(SpriteCache spriteStore, String aImageUrl) {
 	String firstImage = Util.getStringAsList(aImageUrl).get(0);
-	Sprite aSprite = SpriteStore.instance().get(firstImage);
+	Sprite aSprite = spriteStore.get(firstImage);
 	return aSprite.getHeight();
     }
 
@@ -79,32 +76,10 @@ public class Util {
 	System.out.println(format.format(new Date()) + ": " + message);
     }
 
-    // TODO this is Applet specific and should therefore move into
-    // AppletFileLister
-    public static String[] getFileNamesInDir(FilenameFilter filter,
-	    String aDirectory) {
-	String[] fileNames = {};
-	try {
-	    URI uri = Util.class.getResource(aDirectory).toURI();
-	    fileNames = new File(uri).list(filter);
-	} catch (Exception e) {
-	    throw new AssertionError("\nCan't read from dir: " + aDirectory
-		    + "\n" + e);
-	}
-	return fileNames;
-    }
-
-    public static String[] getFileNamesInDir(String aDirectory) {
-	return getFileNamesInDir(null, aDirectory);
-    }
-
-    public static List<String> getFilesAsList(String aDirectory) {
-	return Arrays.asList(getFileNamesInDir(aDirectory));
-    }
-
     // draw a number at specified location and spacing
-    public static void drawNumber(AbstractGraphics graphics, int xStart,
-	    int yStart, int digitSpace, int commaSpace, int number) {
+    public static void drawNumber(SpriteCache spriteStore,
+	    AbstractGraphics graphics, int xStart, int yStart, int digitSpace,
+	    int commaSpace, int number) {
 	int numDigits = numDigits(number);
 	int i = 1;
 	int commaCount = 1;
@@ -113,7 +88,8 @@ public class Util {
 	int y = yStart;
 
 	while (numDigits > 0) {
-	    getNumeralSprite(getNumeral(i, number)).draw(graphics, x, y);
+	    getNumeralSprite(spriteStore, getNumeral(i, number)).draw(graphics,
+		    x, y);
 	    x -= digitSpace;
 	    if (commaCount % 3 == 0) {
 		x -= commaSpace;
@@ -128,31 +104,31 @@ public class Util {
 	return (number % (i * 10)) / i;
     }
 
-    public static Sprite getNumeralSprite(int n) {
+    public static Sprite getNumeralSprite(SpriteCache spriteStore, int n) {
 	switch (n) {
 	case 0:
-	    return SpriteStore.instance().get(NUM_0);
+	    return spriteStore.get(NUM_0);
 	case 1:
-	    return SpriteStore.instance().get(NUM_1);
+	    return spriteStore.get(NUM_1);
 	case 2:
-	    return SpriteStore.instance().get(NUM_2);
+	    return spriteStore.get(NUM_2);
 	case 3:
-	    return SpriteStore.instance().get(NUM_3);
+	    return spriteStore.get(NUM_3);
 	case 4:
-	    return SpriteStore.instance().get(NUM_4);
+	    return spriteStore.get(NUM_4);
 	case 5:
-	    return SpriteStore.instance().get(NUM_5);
+	    return spriteStore.get(NUM_5);
 	case 6:
-	    return SpriteStore.instance().get(NUM_6);
+	    return spriteStore.get(NUM_6);
 	case 7:
-	    return SpriteStore.instance().get(NUM_7);
+	    return spriteStore.get(NUM_7);
 	case 8:
-	    return SpriteStore.instance().get(NUM_8);
+	    return spriteStore.get(NUM_8);
 	case 9:
-	    return SpriteStore.instance().get(NUM_9);
+	    return spriteStore.get(NUM_9);
 	}
 	assert false : "fell through switch - impossible. n: " + n;
-	return SpriteStore.instance().get(NUM_0);
+	return spriteStore.get(NUM_0);
     }
 
     public static int numDigits(int number) {

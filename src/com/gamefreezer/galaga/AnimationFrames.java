@@ -5,8 +5,9 @@ import java.util.List;
 
 public class AnimationFrames extends AllocGuard {
 
-    public AnimationFrames() {
+    public AnimationFrames(SpriteCache spriteStore) {
 	super();
+	this.spriteStore = spriteStore;
 	// TODO wait till can measure actual GC then look at changing how this
 	// works
 	// get MAX from config file
@@ -15,9 +16,9 @@ public class AnimationFrames extends AllocGuard {
 	// renderTicks = new int[MAX];
     }
 
-    public AnimationFrames(String imageNames, String renderTimesStr,
-	    String renderTicksStr) {
-	this();
+    public AnimationFrames(SpriteCache spriteStore, String imageNames,
+	    String renderTimesStr, String renderTicksStr) {
+	this(spriteStore);
 	reset(imageNames, renderTimesStr, renderTicksStr);
     }
 
@@ -71,6 +72,7 @@ public class AnimationFrames extends AllocGuard {
 	}
 
 	if (!finished) {
+	    // TODO index out of bounds error here occasionaly, track down
 	    sprites.get(index).draw(graphics, x, y);
 	    ticks++;
 	}
@@ -82,7 +84,7 @@ public class AnimationFrames extends AllocGuard {
     private void loadSprites(List<String> imageNames) {
 	sprites = new ArrayList<Sprite>();
 	for (String name : imageNames) {
-	    sprites.add(SpriteStore.instance().get(name));
+	    sprites.add(spriteStore.get(name));
 	}
     }
 
@@ -118,4 +120,5 @@ public class AnimationFrames extends AllocGuard {
     private long ticks = 0;
     private boolean oneShot = false;
     private boolean finished = false;
+    private SpriteCache spriteStore;
 }

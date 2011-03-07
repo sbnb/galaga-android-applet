@@ -5,11 +5,28 @@ import static com.gamefreezer.galaga.Constants.EXPL_TIMES;
 
 public class Entity extends AllocGuard {
 
-    public Entity(Location location, int width, int height,
-	    int horizontalMovement, int verticalMovement, String imagePath,
-	    String renderTimes, String renderTicks) {
-	super();
+    protected Movement movement = new Movement();
+    protected Speed maxSpeed = new Speed();
+    protected int width = 0;
+    protected int height = 0;
+    protected boolean active = true;
+    protected boolean exploding = false;
+    protected boolean solo = false;
+    protected boolean diveComplete = false;
+    protected AnimationFrames animation;
+    protected int points = 0;
 
+    public Entity(SpriteCache spriteStore) {
+	super();
+	animation = new AnimationFrames(spriteStore);
+    }
+
+    public Entity(SpriteCache spriteStore, Location location, int width,
+	    int height, int horizontalMovement, int verticalMovement,
+	    String imagePath, String renderTimes, String renderTicks) {
+	// super();
+	this(spriteStore);
+	// animation = new AnimationFrames(spriteStore);
 	this.width = width;
 	this.height = height;
 	this.active = true;
@@ -22,19 +39,15 @@ public class Entity extends AllocGuard {
 		verticalMovement));
     }
 
-    public Entity(Location location, int horizontalMovement,
-	    int verticalMovement, String imageUrl, String renderTimes,
-	    String renderTicks) {
-	this(location, Util.widthFromSprite(imageUrl), Util
-		.heightFromSprite(imageUrl), horizontalMovement,
-		verticalMovement, imageUrl, renderTimes, renderTicks);
+    public Entity(SpriteCache spriteStore, Location location,
+	    int horizontalMovement, int verticalMovement, String imageUrl,
+	    String renderTimes, String renderTicks) {
+	this(spriteStore, location,
+		Util.widthFromSprite(spriteStore, imageUrl), Util
+			.heightFromSprite(spriteStore, imageUrl),
+		horizontalMovement, verticalMovement, imageUrl, renderTimes,
+		renderTicks);
     }
-
-    public Entity() {
-	super();
-    }
-
-    public static Entity NULL = new Entity();
 
     public void setImagePath(String imagePath) {
 	setImagePath(imagePath, "", "");
@@ -337,16 +350,4 @@ public class Entity extends AllocGuard {
 		+ height + " active: " + active + " solo: " + solo + " ] "
 		+ movement;
     }
-
-    protected Movement movement = new Movement();
-    protected Speed maxSpeed = new Speed();
-    protected int width = 0;
-    protected int height = 0;
-    // protected MyColor color = new MyColor(Color.gray);
-    protected boolean active = true;
-    protected boolean exploding = false;
-    protected boolean solo = false;
-    protected boolean diveComplete = false;
-    protected AnimationFrames animation = new AnimationFrames();
-    protected int points = 0;
 }
