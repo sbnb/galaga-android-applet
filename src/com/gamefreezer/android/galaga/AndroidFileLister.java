@@ -20,7 +20,7 @@ public class AndroidFileLister extends AbstractFileLister {
     public String[] list() {
 	String[] files = null;
 	try {
-	    files = assetManager.list(Galaga.DATA_DIR);
+	    files = assetManager.list(GameWrapper.DATA_DIR);
 	} catch (IOException e) {
 	    Game.log(e.getMessage());
 	}

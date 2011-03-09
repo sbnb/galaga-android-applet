@@ -8,14 +8,18 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.Screen;
 
 public class GameWrapper implements Runnable {
 
+    public static final String DATA_DIR = "data";
     private Context appContext;
     private SurfaceHolder surfaceHolder;
     private boolean running;
+
+    private Constants cfg;
     private AndroidGraphics androidGraphics;
     private AndroidLog log;
     private AndroidBitmapReader bitmapReader;
@@ -28,6 +32,10 @@ public class GameWrapper implements Runnable {
 	Log.i("GALAGA", "MyGameWrapper(): constructor.");
 	this.surfaceHolder = surfaceView.getHolder();
 	this.appContext = appContext;
+	fileOpener = new AndroidFileOpener(appContext);
+	log = new AndroidLog();
+	colorDecoder = new AndroidColor(Color.GREEN);
+	this.cfg = new Constants(fileOpener, log, colorDecoder);
 	initGame();
     }
 
@@ -59,29 +67,25 @@ public class GameWrapper implements Runnable {
 
     private void initGame() {
 	androidGraphics = new AndroidGraphics();
-	log = new AndroidLog();
 	bitmapReader = new AndroidBitmapReader(appContext);
 	colorDecoder = new AndroidColor(Color.GREEN);
-	fileOpener = new AndroidFileOpener(appContext);
 	fileLister = new AndroidFileLister(appContext);
-	Game.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
-		fileOpener, fileLister);
-	Game.log("Game.log(msg): now available");
+	log.i("GALAGA", "Game.log(msg): now available");
 
-	Game.log("GameWrapper.initGame(): setting Screen.x dimensions");
+	log.i("GALAGA", "GameWrapper.initGame(): setting Screen.x dimensions");
 	Screen.x = 0;
 	Screen.y = 0;
 	Screen.w = MainActivity.metrics.widthPixels;
 	Screen.y = MainActivity.metrics.heightPixels;
 
-	Game.log("GameWrapper.initGame(): about to init Game()");
-	game = new Game();
+	log.i("GALAGA", "GameWrapper.initGame(): about to init Game()");
+	game = new Game(cfg, log, bitmapReader, colorDecoder, fileOpener,
+		fileLister);
     }
 
     private Paint paint = new Paint();
 
     private void myDraw(Canvas canvas) {
-	// TODO access metrics here (temporarily for now)
 	paint.setColor(Color.RED);
 	canvas.drawCircle(0, 0, 5, paint);
 	canvas.drawCircle(MainActivity.metrics.widthPixels, 0, 5, paint);

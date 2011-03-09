@@ -21,7 +21,7 @@ public class AndroidFileOpener extends AbstractFileOpener {
     public InputStream open(String name) {
 	InputStream inputStream = null;
 	try {
-	    inputStream = assetManager.open(Galaga.DATA_DIR + "/" + name);
+	    inputStream = assetManager.open(GameWrapper.DATA_DIR + "/" + name);
 	} catch (IOException e) {
 	    Game.log(e.getMessage());
 	}
