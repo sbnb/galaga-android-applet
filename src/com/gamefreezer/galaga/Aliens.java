@@ -165,7 +165,7 @@ public class Aliens extends AllocGuard {
 	    updateEachAlien(delta);
 	    int remainingDelta = getTimeToTravelDistance(dtw);
 	    if (movingRight || movingLeft) {
-		speed.reset(0, -getMaxAlienSpeed());
+		speed.reset(0, getMaxAlienSpeed());
 		assignTargetToMoveDownTo();
 	    } else if (movingDown && distRight < distLeft) {
 		speed.reset(-getMaxAlienSpeed(), 0);
@@ -180,9 +180,9 @@ public class Aliens extends AllocGuard {
     // save all expensive calculated variables in one pass through the array
     private void calculateLookups() {
 	rightMost = 0;
-	leftMost = cfg.SCREEN.width();
-	float lowest = cfg.SCREEN.height();
-	float highest = cfg.SCREEN.playableBottom();
+	leftMost = cfg.SCREEN.inGameRight();
+	float lowest = cfg.SCREEN.inGameTop();
+	float highest = cfg.SCREEN.inGameBottom();
 	livingAliens = 0;
 	inFormationAliens = 0;
 
@@ -194,10 +194,10 @@ public class Aliens extends AllocGuard {
 		rightMost = aliens[i].getRightHomeSlot(anchor) > rightMost ? aliens[i]
 			.getRightHomeSlot(anchor)
 			: rightMost;
-		lowest = aliens[i].getYHomeSlot(anchor) < lowest ? aliens[i]
+		lowest = aliens[i].getYHomeSlot(anchor) > lowest ? aliens[i]
 			.getYHomeSlot(anchor) : lowest;
 		highest = (int) Math
-			.floor(aliens[i].getYHomeSlot(anchor) > highest ? aliens[i]
+			.floor(aliens[i].getYHomeSlot(anchor) < highest ? aliens[i]
 				.getYHomeSlot(anchor)
 				: highest);
 	    }
@@ -209,16 +209,16 @@ public class Aliens extends AllocGuard {
 	    }
 	}
 
-	distRight = cfg.SCREEN.width() - rightMost - 2;
-	distLeft = leftMost - cfg.SCREEN.left() - 2;
+	distRight = cfg.SCREEN.inGameRight() - rightMost - 2;
+	distLeft = leftMost - cfg.SCREEN.inGameLeft() - 2;
 	bottomMost = lowest;
 	movingLeft = speed.getDx() < 0;
 	movingRight = speed.getDx() > 0;
-	movingDown = speed.getDy() < 0;
+	movingDown = speed.getDy() > 0;
     }
 
     private float distBottomTarget() {
-	return (bottomMost - targetY - 2);
+	return (targetY - bottomMost);
     }
 
     private int getTimeToTravelDistance(float distance) {
@@ -232,10 +232,12 @@ public class Aliens extends AllocGuard {
 	for (int i = 0; i < formation.size(); i++) {
 	    if (aliens[i].isVisible()) {
 		if (!aliens[i].isSolo()) {
+		    // in formation aliens
 		    checkNotGoingOffscreen(aliens[i]);
 		    aliens[i].moveBy(moveDist);
 		    inFormation++;
 		} else {
+		    // solo aliens
 		    offset.setX(anchor.getXAsFloat() + aliens[i].relAnchorX);
 		    offset.setY(anchor.getYAsFloat() + aliens[i].relAnchorY);
 		    offset.moveBy(moveDist);
@@ -249,13 +251,20 @@ public class Aliens extends AllocGuard {
     private void checkNotGoingOffscreen(Alien alien) {
 	int x = alien.getX() + moveDist.getX();
 	int alienR = alien.rightEdge() + moveDist.getX();
-	assert x >= cfg.SCREEN.left() : "off screen left: x: " + x + " s.l: "
-		+ cfg.SCREEN.left() + "\n" + alien + "\nMoveDist: " + moveDist
-		+ "\ndistLeft: " + distLeft + "\nleftMost: " + leftMost
-		+ "\nrightMost: " + rightMost;
-	assert alienR <= cfg.SCREEN.right() : "off screen right: alienR: "
-		+ alienR + " s.r: " + cfg.SCREEN.right() + "\n" + alien
-		+ "\nMoveDist: " + moveDist + "\ndistRight: " + distRight
+	assert x >= cfg.SCREEN.inGameLeft() : "off screen left: x: " + x
+		+ " s.l: " + cfg.SCREEN.inGameLeft() + "\n" + alien
+		+ "\nMoveDist: " + moveDist + "\ndistLeft: " + distLeft
+		+ "\nleftMost: " + leftMost + "\nrightMost: " + rightMost;
+	assert alienR <= cfg.SCREEN.inGameRight() : "off screen right: alienR: "
+		+ alienR
+		+ " s.r: "
+		+ cfg.SCREEN.inGameRight()
+		+ "\n"
+		+ alien
+		+ "\nMoveDist: "
+		+ moveDist
+		+ "\ndistRight: "
+		+ distRight
 		+ "\nleftMost: " + leftMost + "\nrightMost: " + rightMost;
     }
 
@@ -265,7 +274,7 @@ public class Aliens extends AllocGuard {
 	} else if (movingRight) {
 	    moveDist.moveTo(dc, 0);
 	} else if (movingDown) {
-	    moveDist.moveTo(0, -dc);
+	    moveDist.moveTo(0, dc);
 	} else {
 	    assert false : "Aliens are not moving!";
 	}
@@ -365,7 +374,7 @@ public class Aliens extends AllocGuard {
     }
 
     private void assignTargetToMoveDownTo() {
-	targetY = bottomMost - formation.getVerticalStepDistance();
+	targetY = bottomMost + formation.getVerticalStepDistance();
     }
 
     private int livingAliens() {

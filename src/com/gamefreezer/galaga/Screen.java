@@ -13,78 +13,90 @@ public class Screen {
 	this.cfg = cfg;
     }
 
-    /*
-     * Convert logical location to screen location - logical location 0,0 is
-     * bottom left, screen location 0,0 is top left.
-     */
-    public int translateX(int x) {
-	return x + leftIndent();
-    }
-
-    public int translateY(int y) {
-	return height() - y + topIndent();
-    }
-
-    public int left() {
-	return cfg.LEFT_EDGE;
-    }
-
-    public int right() {
-	return cfg.LEFT_EDGE + cfg.SCREEN_WIDTH;
-    }
-
-    public int bottom() {
-	return cfg.BOTTOM_EDGE;
-    }
-
+    /* Absolute screen width in pixels. */
     public int width() {
 	return cfg.SCREEN_WIDTH;
     }
 
-    private boolean firstTime = true;
+    /* Width excluding outer vertical borders. */
+    public int drawableWidth() {
+	return width() - outerVerticalBorderWidth() * 2;
+    }
 
+    /* Width excluding inner and outer vertical borders, where entities roam */
+    public int inGameWidth() {
+	return width() - verticalBorderWidths() * 2;
+    }
+
+    /* Absolute screen height in pixels. */
     public int height() {
-	if (firstTime) {
-	    Game.log("Screen.height() called");
-	    firstTime = false;
-	}
 	return cfg.SCREEN_HEIGHT;
     }
 
-    public int playableTop() {
-	return cfg.SCREEN_HEIGHT - cfg.INNER_TOP_INDENT;
+    /* Width excluding outer vertical borders. */
+    public int drawableHeight() {
+	return height() - outerHorizontalBorderWidth() * 2;
     }
 
-    public int playableBottom() {
-	return cfg.BOTTOM_EDGE + cfg.INNER_BOTTOM_INDENT;
+    /* Height excluding inner and outer horizontal borders, where entities roam */
+    public int inGameHeight() {
+	return height() - horizontalBorderWidths() * 2;
     }
 
-    public int leftIndent() {
-	return cfg.LEFT_INDENT;
+    /* first y pixel from top of screen in game */
+    public int inGameTop() {
+	return horizontalBorderWidths();
     }
 
-    public int topIndent() {
-	return cfg.TOP_INDENT;
+    /* first y pixel from bottom of screen in game */
+    public int inGameBottom() {
+	return horizontalBorderWidths() + inGameHeight();
     }
 
-    public int middleHorizontal() {
-	return cfg.LEFT_EDGE + cfg.SCREEN_WIDTH / 2;
+    /* first x pixel from left of screen in game */
+    public int inGameLeft() {
+	return verticalBorderWidths();
     }
 
+    /* first x pixel from right of screen in game */
+    public int inGameRight() {
+	return verticalBorderWidths() + inGameWidth();
+    }
+
+    /* x pixel in middle of screen */
     public int middleX() {
-	return cfg.LEFT_EDGE + cfg.SCREEN_WIDTH / 2;
+	return width() / 2;
     }
 
+    /* y pixel in middle of screen */
     public int middleY() {
-	return playableTop() - playableBottom();
+	return height() / 2;
     }
 
-    public int centerImageX(int width) {
-	return middleX() - width / 2;
+    /* Combined inner and outer vertical border widths (one side) */
+    public int verticalBorderWidths() {
+	return cfg.OUTER_VERTICAL_BORDER + cfg.INNER_VERTICAL_BORDER;
     }
 
-    public int centerImageY(int height) {
-	return middleY() - height / 2;
+    public int outerVerticalBorderWidth() {
+	return cfg.OUTER_VERTICAL_BORDER;
+    }
+
+    public int innerVerticalBorderWidth() {
+	return cfg.INNER_VERTICAL_BORDER;
+    }
+
+    /* Combined inner and outer horizontal widths (top or bottom) */
+    public int horizontalBorderWidths() {
+	return cfg.OUTER_HORIZONTAL_BORDER + cfg.INNER_HORIZONTAL_BORDER;
+    }
+
+    public int outerHorizontalBorderWidth() {
+	return cfg.OUTER_HORIZONTAL_BORDER;
+    }
+
+    public int innerHorizontalBorderWidth() {
+	return cfg.INNER_HORIZONTAL_BORDER;
     }
 
     public int bottomMaskHeight() {

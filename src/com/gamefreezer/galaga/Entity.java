@@ -98,15 +98,8 @@ public class Entity extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 	if (isVisible()) {
-	    int x = screen.translateX(getX());
-	    int y = screen.translateY(getY());
-	    // graphics.setColor(color);
-	    animation.draw(graphics, x, y - height);
+	    animation.draw(graphics, getX(), getY());
 	    resetExploding();
-	    // if (!isVisible()) {
-	    // SpriteStore.instance().get("imgs/ship.jpg").draw(graphics, x, y -
-	    // height);
-	    // }
 	}
     }
 
@@ -185,28 +178,8 @@ public class Entity extends AllocGuard {
 	return movement.getYAsFloat();
     }
 
-    public int getScreenX() {
-	return screen.translateX(movement.getX());
-    }
-
-    public int getScreenY() {
-	return screen.translateY(movement.getY());
-    }
-
-    public int leftEdge() {
-	return movement.getX();
-    }
-
     public int rightEdge() {
 	return movement.getX() + width;
-    }
-
-    public int getDx() {
-	return movement.getSpeed().getDx();
-    }
-
-    public int getDy() {
-	return movement.getSpeed().getDy();
     }
 
     public void setDimensions(int width, int height) {
@@ -278,25 +251,27 @@ public class Entity extends AllocGuard {
 
     private void adjustIfOffScreenLeft() {
 	if (offScreenLeft() && stopIfOffScreenLeftOrRight()) {
-	    movement.getLocation().setX(screen.left());
+	    movement.getLocation().setX(screen.inGameLeft());
 	}
     }
 
     private void adjustIfOffScreenRight() {
 	if (offScreenRight() && stopIfOffScreenLeftOrRight()) {
-	    movement.getLocation().setX(screen.width() - width);
+	    movement.getLocation().setX(screen.inGameRight() - width);
 	}
     }
 
     private void adjustIfOffScreenTop() {
 	if (offScreenTop() && stopIfOffScreenTopOrBottom()) {
-	    movement.getLocation().setY(screen.playableTop() - height);
+	    System.out.println("Entity.adjustIfOffScreenTop() fired");
+	    movement.getLocation().setY(screen.inGameTop());
 	}
     }
 
     protected void adjustIfOffScreenBottom() {
 	if (offScreenBottom() && stopIfOffScreenTopOrBottom()) {
-	    movement.getLocation().setY(screen.playableBottom());
+	    System.out.println("Entity.adjustIfOffScreenBottom() fired");
+	    movement.getLocation().setY(screen.inGameBottom() - height);
 	}
     }
 
@@ -306,23 +281,23 @@ public class Entity extends AllocGuard {
     }
 
     private boolean offScreenLeft() {
-	return getX() < screen.left();
+	return getX() < screen.inGameLeft();
     }
 
     private boolean offScreenRight() {
-	return getX() + width > screen.width();
+	return rightEdge() > screen.inGameRight();
     }
 
     private boolean offScreenTop() {
-	return getY() + height > screen.playableTop();
+	return getY() < screen.inGameTop();
     }
 
     private boolean offScreenBottom() {
-	return getY() < screen.playableBottom();
+	return getY() + height > screen.inGameBottom();
     }
 
     protected boolean offScreenBottom(int offset) {
-	return getY() < screen.playableBottom() - offset;
+	return getY() + height > screen.inGameBottom() + offset;
     }
 
     protected void killIfOffScreen() {

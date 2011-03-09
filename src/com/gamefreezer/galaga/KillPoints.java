@@ -27,15 +27,14 @@ public class KillPoints extends AllocGuard {
 	for (int i = 0; i < aliens.length; i++) {
 	    if (aliens[i] != null) {
 		// TODO find the sprite needed for these points
+		// TODO fix for topleft 0,0 coords change
 		// draw the sprite at alien.location if alien.exploding
 		Sprite sprite = spriteStore.get(cfg.NUM_9);
 		int x = aliens[i].getX() + aliens[i].getWidth() / 2
 			- sprite.getWidth() / 2;
 		int y = aliens[i].getY() + aliens[i].getHeight() / 2
 			- sprite.getHeight() / 2;
-		sprite.draw(graphics, screen.translateX(x), screen
-			.translateY(y)
-			- sprite.getHeight());
+		sprite.draw(graphics, x, y - sprite.getHeight());
 		// TODO zoom effects - should use AnimaitonFrames, not Sprite
 	    }
 	}

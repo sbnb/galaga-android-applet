@@ -10,9 +10,8 @@ public class Ship extends Entity {
     Location gunLocation;
 
     public Ship(SpriteCache spriteStore, Screen screen, String imageName,
-	    Location location, Gun gun, Speed rightSpeed, Speed leftSpeed,
-	    Speed noSpeed) {
-	super(spriteStore, screen, location, 0, 0, imageName, "", "");
+	    Gun gun, Speed rightSpeed, Speed leftSpeed, Speed noSpeed) {
+	super(spriteStore, screen, new Location(), 0, 0, imageName, "", "");
 
 	assert gun != null : "gun is null!";
 	assert rightSpeed != null : "rightSpeed is null!";
@@ -24,6 +23,7 @@ public class Ship extends Entity {
 	NO_SPEED = noSpeed;
 	fireMode = false;
 	this.gun = gun;
+	this.moveTo(screen.middleX(), screen.inGameBottom() - height);
 	gunLocation = new Location(movement.getLocation());
     }
 
@@ -32,7 +32,7 @@ public class Ship extends Entity {
 	gunLocation.moveTo(this.getLocation());
 	// TODO bullet offset for ship should be configurable, or use ships
 	// bullet width
-	gunLocation.moveBy(width / 2 - bulletWidth / 2, height);
+	gunLocation.moveBy(width / 2 - bulletWidth / 2, 0);
 	return gunLocation;
     }
 

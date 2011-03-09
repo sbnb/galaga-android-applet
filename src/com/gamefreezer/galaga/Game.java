@@ -75,18 +75,17 @@ public class Game extends AllocGuard {
 	final Speed NO_SPEED = new Speed(0, 0);
 	final Gun gun = new Gun(cfg.MIN_TIME_BETWEEN_BULLETS,
 		cfg.BULLET_MOVEMENT);
-	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGE,
-		cfg.SHIP_START_LOCATION, gun, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
+	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGE, gun, RIGHT_SPEED,
+		LEFT_SPEED, NO_SPEED);
 
 	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
 		cfg.BULLET_IMAGE);
 	alienBullets = new Bullets(spriteCache, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGE);
 
-	healthBarX = screen.leftIndent() + cfg.HEALTH_SIDE_INDENT;
-	healthBarY = screen.topIndent() + screen.height()
-		- cfg.HEALTH_BOTTOM_INDENT;
-	healthBarWidth = screen.width() - (cfg.HEALTH_SIDE_INDENT * 2);
+	healthBarX = screen.inGameLeft() + cfg.HEALTH_SIDE_INDENT;
+	healthBarY = screen.inGameBottom() + cfg.HEALTH_BOTTOM_INDENT;
+	healthBarWidth = screen.inGameWidth() - (cfg.HEALTH_SIDE_INDENT * 2);
 
 	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
@@ -154,9 +153,9 @@ public class Game extends AllocGuard {
 
 	Profiler.end("Game.update");
 	cycles++;
-	if (cycles % 1000 == 0) {
-	    System.out.println(Profiler.results());
-	}
+	// if (cycles % 1000 == 0) {
+	// System.out.println(Profiler.results());
+	// }
     }
 
     private void updateState() {
@@ -253,9 +252,8 @@ public class Game extends AllocGuard {
 	if (state != cfg.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
-	    // TODO sort out the translation of animations!
-	    shipExplosion.draw(graphics, screen.translateX(ship.getX()), screen
-		    .translateY(ship.getY() + ship.getHeight()));
+	    shipExplosion.draw(graphics, ship.getX(), ship.getY()
+		    + ship.getHeight());
 	}
 	Profiler.end("Ship.draw");
 
@@ -399,15 +397,62 @@ public class Game extends AllocGuard {
 	// Screen
 	// .width() + 1, screen.height() + 1);
 	graphics.fillScreen();
+
+	showBorders(graphics);
 	// TODO magic string reference
 	// spriteCache.get("bg_starfield.png").draw(graphics,
 	// screen.leftIndent(),
 	// screen.topIndent());
 
 	graphics.setColor(cfg.BORDER);
-	graphics.drawRect(screen.leftIndent(), screen.topIndent(), screen
-		.width() - 2, screen.height() - 2);
+	graphics.drawRect(screen.verticalBorderWidths(), screen
+		.horizontalBorderWidths(), screen.inGameWidth(), screen
+		.inGameHeight());
 
+    }
+
+    private void showBorders(AbstractGraphics graphics) {
+	// left and right outer vertical borders
+	graphics.setColor(colorDecoder.decode("#333333"));
+	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen
+		.height());
+	graphics.fillRect(screen.width() - screen.outerVerticalBorderWidth(),
+		0, screen.outerVerticalBorderWidth(), screen.height());
+
+	// left and right inner vertical borders
+	graphics.setColor(colorDecoder.decode("#777777"));
+	graphics.fillRect(screen.outerVerticalBorderWidth(), 0, screen
+		.innerVerticalBorderWidth(), screen.height());
+	graphics.fillRect(screen.width() - screen.verticalBorderWidths(), 0,
+		screen.innerVerticalBorderWidth(), screen.height());
+
+	// top and bottom outer horizontal borders
+	graphics.setColor(colorDecoder.decode("#333333"));
+	graphics.fillRect(0, 0, screen.width(), screen
+		.outerHorizontalBorderWidth());
+	graphics.fillRect(0, screen.height()
+		- screen.outerHorizontalBorderWidth(), screen.width(), screen
+		.outerHorizontalBorderWidth());
+
+	// top and bottom inner horizontal borders
+	graphics.setColor(colorDecoder.decode("#777777"));
+	graphics.fillRect(screen.outerVerticalBorderWidth(), screen
+		.outerHorizontalBorderWidth(), screen.drawableWidth(), screen
+		.innerHorizontalBorderWidth());
+	graphics.fillRect(screen.outerVerticalBorderWidth(), screen.height()
+		- screen.horizontalBorderWidths(), screen.drawableWidth(),
+		screen.innerHorizontalBorderWidth());
+
+	// dot at each corner of playable game screen
+	int size = 5;
+	graphics.setColor(colorDecoder.decode("#FF00FF"));
+	graphics.fillRect(screen.inGameLeft(), screen.inGameTop(), size, size);
+	graphics.fillRect(screen.inGameRight() - size, screen.inGameTop(),
+		size, size);
+	graphics.fillRect(screen.inGameRight() - size, screen.inGameBottom()
+		- size, size, size);
+	graphics.fillRect(screen.inGameLeft(), screen.inGameBottom() - size,
+		size, size);
     }
 
     private void drawScoreAndHealth(AbstractGraphics graphics) {
@@ -434,8 +479,8 @@ public class Game extends AllocGuard {
 
     private void drawBottomCover(AbstractGraphics graphics) {
 	graphics.setColor(cfg.BOTTOM_COVER);
-	graphics.fillRect(screen.leftIndent(), screen.height() + 1, screen
-		.width() + 1, screen.bottomMaskHeight());
+	graphics.fillRect(screen.inGameLeft(), screen.inGameBottom(), screen
+		.inGameWidth(), screen.bottomMaskHeight());
     }
 
 }

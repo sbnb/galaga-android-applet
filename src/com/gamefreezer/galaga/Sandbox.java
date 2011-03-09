@@ -14,7 +14,8 @@ public class Sandbox extends AllocGuard {
 	super();
 	this.spriteStore = spriteStore;
 	this.cfg = cfg;
-	start = new Location(cfg.SCREEN.left() + 20, cfg.SCREEN.height() - 50);
+	start = new Location(cfg.SCREEN.inGameLeft() + 20, cfg.SCREEN
+		.inGameTop() + 50);
 	target = new Location(200, 200);
 	// controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
 	alien = getAlien(start);
@@ -29,8 +30,7 @@ public class Sandbox extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 	alien.draw(graphics);
-	graphics.drawRect(cfg.SCREEN.translateX(target.getX()), cfg.SCREEN
-		.translateY(target.getY()), 1, 1);
+	graphics.drawRect(target.getX(), target.getY(), 1, 1);
     }
 
     public Alien getAlien(Location location) {

@@ -141,13 +141,13 @@ public class Formation extends AllocGuard {
 	try {
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String line;
-	    int x = cfg.SCREEN.left();
-	    int y = cfg.SCREEN.playableTop() - spVert;
+	    int x = cfg.SCREEN.inGameLeft();
+	    int y = cfg.SCREEN.inGameTop() + spVert;
 
 	    while ((line = br.readLine()) != null) {
 		scanALineOfLayout(line, x, y);
-		x = cfg.SCREEN.left();
-		y -= spVert;
+		x = cfg.SCREEN.inGameLeft();
+		y += spVert;
 	    }
 	    in.close();
 	} catch (Exception e) {
@@ -203,7 +203,7 @@ public class Formation extends AllocGuard {
     }
 
     private void centerFormation() {
-	int offset = (cfg.SCREEN.width() - formationWidth()) / 2;
+	int offset = (cfg.SCREEN.inGameWidth() - formationWidth()) / 2;
 	for (int i = 0; i < last; i++) {
 	    xLocations[i] += offset;
 	}
@@ -211,8 +211,8 @@ public class Formation extends AllocGuard {
 
     private int formationWidth() {
 	assert xLocations.length > 0 : "Formation must have elements";
-	int leftMin = cfg.SCREEN.width();
-	int rightMax = cfg.SCREEN.left();
+	int leftMin = cfg.SCREEN.inGameRight();
+	int rightMax = cfg.SCREEN.inGameLeft();
 	for (int i = 0; i < last; i++) {
 	    leftMin = xLocations[i] < leftMin ? xLocations[i] : leftMin;
 	    rightMax = xLocations[i] + widths[i] > rightMax ? xLocations[i]

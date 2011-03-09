@@ -49,7 +49,7 @@ public class Alien extends Entity {
     @Override
     protected void adjustIfOffScreenBottom() {
 	if (offScreenBottom(screen.bottomMaskHeight())) {
-	    movement.getLocation().setY(screen.playableTop());
+	    movement.getLocation().setY(screen.inGameTop());
 	    diveComplete = true;
 	}
     }
@@ -82,10 +82,10 @@ public class Alien extends Entity {
     }
 
     public float getRightHomeSlot(Location anchor) {
-	return anchor.getXAsFloat() + relAnchorX + width;
+	return anchor.getXAsFloat() + width + relAnchorX;
     }
 
     public float getYHomeSlot(Location anchor) {
-	return anchor.getYAsFloat() + relAnchorY;
+	return anchor.getYAsFloat() + height + relAnchorY;
     }
 }

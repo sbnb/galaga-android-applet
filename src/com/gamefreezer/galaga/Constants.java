@@ -12,14 +12,13 @@ public class Constants {
 	DELAY = PROPS.getInt("DELAY");
 	LEVEL_DELAY = PROPS.getInt("LEVEL_DELAY");
 
-	LEFT_EDGE = PROPS.getInt("LEFT_EDGE");
-	BOTTOM_EDGE = PROPS.getInt("BOTTOM_EDGE");
 	SCREEN_WIDTH = PROPS.getInt("SCREEN_WIDTH");
 	SCREEN_HEIGHT = PROPS.getInt("SCREEN_HEIGHT");
-	LEFT_INDENT = PROPS.getInt("LEFT_INDENT");
-	TOP_INDENT = PROPS.getInt("TOP_INDENT");
-	INNER_TOP_INDENT = PROPS.getInt("INNER_TOP_INDENT");
-	INNER_BOTTOM_INDENT = PROPS.getInt("INNER_BOTTOM_INDENT");
+	OUTER_VERTICAL_BORDER = PROPS.getInt("OUTER_VERTICAL_BORDER");
+	INNER_VERTICAL_BORDER = PROPS.getInt("INNER_VERTICAL_BORDER");
+	OUTER_HORIZONTAL_BORDER = PROPS.getInt("OUTER_HORIZONTAL_BORDER");
+	INNER_HORIZONTAL_BORDER = PROPS.getInt("INNER_HORIZONTAL_BORDER");
+
 	BOTTOM_MASK_HEIGHT = PROPS.getInt("BOTTOM_MASK_HEIGHT");
 
 	// health bar
@@ -54,7 +53,9 @@ public class Constants {
 
 	// player ship
 	SHIP_MOVEMENT = PROPS.getInt("SHIP_MOVEMENT");
-	SHIP_START_LOCATION = new Location(SCREEN_WIDTH / 2, 0);
+	// TODO place ship in Ship constructor, when height is available
+	// SHIP_START_LOCATION = new Location(SCREEN_WIDTH / 2, SCREEN_HEIGHT
+	// - INNER_BOTTOM_INDENT - 20);
 	SHIP_IMAGE = PROPS.getString("SHIP_IMAGE");
 
 	// aliens
@@ -155,15 +156,13 @@ public class Constants {
     // LEVEL_DELAY is the pause between levels
     public final int LEVEL_DELAY;
 
-    // screen settings
-    public final int LEFT_EDGE;
-    public final int BOTTOM_EDGE;
+    // new screen settings
     public final int SCREEN_WIDTH;
     public final int SCREEN_HEIGHT;
-    public final int LEFT_INDENT;
-    public final int TOP_INDENT;
-    public final int INNER_TOP_INDENT;
-    public final int INNER_BOTTOM_INDENT;
+    public final int OUTER_VERTICAL_BORDER;
+    public final int INNER_VERTICAL_BORDER;
+    public final int OUTER_HORIZONTAL_BORDER;
+    public final int INNER_HORIZONTAL_BORDER;
     public final int BOTTOM_MASK_HEIGHT;
 
     public final Screen SCREEN;
@@ -200,7 +199,6 @@ public class Constants {
 
     // player ship
     public final int SHIP_MOVEMENT;
-    public final Location SHIP_START_LOCATION;
     public final String SHIP_IMAGE;
 
     // aliens

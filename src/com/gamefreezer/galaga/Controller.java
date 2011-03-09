@@ -43,10 +43,10 @@ public class Controller extends AllocGuard {
     }
 
     private boolean atRightEdge(Alien alien) {
-	return screen.right() == alien.rightEdge();
+	return screen.inGameRight() == alien.rightEdge();
     }
 
     private boolean atLeftEdge(Alien alien) {
-	return screen.left() == alien.getX();
+	return screen.inGameLeft() == alien.getX();
     }
 }

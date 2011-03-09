@@ -36,7 +36,7 @@ public class SoloAliens extends AllocGuard {
     }
 
     private int randomYSpeedComponent() {
-	return -Util.getRandom(cfg.FREE_ALIEN_Y_SPEED_MIN,
+	return Util.getRandom(cfg.FREE_ALIEN_Y_SPEED_MIN,
 		cfg.FREE_ALIEN_Y_SPEED_MAX);
     }
 

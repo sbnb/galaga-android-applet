@@ -40,8 +40,7 @@ public class Movement extends AllocGuard {
 	adjustSpeed(speed, src, target.getX(), target.getY());
     }
 
-    // this method has no side effects in this class - it used to be static
-    // it changes the value of parameter speed
+    // !! changes the value of parameter speed
     public void adjustSpeed(Speed speed, Location src, int targetX, int targetY) {
 
 	int xDist = Math.abs(targetX - src.getX());
