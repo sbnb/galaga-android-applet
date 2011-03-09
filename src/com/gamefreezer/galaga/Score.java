@@ -1,10 +1,9 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.*;
-
 public class Score extends AllocGuard {
 
     private SpriteCache spriteStore;
+    private Constants cfg;
     private int lives = 0;
     private int health = 100;
     private int totalScore = 0;
@@ -16,8 +15,9 @@ public class Score extends AllocGuard {
     private int bonus;
     private int bonusDecrement;
 
-    public Score(SpriteCache spriteStore) {
+    public Score(SpriteCache spriteStore, Constants cfg) {
 	super();
+	this.cfg = cfg;
 	this.spriteStore = spriteStore;
     }
 
@@ -88,10 +88,10 @@ public class Score extends AllocGuard {
     public void calculateBonus() {
 	bonus = bonus();
 	bonusDecrement = 1;
-	if (bonus < BONUS_THRESHOLD) {
+	if (bonus < cfg.BONUS_THRESHOLD) {
 	    bonusDecrement = 1;
 	} else {
-	    bonusDecrement = bonus / BONUS_THRESHOLD;
+	    bonusDecrement = bonus / cfg.BONUS_THRESHOLD;
 	}
     }
 
@@ -130,25 +130,25 @@ public class Score extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-	Util.drawNumber(spriteStore, graphics, SCORE_LEFT, SCORE_TOP,
-		SCORE_SPACING, SCORE_COMMAS, totalScore);
+	Util.drawNumber(spriteStore, cfg, graphics, cfg.SCORE_LEFT,
+		cfg.SCORE_TOP, cfg.SCORE_SPACING, cfg.SCORE_COMMAS, totalScore);
     }
 
     public void drawBonuses(AbstractGraphics graphics) {
 	// TODO replace magic numbers for bonus details placement
 	// shots fired
 	// System.out.println("draw levelShotsFired: " + levelShotsFired);
-	Util.drawNumber(spriteStore, graphics, 170, 168, SCORE_SPACING,
-		SCORE_COMMAS, levelShotsFired);
+	Util.drawNumber(spriteStore, cfg, graphics, 170, 168,
+		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelShotsFired);
 	// hits made
-	Util.drawNumber(spriteStore, graphics, 170, 191, SCORE_SPACING,
-		SCORE_COMMAS, levelHitsMade);
+	Util.drawNumber(spriteStore, cfg, graphics, 170, 191,
+		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelHitsMade);
 	// accuracy
-	Util.drawNumber(spriteStore, graphics, 170, 214, SCORE_SPACING,
-		SCORE_COMMAS, (int) (accuracy() * 100));
+	Util.drawNumber(spriteStore, cfg, graphics, 170, 214,
+		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, (int) (accuracy() * 100));
 	// bonus
-	Util.drawNumber(spriteStore, graphics, 170, 237, SCORE_SPACING,
-		SCORE_COMMAS, bonus);
+	Util.drawNumber(spriteStore, cfg, graphics, 170, 237,
+		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, bonus);
 
     }
 }

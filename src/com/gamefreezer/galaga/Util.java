@@ -1,16 +1,5 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.NUM_0;
-import static com.gamefreezer.galaga.Constants.NUM_1;
-import static com.gamefreezer.galaga.Constants.NUM_2;
-import static com.gamefreezer.galaga.Constants.NUM_3;
-import static com.gamefreezer.galaga.Constants.NUM_4;
-import static com.gamefreezer.galaga.Constants.NUM_5;
-import static com.gamefreezer.galaga.Constants.NUM_6;
-import static com.gamefreezer.galaga.Constants.NUM_7;
-import static com.gamefreezer.galaga.Constants.NUM_8;
-import static com.gamefreezer.galaga.Constants.NUM_9;
-
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,14 +11,6 @@ public class Util {
 
     private static final Random randomGenerator = new Random();
 
-    public static int getRandomX() {
-	return getRandom(Screen.left() + 1, Screen.width() - 1);
-    }
-
-    public static int getRandomY() {
-	return getRandom(Screen.bottom() + 1, Screen.playableTop() - 1);
-    }
-
     public static int getRandom(int low, int high) {
 	return randomGenerator.nextInt(high + 1 - low) + low;
     }
@@ -37,6 +18,10 @@ public class Util {
     // static function to return sprite width from imgUrl
     public static int widthFromSprite(SpriteCache spriteStore, String aImageUrl) {
 	// TODO don't use List - it will need to be GC'd
+
+	assert spriteStore != null : "spriteStore is null!";
+	assert aImageUrl != null : "aImageUrl is null!";
+
 	String firstImage = Util.getStringAsList(aImageUrl).get(0);
 	Sprite aSprite = spriteStore.get(firstImage);
 	return aSprite.getWidth();
@@ -44,6 +29,10 @@ public class Util {
 
     // static function to return sprite height from imgUrl
     public static int heightFromSprite(SpriteCache spriteStore, String aImageUrl) {
+
+	assert spriteStore != null : "spriteStore is null!";
+	assert aImageUrl != null : "aImageUrl is null!";
+
 	String firstImage = Util.getStringAsList(aImageUrl).get(0);
 	Sprite aSprite = spriteStore.get(firstImage);
 	return aSprite.getHeight();
@@ -77,7 +66,7 @@ public class Util {
     }
 
     // draw a number at specified location and spacing
-    public static void drawNumber(SpriteCache spriteStore,
+    public static void drawNumber(SpriteCache spriteStore, Constants cfg,
 	    AbstractGraphics graphics, int xStart, int yStart, int digitSpace,
 	    int commaSpace, int number) {
 	int numDigits = numDigits(number);
@@ -88,8 +77,8 @@ public class Util {
 	int y = yStart;
 
 	while (numDigits > 0) {
-	    getNumeralSprite(spriteStore, getNumeral(i, number)).draw(graphics,
-		    x, y);
+	    getNumeralSprite(spriteStore, cfg, getNumeral(i, number)).draw(
+		    graphics, x, y);
 	    x -= digitSpace;
 	    if (commaCount % 3 == 0) {
 		x -= commaSpace;
@@ -104,31 +93,32 @@ public class Util {
 	return (number % (i * 10)) / i;
     }
 
-    public static Sprite getNumeralSprite(SpriteCache spriteStore, int n) {
+    public static Sprite getNumeralSprite(SpriteCache spriteStore,
+	    Constants cfg, int n) {
 	switch (n) {
 	case 0:
-	    return spriteStore.get(NUM_0);
+	    return spriteStore.get(cfg.NUM_0);
 	case 1:
-	    return spriteStore.get(NUM_1);
+	    return spriteStore.get(cfg.NUM_1);
 	case 2:
-	    return spriteStore.get(NUM_2);
+	    return spriteStore.get(cfg.NUM_2);
 	case 3:
-	    return spriteStore.get(NUM_3);
+	    return spriteStore.get(cfg.NUM_3);
 	case 4:
-	    return spriteStore.get(NUM_4);
+	    return spriteStore.get(cfg.NUM_4);
 	case 5:
-	    return spriteStore.get(NUM_5);
+	    return spriteStore.get(cfg.NUM_5);
 	case 6:
-	    return spriteStore.get(NUM_6);
+	    return spriteStore.get(cfg.NUM_6);
 	case 7:
-	    return spriteStore.get(NUM_7);
+	    return spriteStore.get(cfg.NUM_7);
 	case 8:
-	    return spriteStore.get(NUM_8);
+	    return spriteStore.get(cfg.NUM_8);
 	case 9:
-	    return spriteStore.get(NUM_9);
+	    return spriteStore.get(cfg.NUM_9);
 	}
 	assert false : "fell through switch - impossible. n: " + n;
-	return spriteStore.get(NUM_0);
+	return spriteStore.get(cfg.NUM_0);
     }
 
     public static int numDigits(int number) {

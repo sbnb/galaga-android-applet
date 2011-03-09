@@ -1,11 +1,9 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.EXPL_IMGS;
-import static com.gamefreezer.galaga.Constants.EXPL_TIMES;
-
 public class Entity extends AllocGuard {
 
-    protected Movement movement = new Movement();
+    protected Constants cfg;
+    protected Movement movement;
     protected Speed maxSpeed = new Speed();
     protected int width = 0;
     protected int height = 0;
@@ -15,49 +13,53 @@ public class Entity extends AllocGuard {
     protected boolean diveComplete = false;
     protected AnimationFrames animation;
     protected int points = 0;
+    protected Screen screen;
 
-    public Entity(SpriteCache spriteStore) {
-	super();
-	animation = new AnimationFrames(spriteStore);
+    public Entity(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
+	this(spriteStore, screen, new Location(), 0, 0, 0, 0, null, "", "",
+		targettingSpeed);
     }
 
-    public Entity(SpriteCache spriteStore, Location location, int width,
-	    int height, int horizontalMovement, int verticalMovement,
-	    String imagePath, String renderTimes, String renderTicks) {
-	// super();
-	this(spriteStore);
-	// animation = new AnimationFrames(spriteStore);
+    public Entity(SpriteCache spriteStore, Screen screen, Location location,
+	    int horizontalMovement, int verticalMovement, String imageName,
+	    String renderTimes, String renderTicks) {
+	this(spriteStore, screen, location, Util.widthFromSprite(spriteStore,
+		imageName), Util.heightFromSprite(spriteStore, imageName),
+		horizontalMovement, verticalMovement, imageName, renderTimes,
+		renderTicks, new Speed(0, 0));
+    }
+
+    public Entity(SpriteCache spriteStore, Screen screen, Location location,
+	    int width, int height, int horizontalMovement,
+	    int verticalMovement, String imageName, String renderTimes,
+	    String renderTicks, Speed targettingSpeed) {
+	super();
+
+	// assert cfg != null : "cfg is null!";
+	assert spriteStore != null : "spriteStore is null!";
+	assert location != null : "location is null!";
+	assert renderTimes != null : "renderTimes is null!";
+	assert renderTicks != null : "renderTicks is null!";
+	assert targettingSpeed != null : "targettingSpeed is null!";
+
+	// this.cfg = cfg;
+	this.screen = screen;
 	this.width = width;
 	this.height = height;
+	animation = new AnimationFrames(spriteStore);
+	movement = new Movement(location, new Speed(horizontalMovement,
+		verticalMovement), targettingSpeed);
 	this.active = true;
 
-	if (imagePath != null) {
-	    animation.reset(imagePath, renderTimes, renderTicks);
+	if (imageName != null) {
+	    animation.reset(imageName, renderTimes, renderTicks);
 	}
-
-	this.movement = new Movement(location, new Speed(horizontalMovement,
-		verticalMovement));
     }
 
-    public Entity(SpriteCache spriteStore, Location location,
-	    int horizontalMovement, int verticalMovement, String imageUrl,
-	    String renderTimes, String renderTicks) {
-	this(spriteStore, location,
-		Util.widthFromSprite(spriteStore, imageUrl), Util
-			.heightFromSprite(spriteStore, imageUrl),
-		horizontalMovement, verticalMovement, imageUrl, renderTimes,
-		renderTicks);
-    }
-
-    public void setImagePath(String imagePath) {
-	setImagePath(imagePath, "", "");
-    }
-
-    public void setImagePath(String imagePath, String renderTimes,
+    public void setImagePath(String imageName, String renderTimes,
 	    String renderTicks) {
-	if (imagePath != null) {
-	    animation.reset(imagePath, renderTimes, renderTicks);
-	}
+	assert imageName != null : "imageName is null!";
+	animation.reset(imageName, renderTimes, renderTicks);
     }
 
     public void move(int timeDelta) {
@@ -96,8 +98,8 @@ public class Entity extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 	if (isVisible()) {
-	    int x = Screen.translateX(getX());
-	    int y = Screen.translateY(getY());
+	    int x = screen.translateX(getX());
+	    int y = screen.translateY(getY());
 	    // graphics.setColor(color);
 	    animation.draw(graphics, x, y - height);
 	    resetExploding();
@@ -184,11 +186,11 @@ public class Entity extends AllocGuard {
     }
 
     public int getScreenX() {
-	return Screen.translateX(movement.getX());
+	return screen.translateX(movement.getX());
     }
 
     public int getScreenY() {
-	return Screen.translateY(movement.getY());
+	return screen.translateY(movement.getY());
     }
 
     public int leftEdge() {
@@ -236,9 +238,9 @@ public class Entity extends AllocGuard {
 	active = false;
     }
 
-    public void explode() {
+    public void explode(String explosionImages, String explosionTimes) {
 	exploding = true;
-	animation.reset(EXPL_IMGS, EXPL_TIMES, "", true);
+	animation.reset(explosionImages, explosionTimes, "", true);
     }
 
     public void regenerate() {
@@ -276,25 +278,25 @@ public class Entity extends AllocGuard {
 
     private void adjustIfOffScreenLeft() {
 	if (offScreenLeft() && stopIfOffScreenLeftOrRight()) {
-	    movement.getLocation().setX(Screen.left());
+	    movement.getLocation().setX(screen.left());
 	}
     }
 
     private void adjustIfOffScreenRight() {
 	if (offScreenRight() && stopIfOffScreenLeftOrRight()) {
-	    movement.getLocation().setX(Screen.width() - width);
+	    movement.getLocation().setX(screen.width() - width);
 	}
     }
 
     private void adjustIfOffScreenTop() {
 	if (offScreenTop() && stopIfOffScreenTopOrBottom()) {
-	    movement.getLocation().setY(Screen.playableTop() - height);
+	    movement.getLocation().setY(screen.playableTop() - height);
 	}
     }
 
     protected void adjustIfOffScreenBottom() {
 	if (offScreenBottom() && stopIfOffScreenTopOrBottom()) {
-	    movement.getLocation().setY(Screen.playableBottom());
+	    movement.getLocation().setY(screen.playableBottom());
 	}
     }
 
@@ -304,23 +306,23 @@ public class Entity extends AllocGuard {
     }
 
     private boolean offScreenLeft() {
-	return getX() < Screen.left();
+	return getX() < screen.left();
     }
 
     private boolean offScreenRight() {
-	return getX() + width > Screen.width();
+	return getX() + width > screen.width();
     }
 
     private boolean offScreenTop() {
-	return getY() + height > Screen.playableTop();
+	return getY() + height > screen.playableTop();
     }
 
     private boolean offScreenBottom() {
-	return getY() < Screen.playableBottom();
+	return getY() < screen.playableBottom();
     }
 
     protected boolean offScreenBottom(int offset) {
-	return getY() < Screen.playableBottom() - offset;
+	return getY() < screen.playableBottom() - offset;
     }
 
     protected void killIfOffScreen() {

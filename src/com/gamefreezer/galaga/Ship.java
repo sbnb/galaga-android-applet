@@ -1,13 +1,30 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.*;
-import static com.gamefreezer.galaga.Constants.SHIP_IMAGE;
-import static com.gamefreezer.galaga.Constants.SHIP_MOVEMENT;
-
 public class Ship extends Entity {
 
-    public Ship(SpriteCache spriteStore, Location location) {
-	super(spriteStore, location, 0, 0, SHIP_IMAGE, "", "");
+    private final Speed RIGHT_SPEED;
+    private final Speed LEFT_SPEED;
+    private final Speed NO_SPEED;
+    private boolean fireMode;
+    private Gun gun;
+    Location gunLocation;
+
+    public Ship(SpriteCache spriteStore, Screen screen, String imageName,
+	    Location location, Gun gun, Speed rightSpeed, Speed leftSpeed,
+	    Speed noSpeed) {
+	super(spriteStore, screen, location, 0, 0, imageName, "", "");
+
+	assert gun != null : "gun is null!";
+	assert rightSpeed != null : "rightSpeed is null!";
+	assert leftSpeed != null : "leftSpeed is null!";
+	assert noSpeed != null : "noSpeed is null!";
+
+	RIGHT_SPEED = rightSpeed;
+	LEFT_SPEED = leftSpeed;
+	NO_SPEED = noSpeed;
+	fireMode = false;
+	this.gun = gun;
+	gunLocation = new Location(movement.getLocation());
     }
 
     /* The start location for bullets fired by the ship. */
@@ -50,11 +67,4 @@ public class Ship extends Entity {
     public void standingStill() {
 	setSpeed(NO_SPEED);
     }
-
-    private final Speed RIGHT_SPEED = new Speed(SHIP_MOVEMENT, 0);
-    private final Speed LEFT_SPEED = new Speed(-SHIP_MOVEMENT, 0);
-    private final Speed NO_SPEED = new Speed(0, 0);
-    private boolean fireMode = false;
-    private Gun gun = new Gun(MIN_TIME_BETWEEN_BULLETS, BULLET_MOVEMENT);
-    Location gunLocation = new Location(movement.getLocation());
 }

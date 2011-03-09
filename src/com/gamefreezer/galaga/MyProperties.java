@@ -1,7 +1,5 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.ALIEN_SPEEDS;
-
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.SortedMap;
@@ -10,6 +8,18 @@ import java.util.TreeMap;
 public class MyProperties {
 
     private final Properties properties = new Properties();
+    private AbstractColor colorDecoder;
+    private AbstractLog log;
+
+    // TODO this is ugly - either pass a full set of Abstract tools or none, and
+    // be consistent
+    public MyProperties(InputStream in, AbstractLog log,
+	    AbstractColor colorDecoder) {
+	this.colorDecoder = colorDecoder;
+	this.log = log;
+	log.i("GALAGA", "MyProperties(): constructor.");
+	readFromInputStream(in);
+    }
 
     public MyProperties(InputStream in) {
 	Game.log("MyProperties(): constructor.");
@@ -73,14 +83,14 @@ public class MyProperties {
 
     public AbstractColor getColor(String key) {
 	if (properties.containsKey(key)) {
-	    return Game.decodeColor(properties.getProperty(key));
+	    return colorDecoder.decode(properties.getProperty(key));
 	}
 	throw new IllegalArgumentException("Key doesn't exist: " + key);
     }
 
     public SortedMap<Integer, Integer> getSortedMap(String key) {
 	if (properties.containsKey(key)) {
-	    return MyProperties.parseSortedMap(properties.getProperty(key));
+	    return parseSortedMap(properties.getProperty(key));
 	}
 	throw new IllegalArgumentException("Key doesn't exist: " + key);
     }
@@ -88,17 +98,18 @@ public class MyProperties {
     public SortedMap<Integer, Integer> getSortedMap(String key,
 	    SortedMap<Integer, Integer> defaultValue) {
 	if (properties.containsKey(key)) {
-	    return MyProperties.parseSortedMap(properties.getProperty(key));
+	    return parseSortedMap(properties.getProperty(key));
 	}
 	return defaultValue;
     }
 
-    public static SortedMap<Integer, Integer> parseSortedMap(String line) {
+    public SortedMap<Integer, Integer> parseSortedMap(String line) {
 	// if not there, return default speeds here
-	if (line.equals("")) {
-	    return ALIEN_SPEEDS;
-	}
 	SortedMap<Integer, Integer> smap = new TreeMap<Integer, Integer>();
+	if (line.equals("")) {
+	    assert false : "cannot parse line: " + line;
+	    return smap;
+	}
 	String[] entries = line.split(" ");
 	for (String entry : entries) {
 	    String[] kv = entry.split(":");
@@ -106,11 +117,11 @@ public class MyProperties {
 	    int value = Integer.parseInt(kv[1]);
 	    smap.put(key, value);
 	}
-	MyProperties.fillMap(smap);
+	fillMap(smap);
 	return smap;
     }
 
-    public static void fillMap(SortedMap<Integer, Integer> smap) {
+    public void fillMap(SortedMap<Integer, Integer> smap) {
 	int val = 1;
 	for (int x = 100; x > 0; --x) {
 	    if (smap.containsKey(x)) {

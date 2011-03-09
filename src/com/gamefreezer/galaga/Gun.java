@@ -2,6 +2,10 @@ package com.gamefreezer.galaga;
 
 public class Gun extends AllocGuard {
 
+    private long lastFiredTime = 0;
+    private int minTimeBetweenBullets;
+    private final int bulletMovement;
+
     public Gun(int minTimeBetweenBullets, int bulletMovement) {
 	super();
 	this.minTimeBetweenBullets = minTimeBetweenBullets;
@@ -27,12 +31,8 @@ public class Gun extends AllocGuard {
     public void setMinTimeBetweenBullets(int newTime) {
 	minTimeBetweenBullets = newTime;
     }
-    
+
     private void recordFireTime() {
 	lastFiredTime = System.currentTimeMillis();
     }
-
-    private long lastFiredTime = 0;
-    private int minTimeBetweenBullets;
-    private final int bulletMovement;
 }

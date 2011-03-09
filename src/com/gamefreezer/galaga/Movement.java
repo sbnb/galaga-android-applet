@@ -2,31 +2,70 @@ package com.gamefreezer.galaga;
 
 public class Movement extends AllocGuard {
 
+    private Speed speed;
+    private Location location;
+    private Location target;
+    private final Speed targettingSpeed;
+
     public Movement(Location location, Speed speed) {
+	this(location, speed, new Speed(0, 0));
+    }
+
+    public Movement(Location location, Speed speed, Speed targettingSpeed) {
 	super();
+
+	assert location != null : "location is null!";
+	assert speed != null : "speed is null!";
+	assert targettingSpeed != null : "targettingSpeed is null!";
+
 	this.location = location;
 	this.speed = speed;
 	this.target = new Location();
 	target.moveTo(-1f, -1f);
+	this.targettingSpeed = targettingSpeed;
     }
-
-    public Movement() {
-	super();
-	this.location = new Location();
-	this.target = new Location();
-	target.moveTo(-1f, -1f);
-	this.speed = new Speed();
-    }
-
-    public static Movement NULL = new Movement();
 
     public void update(int timeDelta) {
+	assert location != null : "location is null!";
+	assert target != null : "target is null!";
 	if (targetting()) {
-	    Controller.adjustSpeed(getSpeed(), location, target);
+	    adjustSpeed(getSpeed(), location, target);
 	}
 	location.moveBy(speed.getXDistanceTravelledIn(timeDelta), speed
 		.getYDistanceTravelledIn(timeDelta));
 
+    }
+
+    public void adjustSpeed(Speed speed, Location src, Location target) {
+	adjustSpeed(speed, src, target.getX(), target.getY());
+    }
+
+    // this method has no side effects in this class - it used to be static
+    // it changes the value of parameter speed
+    public void adjustSpeed(Speed speed, Location src, int targetX, int targetY) {
+
+	int xDist = Math.abs(targetX - src.getX());
+	int yDist = Math.abs(targetY - src.getY());
+
+	// take min of x,y and max speeds dx, dy adjusted for timeDelta
+	int x = Math.min(xDist, targettingSpeed.getDx());
+	x = Math.max(x, targettingSpeed.getDx() / 2);
+	if (xDist < 2)
+	    x = 0;
+	int y = Math.min(yDist, targettingSpeed.getDy());
+	y = Math.max(y, targettingSpeed.getDy() / 2);
+	if (yDist < 2)
+	    y = 0;
+
+	// negate if alien.x > target.x
+	if (src.getX() > targetX) {
+	    x = -x;
+	}
+	// negate if alien.y > target.y
+	if (src.getY() > targetY) {
+	    y = -y;
+	}
+	speed.reset(x, y);
     }
 
     public boolean targetting() {
@@ -108,8 +147,4 @@ public class Movement extends AllocGuard {
 	return "Movement: [" + location.toString() + "] [" + speed.toString()
 		+ "]";
     }
-
-    private Speed speed;
-    private Location location;
-    private Location target;
 }

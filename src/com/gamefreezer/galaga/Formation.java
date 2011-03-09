@@ -1,11 +1,5 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.ALIEN_SPEEDS;
-import static com.gamefreezer.galaga.Constants.AL_SP_HORIZ;
-import static com.gamefreezer.galaga.Constants.AL_SP_VERT;
-import static com.gamefreezer.galaga.Constants.MAX_FORMATION;
-import static com.gamefreezer.galaga.Constants.VERT_STEP;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,10 +8,40 @@ import java.util.SortedMap;
 
 public class Formation extends AllocGuard {
 
-    public Formation(SpriteCache spriteStore, String propertiesFileName) {
+    private SpriteCache spriteStore;
+    private MyProperties props;
+    private String propertiesFileName;
+    private String layoutFile;
+    private SortedMap<Integer, Integer> alienSpeeds;
+    private int spVert;
+    private int spHoriz;
+    private int vertStep;
+
+    private int last = 0;
+    private int[] xLocations;
+    private int[] yLocations;
+    private String[] imagePaths;
+    private String[] renderTimesStore;
+    private String[] renderTicksStore;
+    private int[] widths;
+    private int[] heights;
+    private int[] pointsStore;
+    private Constants cfg;
+
+    public Formation(SpriteCache spriteStore, Constants cfg,
+	    String propertiesFileName) {
 	super();
+	this.cfg = cfg;
 	this.spriteStore = spriteStore;
 	this.propertiesFileName = propertiesFileName;
+	xLocations = new int[cfg.MAX_FORMATION];
+	yLocations = new int[cfg.MAX_FORMATION];
+	imagePaths = new String[cfg.MAX_FORMATION];
+	renderTimesStore = new String[cfg.MAX_FORMATION];
+	renderTicksStore = new String[cfg.MAX_FORMATION];
+	widths = new int[cfg.MAX_FORMATION];
+	heights = new int[cfg.MAX_FORMATION];
+	pointsStore = new int[cfg.MAX_FORMATION];
 	loadProperties();
 	initializeFromProperties();
 	createLayout();
@@ -102,11 +126,11 @@ public class Formation extends AllocGuard {
 
     private void initializeFromProperties() {
 	assert props.size() > 0 : "properties must be loaded";
-	spVert = props.getInt("spacingVertical", AL_SP_VERT);
-	spHoriz = props.getInt("spacingHorizontal", AL_SP_HORIZ);
-	vertStep = props.getInt("verticalStepDistance", VERT_STEP);
+	spVert = props.getInt("spacingVertical", cfg.AL_SP_VERT);
+	spHoriz = props.getInt("spacingHorizontal", cfg.AL_SP_HORIZ);
+	vertStep = props.getInt("verticalStepDistance", cfg.VERT_STEP);
 	alienSpeeds = props.getSortedMap(props.getString("alienSpeeds", ""),
-		ALIEN_SPEEDS);
+		cfg.ALIEN_SPEEDS);
 	layoutFile = props.getString("layoutFile", "");
     }
 
@@ -117,12 +141,12 @@ public class Formation extends AllocGuard {
 	try {
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String line;
-	    int x = Screen.left();
-	    int y = Screen.playableTop() - spVert;
+	    int x = cfg.SCREEN.left();
+	    int y = cfg.SCREEN.playableTop() - spVert;
 
 	    while ((line = br.readLine()) != null) {
 		scanALineOfLayout(line, x, y);
-		x = Screen.left();
+		x = cfg.SCREEN.left();
 		y -= spVert;
 	    }
 	    in.close();
@@ -145,7 +169,7 @@ public class Formation extends AllocGuard {
 
     // save the information needed to create each alien in this level later
     private void saveAlienDetails(int x, int y, char c) {
-	assert last < MAX_FORMATION : "MAX_FORMATION(" + MAX_FORMATION
+	assert last < cfg.MAX_FORMATION : "MAX_FORMATION(" + cfg.MAX_FORMATION
 		+ ") <= last (" + last + "): increase it.";
 
 	String imagePath = getAlienImagePath(c);
@@ -179,7 +203,7 @@ public class Formation extends AllocGuard {
     }
 
     private void centerFormation() {
-	int offset = (Screen.width() - formationWidth()) / 2;
+	int offset = (cfg.SCREEN.width() - formationWidth()) / 2;
 	for (int i = 0; i < last; i++) {
 	    xLocations[i] += offset;
 	}
@@ -187,8 +211,8 @@ public class Formation extends AllocGuard {
 
     private int formationWidth() {
 	assert xLocations.length > 0 : "Formation must have elements";
-	int leftMin = Screen.width();
-	int rightMax = Screen.left();
+	int leftMin = cfg.SCREEN.width();
+	int rightMax = cfg.SCREEN.left();
 	for (int i = 0; i < last; i++) {
 	    leftMin = xLocations[i] < leftMin ? xLocations[i] : leftMin;
 	    rightMax = xLocations[i] + widths[i] > rightMax ? xLocations[i]
@@ -203,24 +227,4 @@ public class Formation extends AllocGuard {
 	return "abcdefghijklmnopqrstuvwxyz".contains(String.valueOf(c))
 		|| "ABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(String.valueOf(c));
     }
-
-    SpriteCache spriteStore;
-    private MyProperties props;
-    private String propertiesFileName;
-    private String layoutFile;
-    private SortedMap<Integer, Integer> alienSpeeds;
-    private int spVert;
-    private int spHoriz;
-    private int vertStep;
-
-    private int last = 0;
-    private int[] xLocations = new int[MAX_FORMATION];
-    private int[] yLocations = new int[MAX_FORMATION];
-    private String[] imagePaths = new String[MAX_FORMATION];
-    private String[] renderTimesStore = new String[MAX_FORMATION];
-    private String[] renderTicksStore = new String[MAX_FORMATION];
-    private int[] widths = new int[MAX_FORMATION];
-    private int[] heights = new int[MAX_FORMATION];
-    private int[] pointsStore = new int[MAX_FORMATION];
-
 }

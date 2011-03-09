@@ -1,32 +1,39 @@
 package com.gamefreezer.galaga;
 
-//import static com.gamefreezer.galaga.Constants.*;
-
 public class Sandbox extends AllocGuard {
 
+    private Constants cfg;
+    private SpriteCache spriteStore;
     private Alien alien;
-    Location start = new Location(Screen.left() + 20, Screen.height() - 50);
-    // Location start = new Location(Screen.left() + 200, Screen.height() -
-    // 400);
-    private Location target = new Location(200, 200);
+    Location start;
+    private Location target;
 
-    public Sandbox(SpriteCache spriteStore) {
+    // private Controller controller;
+
+    public Sandbox(SpriteCache spriteStore, Constants cfg) {
 	super();
-	alien = getAlien(spriteStore, start);
+	this.spriteStore = spriteStore;
+	this.cfg = cfg;
+	start = new Location(cfg.SCREEN.left() + 20, cfg.SCREEN.height() - 50);
+	target = new Location(200, 200);
+	// controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
+	alien = getAlien(start);
     }
 
     public void update(int delta) {
-	Controller.adjustSpeed(alien.getSpeed(), alien.getLocation(), target);
+	// TODO resolve usage of adjust speed - it now lives in movement
+	// controller.adjustSpeed(alien.getSpeed(), alien.getLocation(),
+	// target);
 	alien.move(delta);
     }
 
     public void draw(AbstractGraphics graphics) {
 	alien.draw(graphics);
-	graphics.drawRect(Screen.translateX(target.getX()), Screen
+	graphics.drawRect(cfg.SCREEN.translateX(target.getX()), cfg.SCREEN
 		.translateY(target.getY()), 1, 1);
     }
 
-    public static Alien getAlien(SpriteCache spriteStore, Location location) {
+    public Alien getAlien(Location location) {
 	int dx = 0;
 	int dy = 0;
 	int baseDx = 100;
@@ -36,7 +43,7 @@ public class Sandbox extends AllocGuard {
 	String renderTimes = "";
 	String renderTicks = "";
 
-	return new Alien(spriteStore, location, dx, dy, baseDx, baseDy,
-		imgPath, points, renderTimes, renderTicks);
+	return new Alien(spriteStore, cfg.SCREEN, location, dx, dy, baseDx,
+		baseDy, imgPath, points, renderTimes, renderTicks);
     }
 }

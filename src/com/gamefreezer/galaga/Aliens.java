@@ -1,16 +1,14 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.*;
-
 import java.util.SortedMap;
 
 public class Aliens extends AllocGuard {
 
     public static Alien FIRST = null;
-    private Alien[] aliens = new Alien[MAX_FORMATION];
+    private Alien[] aliens;
     private Formation formation;
-    private Speed speed = new Speed();
-    private Location moveDist = new Location();
+    private Speed speed;
+    private Location moveDist;
     private int currentMaxSpeed = 0;
     private float rightMost;
     private float leftMost;
@@ -26,19 +24,29 @@ public class Aliens extends AllocGuard {
     private static final int RIGHT = 1;
     private static final int LEFT = -1;
     private float targetY;
-    private Controller controller = new Controller();
+    private Controller controller;
     private SoloAliens freeMovingAliens;
-    private Gun gun = new Gun(MIN_TIME_BETWEEN_ALIEN_BULLETS,
-	    ALIEN_BULLET_MOVEMENT);
+    private Gun gun;
     private Location anchor = new Location();
+    private Constants cfg;
+    private final Alien nullAlien;
 
-    public Aliens(SpriteCache spriteStore) {
+    public Aliens(SpriteCache spriteStore, Constants cfg, Speed targettingSpeed) {
 	super();
-	for (int i = 0; i < MAX_FORMATION; i++) {
-	    aliens[i] = new Alien(spriteStore);
+	this.cfg = cfg;
+	nullAlien = new Alien(spriteStore, cfg.SCREEN, targettingSpeed);
+	speed = new Speed();
+	moveDist = new Location();
+	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
+	gun = new Gun(cfg.MIN_TIME_BETWEEN_ALIEN_BULLETS,
+		cfg.ALIEN_BULLET_MOVEMENT);
+	freeMovingAliens = new SoloAliens(cfg);
+
+	aliens = new Alien[cfg.MAX_FORMATION];
+	for (int i = 0; i < cfg.MAX_FORMATION; i++) {
+	    aliens[i] = new Alien(spriteStore, cfg.SCREEN, targettingSpeed);
 	    aliens[i].kill();
 	}
-	this.freeMovingAliens = new SoloAliens();
     }
 
     // doubly link all aliens in a formation (regardless of state, living or
@@ -134,8 +142,8 @@ public class Aliens extends AllocGuard {
 	if (gun.ready()) {
 	    gun.shoot(bullets, getShooterLocation());
 	    gun.setMinTimeBetweenBullets(Util.getRandom(
-		    MIN_TIME_BETWEEN_ALIEN_BULLETS,
-		    MAX_TIME_BETWEEN_ALIEN_BULLETS));
+		    cfg.MIN_TIME_BETWEEN_ALIEN_BULLETS,
+		    cfg.MAX_TIME_BETWEEN_ALIEN_BULLETS));
 	}
     }
 
@@ -172,9 +180,9 @@ public class Aliens extends AllocGuard {
     // save all expensive calculated variables in one pass through the array
     private void calculateLookups() {
 	rightMost = 0;
-	leftMost = Screen.width();
-	float lowest = Screen.height();
-	float highest = Screen.playableBottom();
+	leftMost = cfg.SCREEN.width();
+	float lowest = cfg.SCREEN.height();
+	float highest = cfg.SCREEN.playableBottom();
 	livingAliens = 0;
 	inFormationAliens = 0;
 
@@ -201,8 +209,8 @@ public class Aliens extends AllocGuard {
 	    }
 	}
 
-	distRight = Screen.width() - rightMost - 2;
-	distLeft = leftMost - Screen.left() - 2;
+	distRight = cfg.SCREEN.width() - rightMost - 2;
+	distLeft = leftMost - cfg.SCREEN.left() - 2;
 	bottomMost = lowest;
 	movingLeft = speed.getDx() < 0;
 	movingRight = speed.getDx() > 0;
@@ -241,14 +249,14 @@ public class Aliens extends AllocGuard {
     private void checkNotGoingOffscreen(Alien alien) {
 	int x = alien.getX() + moveDist.getX();
 	int alienR = alien.rightEdge() + moveDist.getX();
-	assert x >= Screen.left() : "off screen left: x: " + x + " s.l: "
-		+ Screen.left() + "\n" + alien + "\nMoveDist: " + moveDist
+	assert x >= cfg.SCREEN.left() : "off screen left: x: " + x + " s.l: "
+		+ cfg.SCREEN.left() + "\n" + alien + "\nMoveDist: " + moveDist
 		+ "\ndistLeft: " + distLeft + "\nleftMost: " + leftMost
 		+ "\nrightMost: " + rightMost;
-	assert alienR <= Screen.right() : "off screen right: alienR: " + alienR
-		+ " s.r: " + Screen.right() + "\n" + alien + "\nMoveDist: "
-		+ moveDist + "\ndistRight: " + distRight + "\nleftMost: "
-		+ leftMost + "\nrightMost: " + rightMost;
+	assert alienR <= cfg.SCREEN.right() : "off screen right: alienR: "
+		+ alienR + " s.r: " + cfg.SCREEN.right() + "\n" + alien
+		+ "\nMoveDist: " + moveDist + "\ndistRight: " + distRight
+		+ "\nleftMost: " + leftMost + "\nrightMost: " + rightMost;
     }
 
     private void setMoveDistance(float dc) {
@@ -314,7 +322,7 @@ public class Aliens extends AllocGuard {
 		x++;
 	    }
 	}
-	return Alien.NULL;
+	return nullAlien;
     }
 
     private Alien getRandomInFormationAlien() {

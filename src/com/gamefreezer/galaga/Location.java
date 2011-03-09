@@ -2,6 +2,9 @@ package com.gamefreezer.galaga;
 
 public class Location extends AllocGuard {
 
+    private float xFloat = 0.0f;
+    private float yFloat = 0.0f;
+
     public Location(int x, int y) {
 	super();
 	this.xFloat = x;
@@ -43,7 +46,7 @@ public class Location extends AllocGuard {
     public void setY(float y) {
 	yFloat = y;
     }
-    
+
     public void moveBy(float xMovement, float yMovement) {
 	xFloat += xMovement;
 	yFloat += yMovement;
@@ -53,7 +56,7 @@ public class Location extends AllocGuard {
 	xFloat += anAmount.getXAsFloat();
 	yFloat += anAmount.getYAsFloat();
     }
-    
+
     public void moveTo(int x, int y) {
 	xFloat = x;
 	yFloat = y;
@@ -63,7 +66,7 @@ public class Location extends AllocGuard {
 	xFloat = x;
 	yFloat = y;
     }
-    
+
     public void moveTo(Location point) {
 	xFloat = point.getXAsFloat();
 	yFloat = point.getYAsFloat();
@@ -99,8 +102,5 @@ public class Location extends AllocGuard {
     private float rotateX(float theta, float x, float y) {
 	return (float) (x * Math.cos(theta) - y * Math.sin(theta));
     }
-
-    private float xFloat = 0.0f;
-    private float yFloat = 0.0f;
 
 }

@@ -1,11 +1,12 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.*;
-
 public class CollisionDetector extends AllocGuard {
 
-    public CollisionDetector() {
+    private Constants cfg;
+
+    public CollisionDetector(Constants cfg) {
 	super();
+	this.cfg = cfg;
     }
 
     public void checkCollisions(Aliens aliens, Ship ship, Score score,
@@ -29,7 +30,7 @@ public class CollisionDetector extends AllocGuard {
 	for (Entity bullet : alienBullets) {
 	    if (bullet.isAlive() && bullet.intersects(ship)) {
 		bullet.kill();
-		score.decrementHealth(HEALTH_HIT_LIGHT);
+		score.decrementHealth(cfg.HEALTH_HIT_LIGHT);
 	    }
 	}
     }
@@ -41,8 +42,8 @@ public class CollisionDetector extends AllocGuard {
 	    if (alien.isAlive() && alien.intersects(ship)) {
 		if (alien.isSolo()) {
 		    alien.kill();
-		    alien.explode();
-		    score.decrementHealth(HEALTH_HIT_SEVERE);
+		    alien.explode(cfg.EXPL_IMGS, cfg.EXPL_TIMES);
+		    score.decrementHealth(cfg.HEALTH_HIT_SEVERE);
 		} else {
 		    score.setHealth(0);
 		}
@@ -57,7 +58,7 @@ public class CollisionDetector extends AllocGuard {
 	    Alien alien = aliensArray[i];
 	    if (alien.isAlive() && bullet.intersects(alien)) {
 		alien.kill();
-		alien.explode();
+		alien.explode(cfg.EXPL_IMGS, cfg.EXPL_TIMES);
 		bullet.kill();
 		score.incrementHitsMade();
 		score.incrementScore(alien.points());

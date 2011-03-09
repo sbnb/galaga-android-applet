@@ -1,26 +1,29 @@
 package com.gamefreezer.galaga;
 
-import static com.gamefreezer.galaga.Constants.*;
-
 public class Alien extends Entity {
 
     public Alien next;
     public Alien prev;
+    public float relAnchorX;
+    public float relAnchorY;
 
-    public Alien(SpriteCache spriteStore, Location location, int dx, int dy,
-	    int baseDx, int baseDy, String imgPath, int points,
+    // main constructor called in Aliens()
+    // reset.. methods in Formation handle the bulk of the Alien member settings
+    public Alien(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
+	super(spriteStore, screen, targettingSpeed);
+    }
+
+    // called by Sandbox.getAlien only, a non essential utility constructor
+    // this is not chained, and shouldn't be, as it is a dev only convenience
+    public Alien(SpriteCache spriteStore, Screen screen, Location location,
+	    int dx, int dy, int baseDx, int baseDy, String imgPath, int points,
 	    String renderTimes, String renderTicks) {
-	super(spriteStore, location, dx, dy, imgPath, renderTimes, renderTicks);
+
+	super(spriteStore, screen, location, dx, dy, imgPath, renderTimes,
+		renderTicks);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
     }
-
-    public Alien(SpriteCache spriteStore) {
-	super(spriteStore);
-    }
-
-    // @SuppressWarnings("hiding")
-    public static final Alien NULL = new Alien(null);
 
     @Override
     public void kill() {
@@ -45,8 +48,8 @@ public class Alien extends Entity {
 
     @Override
     protected void adjustIfOffScreenBottom() {
-	if (offScreenBottom(BOTTOM_MASK_HEIGHT)) {
-	    movement.getLocation().setY(Screen.playableTop());
+	if (offScreenBottom(screen.bottomMaskHeight())) {
+	    movement.getLocation().setY(screen.playableTop());
 	    diveComplete = true;
 	}
     }
@@ -85,7 +88,4 @@ public class Alien extends Entity {
     public float getYHomeSlot(Location anchor) {
 	return anchor.getYAsFloat() + relAnchorY;
     }
-
-    public float relAnchorX;
-    public float relAnchorY;
 }
