@@ -10,14 +10,13 @@ public class AppletFileLister extends AbstractFileLister {
 
     @Override
     public String[] list() {
-	return getFileNamesInDir("data");
+	return getFileNamesInDir(SpaceWar.DATA_DIR);
     }
 
     public static String[] getFileNamesInDir(FilenameFilter filter,
 	    String aDirectory) {
 	String[] fileNames = {};
 	try {
-	    // URI uri = Util.class.getResource(aDirectory).toURI();
 	    URI uri = AppletFileLister.class.getResource(aDirectory).toURI();
 	    fileNames = new File(uri).list(filter);
 	} catch (Exception e) {

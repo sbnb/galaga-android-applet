@@ -12,9 +12,11 @@ import com.gamefreezer.galaga.AbstractBitmapReader;
 
 public class AppletBitmapReader extends AbstractBitmapReader {
 
+    private String imgDir = "imgs/";
+
     @Override
-    public AbstractBitmap read(String path) {
-	AppletBitmap bitmap = new AppletBitmap(loadImage(path));
+    public AbstractBitmap read(String name) {
+	AppletBitmap bitmap = new AppletBitmap(loadImage(name));
 	return bitmap;
     }
 
@@ -40,8 +42,7 @@ public class AppletBitmapReader extends AbstractBitmapReader {
     private URL getUrlObject(String name) {
 	URL urlObject = null;
 	try {
-	    // TODO imgs/ should be set in constants - magic string
-	    urlObject = new URL(this.getClass().getResource("imgs/" + name)
+	    urlObject = new URL(this.getClass().getResource(imgDir + name)
 		    .toString());
 	} catch (MalformedURLException e) {
 	    throw (new IllegalArgumentException(name + " " + e));

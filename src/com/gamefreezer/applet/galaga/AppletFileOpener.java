@@ -8,9 +8,9 @@ public class AppletFileOpener extends AbstractFileOpener {
 
     @Override
     public InputStream open(String name) {
-	InputStream in = AppletFileOpener.class.getResourceAsStream("data/"
-		+ name);
-	assert in != null : "Could not open file at data/" + name;
+	String fullPath = SpaceWar.DATA_DIR + "/" + name;
+	InputStream in = AppletFileOpener.class.getResourceAsStream(fullPath);
+	assert in != null : "Could not open file at " + fullPath;
 	return in;
     }
 

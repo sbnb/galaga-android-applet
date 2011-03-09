@@ -7,9 +7,6 @@ package com.gamefreezer.applet.galaga;
  Updated : 22 September, 2010
  */
 
-import static com.gamefreezer.galaga.Constants.DELAY;
-import com.gamefreezer.galaga.Game;
-
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,27 +15,55 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import com.gamefreezer.galaga.Constants;
+import com.gamefreezer.galaga.Game;
 import com.gamefreezer.utilities.Profiler;
 
 @SuppressWarnings("serial")
 public class SpaceWar extends Applet implements Runnable, KeyListener {
 
+    public final static String DATA_DIR = "data";
+
+    private Constants cfg;
+
+    // Thread control variables.
+    private volatile Thread loadThread;
+    private volatile Thread loopThread;
+    private long wakeUpTime;
+
+    // onScreen info
+    private Dimension onScreenDim = null;
+
+    // offScreen info (double buffer)
+    private Dimension offScreenDim = null;
+    private Image offScreenImage = null;
+    private Graphics offScreen = null;
+
+    private Game game;
+    private AppletGraphics appletGraphics;
+
+    // timing & thread variables
+    private long frameExeTimes[] = new long[1000];
+    private long frameCount = 0;
+
     @Override
     public void init() {
 	addKeyListener(this);
+
 	offScreen = null;
 	onScreenDim = getSize();
 	wakeUpTime = System.currentTimeMillis();
-	
-	appletGraphics = new AppletGraphics();
+
+	AppletFileOpener fileOpener = new AppletFileOpener();
 	AppletLog log = new AppletLog();
 	AppletBitmapReader bitmapReader = new AppletBitmapReader();
 	AppletColor colorDecoder = new AppletColor(Color.BLACK);
-	AppletFileOpener fileOpener = new AppletFileOpener();
 	AppletFileLister fileLister = new AppletFileLister();
-	Game.setAbstractInterfaceVars(log, bitmapReader, colorDecoder, fileOpener, fileLister);
-	
-	game = new Game();
+	cfg = new Constants(fileOpener, log, colorDecoder);
+
+	appletGraphics = new AppletGraphics(cfg);
+	game = new Game(cfg, log, bitmapReader, colorDecoder, fileOpener,
+		fileLister);
     }
 
     @Override
@@ -70,7 +95,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	    recordFrameTimes(start);
 
 	    try {
-		wakeUpTime += DELAY;
+		wakeUpTime += cfg.DELAY;
 		Thread.sleep(Math.max(0, sleepInterval()));
 	    } catch (InterruptedException e) {
 		System.out.println("SpaceWar.run():  " + e);
@@ -148,25 +173,4 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	}
 	frameCount++;
     }
-
-    // Thread control variables.
-    private volatile Thread loadThread;
-    private volatile Thread loopThread;
-    private long wakeUpTime;
-
-    // onScreen info
-    private Dimension onScreenDim = null;
-
-    // offScreen info (double buffer)
-    private Dimension offScreenDim = null;
-    private Image offScreenImage = null;
-    private Graphics offScreen = null;
-
-    private Game game;
-    private AppletGraphics appletGraphics;
-
-    // timing & thread variables
-    private long frameExeTimes[] = new long[1000];
-    private long frameCount = 0;
-
 }
