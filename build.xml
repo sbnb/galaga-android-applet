@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="appletgalaga" default="dist" basedir=".">
+<project name="galaga_applet" default="dist" basedir=".">
 	
 	<property name="SRC_IMGS" value="../galaga_resources/imgs" />
-	<property name="ANDROID_IMGS" value="../androidgalaga/res/drawable" />
-	<property name="APPLET_IMGS" value="../appletgalaga/src/com/gamefreezer/applet/galaga/imgs" />
+	<property name="ANDROID_IMGS" value="../galaga_android/res/drawable" />
+	<property name="APPLET_IMGS" value="../galaga_applet/src/com/gamefreezer/applet/galaga/imgs" />
 	
 	<property name="SRC_CONFIG" value="../galaga_resources/data" />
-	<property name="ANDROID_CONFIG" value="../androidgalaga/assets/data" />
-	<property name="APPLET_CONFIG" value="../appletgalaga/src/com/gamefreezer/applet/galaga/data" />
+	<property name="ANDROID_CONFIG" value="../galaga_android/assets/data" />
+	<property name="APPLET_CONFIG" value="../galaga_applet/src/com/gamefreezer/applet/galaga/data" />
 
 	<target name="dist" depends="copy-imgs,copy-config">
-		<echo>"Distributing assets to androidgalaga and appletgalaga"</echo>
+		<echo>"Distributing assets to galaga_android and galaga_applet"</echo>
 	</target>
 
 	<!-- Copy img files -->
-	<target name="copy-imgs" depends="clean-imgs" description="copy images from galaga_resources to androidgalaga and appletgalaga">
+	<target name="copy-imgs" depends="clean-imgs" description="copy images from galaga_resources to galaga_android and galaga_applet">
 		<echo>"Copying *.png from ${SRC_IMGS} to ${ANDROID_IMGS}"</echo>
 		<copy todir="${ANDROID_IMGS}">
 			<fileset dir="${SRC_IMGS}">
@@ -30,7 +30,7 @@
 	</target>
 
 	<!-- Copy config files -->
-	<target name="copy-config" depends="clean-config" description="copy config files from galaga_resources to androidgalaga and appletgalaga">
+	<target name="copy-config" depends="clean-config" description="copy config files from galaga_resources to galaga_android and galaga_applet">
 		<echo>"Copying *.* from ${SRC_CONFIG} to ${ANDROID_CONFIG}"</echo>
 		<copy todir="${ANDROID_CONFIG}">
 			<fileset dir="${SRC_CONFIG}">

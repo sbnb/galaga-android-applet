@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.javaApplet">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/galaga_applet/src/com/gamefreezer/applet/galaga/SpaceWar.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="400"/>
+<stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
+<mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS"/>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="600"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.gamefreezer.applet.galaga.SpaceWar"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="galaga_applet"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
+</launchConfiguration>
