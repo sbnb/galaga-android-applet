@@ -14,9 +14,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
+import com.gamefreezer.galaga.InputMessage;
 import com.gamefreezer.utilities.Profiler;
 
 @SuppressWarnings("serial")
@@ -46,6 +48,13 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
     private long frameExeTimes[] = new long[1000];
     private long frameCount = 0;
 
+    private ArrayBlockingQueue<InputMessage> inputMessagePool;
+    private static boolean KEY_PRESS = true;
+    private static boolean KEY_RELEASE = false;
+    private static final int LEFT_ARROW = 37;
+    private static final int RIGHT_ARROW = 39;
+    private static final int SPACE_BAR = 32;
+
     @Override
     public void init() {
 	addKeyListener(this);
@@ -64,6 +73,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	appletGraphics = new AppletGraphics(cfg);
 	game = new Game(cfg, log, bitmapReader, colorDecoder, fileOpener,
 		fileLister);
+	createInputMessagePool();
     }
 
     @Override
@@ -76,6 +86,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	    loadThread = new Thread(this);
 	    loadThread.start();
 	}
+	// TODO implement a UI thread, sleep 16 millis limit inputs per second
     }
 
     @Override
@@ -105,17 +116,47 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent keyEvent) {
 	Profiler.start("SW.keyPressed");
-	game.keyPressed(e.getKeyCode());
+	convertToMyInput(KEY_PRESS, keyEvent);
 	Profiler.end("SW.keyPressed");
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent keyEvent) {
 	Profiler.start("SW.keyReleased");
-	game.keyReleased(e.getKeyCode());
+	convertToMyInput(KEY_RELEASE, keyEvent);
 	Profiler.start("SW.keyReleased");
+    }
+
+    private void convertToMyInput(boolean keyPressed, KeyEvent keyEvent) {
+	if (inputMessagePool.size() == 0) {
+	    Game.log("SpaceWar.convertToMyInput(): message "
+		    + "pool is exhausted, can't send messages.");
+	    return;
+	}
+	try {
+	    InputMessage message = inputMessagePool.take();
+	    switch (keyEvent.getKeyCode()) {
+	    case LEFT_ARROW:
+		message.eventType = keyPressed ? InputMessage.LEFT_ON
+			: InputMessage.LEFT_OFF;
+		game.feedInput(message);
+		break;
+	    case RIGHT_ARROW:
+		message.eventType = keyPressed ? InputMessage.RIGHT_ON
+			: InputMessage.RIGHT_OFF;
+		game.feedInput(message);
+		break;
+	    case SPACE_BAR:
+		message.eventType = keyPressed ? InputMessage.SHOOT_ON
+			: InputMessage.SHOOT_OFF;
+		game.feedInput(message);
+		break;
+	    }
+	} catch (InterruptedException e) {
+	    Game.log(e.toString());
+	}
     }
 
     @Override
@@ -142,6 +183,14 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
     @Override
     public String getAppletInfo() {
 	return ("SpaceWar - copyright 2000, Sean Noble [sean_noble@hotmail.com].");
+    }
+
+    private void createInputMessagePool() {
+	inputMessagePool = new ArrayBlockingQueue<InputMessage>(
+		InputMessage.INPUT_QUEUE_SIZE);
+	for (int i = 0; i < InputMessage.INPUT_QUEUE_SIZE; i++) {
+	    inputMessagePool.add(new InputMessage(inputMessagePool));
+	}
     }
 
     private long sleepInterval() {
