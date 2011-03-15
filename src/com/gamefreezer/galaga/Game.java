@@ -2,6 +2,7 @@ package com.gamefreezer.galaga;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.gamefreezer.utilities.Profiler;
 
@@ -43,6 +44,10 @@ public class Game extends AllocGuard {
     private int healthBarX;
     private int healthBarY;
     private int healthBarWidth;
+
+    private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
+	    InputMessage.INPUT_QUEUE_SIZE);
+    private Object inputQueueMutex = new Object();
 
     public Game(Constants cfg, AbstractLog log,
 	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
@@ -132,6 +137,7 @@ public class Game extends AllocGuard {
 	int timeDelta = getTimeDelta();
 
 	updateState();
+	processInput();
 
 	Profiler.start("Game.update");
 
@@ -305,31 +311,44 @@ public class Game extends AllocGuard {
 	Profiler.end("Game.draw");
     }
 
-    public void keyPressed(int key) {
-	switch (key) {
-	case LEFT_ARROW:
-	    ship.goingLeft();
-	    break;
-	case RIGHT_ARROW:
-	    ship.goingRight();
-	    break;
-	case SPACE_BAR:
-	    ship.fireModeOn();
-	    break;
+    public void feedInput(InputMessage input) {
+	synchronized (inputQueueMutex) {
+	    if (inputQueue.size() == InputMessage.INPUT_QUEUE_SIZE) {
+		log("Game.feedInput(): Ignoring message, queue is full!");
+		return;
+	    }
+	    try {
+		inputQueue.put(input);
+	    } catch (InterruptedException e) {
+		log(e.getMessage() + e);
+	    }
 	}
     }
 
-    public void keyReleased(int key) {
-	switch (key) {
-	case LEFT_ARROW:
-	    ship.standingStill();
-	    break;
-	case RIGHT_ARROW:
-	    ship.standingStill();
-	    break;
-	case SPACE_BAR:
-	    ship.fireModeOff();
-	    break;
+    private void processInput() {
+	synchronized (inputQueueMutex) {
+	    ArrayBlockingQueue<InputMessage> inputQueue = this.inputQueue;
+	    while (!inputQueue.isEmpty()) {
+		try {
+		    InputMessage input = inputQueue.take();
+		    if (input.eventType == InputMessage.LEFT_ON) {
+			ship.goingLeft();
+		    } else if (input.eventType == InputMessage.RIGHT_ON) {
+			ship.goingRight();
+		    } else if (input.eventType == InputMessage.SHOOT_ON) {
+			ship.fireModeOn();
+		    } else if (input.eventType == InputMessage.LEFT_OFF) {
+			ship.standingStill();
+		    } else if (input.eventType == InputMessage.RIGHT_OFF) {
+			ship.standingStill();
+		    } else if (input.eventType == InputMessage.SHOOT_OFF) {
+			ship.fireModeOff();
+		    }
+		    input.returnToPool();
+		} catch (InterruptedException e) {
+		    log(e.getMessage() + e);
+		}
+	    }
 	}
     }
 
