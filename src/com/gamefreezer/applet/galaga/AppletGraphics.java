@@ -53,8 +53,6 @@ public class AppletGraphics extends AbstractGraphics {
     @Override
     public void fillScreen() {
 	graphics.setColor(Color.BLACK);
-	// graphics.fillRect(0, 0, cfg.LEFT_INDENT + cfg.SCREEN_WIDTH
-	// + cfg.LEFT_INDENT, cfg.SCREEN.height());
 	// TODO can reduce the blit to inGameWidth or drawableWidth etc
 	graphics.fillRect(0, 0, screen.width(), screen.height());
 

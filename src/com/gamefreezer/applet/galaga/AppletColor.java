@@ -20,7 +20,13 @@ public class AppletColor extends AbstractColor {
     }
 
     @Override
+    public int getNativeColorAsInt() {
+	return color.getRGB();
+    }
+
+    @Override
     public AbstractColor decode(String hex) {
 	return new AppletColor(java.awt.Color.decode(hex));
     }
+
 }
