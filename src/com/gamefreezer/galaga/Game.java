@@ -8,6 +8,8 @@ import com.gamefreezer.utilities.Profiler;
 
 public class Game extends AllocGuard {
 
+    private boolean PROFILING = false;
+
     // TODO investigate making this instance variables, not static
     private static AbstractLog log = null;
     private static AbstractColor colorDecoder = null;
@@ -30,6 +32,7 @@ public class Game extends AllocGuard {
     private AnimationFrames textFx;
     private AnimationFrames countDown;
     private AnimationFrames shipExplosion;
+    private Explosions explosions;
     private KillPoints killPoints;
 
     private int state;
@@ -50,6 +53,13 @@ public class Game extends AllocGuard {
     private Rectangle rightButton;
     private Rectangle fireButton;
 
+    private AbstractColor buttonColorMain;
+    private AbstractColor outerVerticlBorderColor;
+    private AbstractColor innerVerticalBorderColor;
+    private AbstractColor outerHorizontalBorderColor;
+    private AbstractColor innerHorizontalBorderColor;
+    private AbstractColor cornerDotColors;
+
     public Game(Constants cfg, AbstractLog log,
 	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
 	    AbstractFileOpener fileOpener, AbstractFileLister fileLister) {
@@ -62,7 +72,8 @@ public class Game extends AllocGuard {
 	log("Game(): constructor.");
 
 	spriteCache = new SpriteCache(bitmapReader);
-	collisionDetector = new CollisionDetector(cfg);
+	explosions = new Explosions(spriteCache, cfg);
+	collisionDetector = new CollisionDetector(cfg, explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
 	score = new Score(spriteCache, cfg);
 	textFx = new AnimationFrames(spriteCache);
@@ -95,7 +106,8 @@ public class Game extends AllocGuard {
 
 	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
-	createButtons();
+	initButtons();
+	initColors();
 	AllocGuard.guardOn = true;
 	log("SpriteStore.size(): " + spriteCache.size());
     }
@@ -140,7 +152,7 @@ public class Game extends AllocGuard {
 	updateState();
 	processInput();
 
-	Profiler.start("Game.update");
+	startProfiler("Game.update");
 
 	if (state == cfg.PLAYING_STATE) {
 	    updateAssetsThatCanBeFrozen(timeDelta);
@@ -158,11 +170,13 @@ public class Game extends AllocGuard {
 
 	killPoints.clear();
 
-	Profiler.end("Game.update");
+	endProfiler("Game.update");
 	cycles++;
-	// if (cycles % 1000 == 0) {
-	// System.out.println(Profiler.results());
-	// }
+
+	if (PROFILING && cycles % 1000 == 0) {
+	    Game.log(Profiler.results());
+	}
+
     }
 
     private void updateState() {
@@ -249,38 +263,42 @@ public class Game extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 
-	Profiler.start("Game.draw");
+	startProfiler("Game.draw");
 
-	Profiler.start("Game.drawBackground");
+	startProfiler("Game.drawBackground");
 	drawBackground(graphics);
-	Profiler.end("Game.drawBackground");
+	endProfiler("Game.drawBackground");
 
-	Profiler.start("Ship.draw");
+	startProfiler("Ship.draw");
 	if (state != cfg.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
 	    shipExplosion.draw(graphics, ship.getX(), ship.getY()
 		    + ship.getHeight());
 	}
-	Profiler.end("Ship.draw");
+	endProfiler("Ship.draw");
 
-	Profiler.start("Killpoints.draw");
+	startProfiler("Killpoints.draw");
 	killPoints.draw(graphics);
-	Profiler.end("Killpoints.draw");
+	endProfiler("Killpoints.draw");
 
-	Profiler.start("Bullets.draw");
+	startProfiler("Bullets.draw");
 	playerBullets.draw(graphics);
 	alienBullets.draw(graphics);
-	Profiler.end("Bullets.draw");
+	endProfiler("Bullets.draw");
 
-	Profiler.start("Aliens.draw");
+	startProfiler("Aliens.draw");
 	aliens.draw(graphics);
-	Profiler.end("Aliens.draw");
+	endProfiler("Aliens.draw");
 
-	Profiler.start("Score_Health.draw");
+	startProfiler("Explosions.draw");
+	explosions.draw(graphics);
+	endProfiler("Explosions.draw");
+
+	startProfiler("Score_Health.draw");
 	drawScoreAndHealth(graphics);
 	drawBottomCover(graphics);
-	Profiler.end("Score_Health.draw");
+	endProfiler("Score_Health.draw");
 
 	// text messages drawn last based on state
 	if (state == cfg.READY_STATE) {
@@ -309,7 +327,17 @@ public class Game extends AllocGuard {
 	}
 	// sandbox.draw(graphics);
 
-	Profiler.end("Game.draw");
+	endProfiler("Game.draw");
+    }
+
+    private void startProfiler(String name) {
+	if (PROFILING)
+	    Profiler.start(name);
+    }
+
+    private void endProfiler(String name) {
+	if (PROFILING)
+	    Profiler.end(name);
     }
 
     public void feedInput(InputMessage input) {
@@ -411,19 +439,9 @@ public class Game extends AllocGuard {
     }
 
     private void drawBackground(AbstractGraphics graphics) {
-	graphics.setColor(cfg.BACKGROUND);
-	// graphics.fillRect(screen.leftIndent(), screen.topIndent(),
-	// Screen
-	// .width() + 1, screen.height() + 1);
 	graphics.fillScreen();
-
 	drawBorders(graphics);
 	drawButtons(graphics);
-	// TODO magic string reference
-	// spriteCache.get("bg_starfield.png").draw(graphics,
-	// screen.leftIndent(),
-	// screen.topIndent());
-
 	graphics.setColor(cfg.BORDER);
 	graphics.drawRect(screen.verticalBorderWidths(), screen
 		.horizontalBorderWidths(), screen.inGameWidth(), screen
@@ -432,7 +450,7 @@ public class Game extends AllocGuard {
     }
 
     private void drawButtons(AbstractGraphics graphics) {
-	graphics.setColor(colorDecoder.decode("#FFFF99"));
+	graphics.setColor(buttonColorMain);
 	graphics.fillRect(leftButton.left, leftButton.top, leftButton.width(),
 		leftButton.height());
 	graphics.fillRect(rightButton.left, rightButton.top, rightButton
@@ -441,7 +459,7 @@ public class Game extends AllocGuard {
 		fireButton.height());
     }
 
-    private void createButtons() {
+    private void initButtons() {
 	// TODO magic numbers for buttons
 	int width = 30;
 	int height = 60;
@@ -456,23 +474,33 @@ public class Game extends AllocGuard {
 	fireButton.translate(offset, screen.height() - height * 2 - offset * 2);
     }
 
+    private void initColors() {
+	// TODO magic numbers for button and border colors
+	buttonColorMain = colorDecoder.decode("#FFFF99");
+	outerVerticlBorderColor = colorDecoder.decode("#333333");
+	innerVerticalBorderColor = colorDecoder.decode("#777777");
+	outerHorizontalBorderColor = colorDecoder.decode("#333333");
+	innerHorizontalBorderColor = colorDecoder.decode("#777777");
+	cornerDotColors = colorDecoder.decode("#FF00FF");
+    }
+
     private void drawBorders(AbstractGraphics graphics) {
 	// left and right outer vertical borders
-	graphics.setColor(colorDecoder.decode("#333333"));
+	graphics.setColor(outerVerticlBorderColor);
 	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen
 		.height());
 	graphics.fillRect(screen.width() - screen.outerVerticalBorderWidth(),
 		0, screen.outerVerticalBorderWidth(), screen.height());
 
 	// left and right inner vertical borders
-	graphics.setColor(colorDecoder.decode("#777777"));
+	graphics.setColor(innerVerticalBorderColor);
 	graphics.fillRect(screen.outerVerticalBorderWidth(), 0, screen
 		.innerVerticalBorderWidth(), screen.height());
 	graphics.fillRect(screen.width() - screen.verticalBorderWidths(), 0,
 		screen.innerVerticalBorderWidth(), screen.height());
 
 	// top and bottom outer horizontal borders
-	graphics.setColor(colorDecoder.decode("#333333"));
+	graphics.setColor(outerHorizontalBorderColor);
 	graphics.fillRect(0, 0, screen.width(), screen
 		.outerHorizontalBorderWidth());
 	graphics.fillRect(0, screen.height()
@@ -480,7 +508,7 @@ public class Game extends AllocGuard {
 		.outerHorizontalBorderWidth());
 
 	// top and bottom inner horizontal borders
-	graphics.setColor(colorDecoder.decode("#777777"));
+	graphics.setColor(innerHorizontalBorderColor);
 	graphics.fillRect(screen.outerVerticalBorderWidth(), screen
 		.outerHorizontalBorderWidth(), screen.drawableWidth(), screen
 		.innerHorizontalBorderWidth());
@@ -490,7 +518,7 @@ public class Game extends AllocGuard {
 
 	// dot at each corner of playable game screen
 	int size = 5;
-	graphics.setColor(colorDecoder.decode("#FF00FF"));
+	graphics.setColor(cornerDotColors);
 	graphics.fillRect(screen.inGameLeft(), screen.inGameTop(), size, size);
 	graphics.fillRect(screen.inGameRight() - size, screen.inGameTop(),
 		size, size);

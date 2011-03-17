@@ -31,10 +31,10 @@ public class Aliens extends AllocGuard {
     private Constants cfg;
     private final Alien nullAlien;
 
-    public Aliens(SpriteCache spriteStore, Constants cfg, Speed targettingSpeed) {
+    public Aliens(SpriteCache spriteCache, Constants cfg, Speed targettingSpeed) {
 	super();
 	this.cfg = cfg;
-	nullAlien = new Alien(spriteStore, cfg.SCREEN, targettingSpeed);
+	nullAlien = new Alien(spriteCache, cfg.SCREEN, targettingSpeed);
 	speed = new Speed();
 	moveDist = new Location();
 	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
@@ -44,7 +44,7 @@ public class Aliens extends AllocGuard {
 
 	aliens = new Alien[cfg.MAX_FORMATION];
 	for (int i = 0; i < cfg.MAX_FORMATION; i++) {
-	    aliens[i] = new Alien(spriteStore, cfg.SCREEN, targettingSpeed);
+	    aliens[i] = new Alien(spriteCache, cfg.SCREEN, targettingSpeed);
 	    aliens[i].kill();
 	}
     }

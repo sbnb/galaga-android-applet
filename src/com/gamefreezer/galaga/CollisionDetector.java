@@ -3,10 +3,12 @@ package com.gamefreezer.galaga;
 public class CollisionDetector extends AllocGuard {
 
     private Constants cfg;
+    private Explosions explosions;
 
-    public CollisionDetector(Constants cfg) {
+    public CollisionDetector(Constants cfg, Explosions explosions) {
 	super();
 	this.cfg = cfg;
+	this.explosions = explosions;
     }
 
     public void checkCollisions(Aliens aliens, Ship ship, Score score,
@@ -18,18 +20,23 @@ public class CollisionDetector extends AllocGuard {
 
     private void checkPlayerShootsAliens(Bullets playerBullets, Aliens aliens,
 	    Score score, KillPoints killPoints) {
-	for (Entity bullet : playerBullets) {
-	    if (bullet.isAlive()) {
-		checkBulletAgainstAllAliens(bullet, aliens, score, killPoints);
+	Bullet[] bulletArray = playerBullets.getArray();
+	int len = bulletArray.length;
+	for (int i = 0; i < len; i++) {
+	    if (bulletArray[i].isAlive()) {
+		checkBulletAgainstAllAliens(bulletArray[i], aliens, score,
+			killPoints);
 	    }
 	}
     }
 
     private void checkAliensShootPlayer(Bullets alienBullets, Ship ship,
 	    Score score) {
-	for (Entity bullet : alienBullets) {
-	    if (bullet.isAlive() && bullet.intersects(ship)) {
-		bullet.kill();
+	Bullet[] bulletArray = alienBullets.getArray();
+	int len = bulletArray.length;
+	for (int i = 0; i < len; i++) {
+	    if (bulletArray[i].isAlive() && bulletArray[i].intersects(ship)) {
+		bulletArray[i].kill();
 		score.decrementHealth(cfg.HEALTH_HIT_LIGHT);
 	    }
 	}
@@ -42,7 +49,7 @@ public class CollisionDetector extends AllocGuard {
 	    if (alien.isAlive() && alien.intersects(ship)) {
 		if (alien.isSolo()) {
 		    alien.kill();
-		    alien.explode(cfg.EXPL_IMGS, cfg.EXPL_TIMES);
+		    explosions.newExplosion(alien);
 		    score.decrementHealth(cfg.HEALTH_HIT_SEVERE);
 		} else {
 		    score.setHealth(0);
@@ -58,7 +65,7 @@ public class CollisionDetector extends AllocGuard {
 	    Alien alien = aliensArray[i];
 	    if (alien.isAlive() && bullet.intersects(alien)) {
 		alien.kill();
-		alien.explode(cfg.EXPL_IMGS, cfg.EXPL_TIMES);
+		explosions.newExplosion(alien);
 		bullet.kill();
 		score.incrementHitsMade();
 		score.incrementScore(alien.points());

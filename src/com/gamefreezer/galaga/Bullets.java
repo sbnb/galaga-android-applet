@@ -3,7 +3,11 @@ package com.gamefreezer.galaga;
 import java.util.Arrays;
 import java.util.Iterator;
 
+// TODO drop iterator support as Android allocation is too expensive
 public class Bullets extends AllocGuard implements Iterable<Bullet> {
+
+    private Bullet[] bulletsArray;
+    private int bulletWidth;
 
     public Bullets(SpriteCache spriteStore, Screen screen,
 	    int numBulletsOnScreen, String bulletImage) {
@@ -21,6 +25,10 @@ public class Bullets extends AllocGuard implements Iterable<Bullet> {
 
     public int bulletWidth() {
 	return bulletWidth;
+    }
+
+    public Bullet[] getArray() {
+	return bulletsArray;
     }
 
     @Override
@@ -78,8 +86,4 @@ public class Bullets extends AllocGuard implements Iterable<Bullet> {
 	}
 	return buffer;
     }
-
-    private Bullet[] bulletsArray;
-    private int bulletWidth;
-
 }

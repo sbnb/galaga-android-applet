@@ -53,9 +53,6 @@ public class Constants {
 
 	// player ship
 	SHIP_MOVEMENT = PROPS.getInt("SHIP_MOVEMENT");
-	// TODO place ship in Ship constructor, when height is available
-	// SHIP_START_LOCATION = new Location(SCREEN_WIDTH / 2, SCREEN_HEIGHT
-	// - INNER_BOTTOM_INDENT - 20);
 	SHIP_IMAGE = PROPS.getString("SHIP_IMAGE");
 
 	// aliens
@@ -81,7 +78,7 @@ public class Constants {
 
 	// explosions and text effects
 	// TODO different explosions, even just simple color shifts
-	// TODO use arrays of strings and arrays of ints, not string fields
+	MAX_EXPLOSIONS = PROPS.getInt("MAX_EXPLOSIONS");
 	EXPL_IMGS = PROPS.getStringArray("EXPL_IMGS");
 	EXPL_TIMES = PROPS.getIntArray("EXPL_TIMES");
 	LEVEL_COMPLETE_IMGS = PROPS.getStringArray("LEVEL_COMPLETE_IMGS");
@@ -229,6 +226,7 @@ public class Constants {
     public final int MAX_TIME_BETWEEN_RELEASES;
 
     // explosions and text effects
+    public final int MAX_EXPLOSIONS;
     public final String[] EXPL_IMGS;
     public final int[] EXPL_TIMES;
     public final String[] LEVEL_COMPLETE_IMGS;
@@ -253,13 +251,9 @@ public class Constants {
 
     // alien bullets
     public final int ALIEN_BULLET_MOVEMENT;
-
     public final int ALIEN_BULLETS_ON_SCREEN;
-
     public final int MIN_TIME_BETWEEN_ALIEN_BULLETS;
-
     public final int MAX_TIME_BETWEEN_ALIEN_BULLETS;
-
     public final String ALIEN_BULLET_IMAGE;
 
     // stars

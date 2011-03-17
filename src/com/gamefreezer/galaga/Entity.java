@@ -93,9 +93,8 @@ public class Entity extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-	if (isVisible()) {
+	if (active) {
 	    animation.draw(graphics, getX(), getY());
-	    resetExploding();
 	}
     }
 
@@ -199,17 +198,16 @@ public class Entity extends AllocGuard {
 	return active || exploding;
     }
 
+    public void setExploding(boolean exploding) {
+	this.exploding = exploding;
+    }
+
     public boolean inFormation() {
 	return active && !solo;
     }
 
     public void kill() {
 	active = false;
-    }
-
-    public void explode(String[] explosionImages, int[] explosionTimes) {
-	exploding = true;
-	animation.reset(explosionImages, explosionTimes, true);
     }
 
     public void regenerate() {
@@ -230,12 +228,6 @@ public class Entity extends AllocGuard {
 
     protected boolean stopIfOffScreenTopOrBottom() {
 	return true;
-    }
-
-    private void resetExploding() {
-	if (animation.finished()) {
-	    exploding = false;
-	}
     }
 
     private void adjustIfOffScreen() {

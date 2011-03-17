@@ -15,12 +15,16 @@ public class AnimationFrames extends AllocGuard {
 	this.spriteStore = spriteStore;
     }
 
+    public AnimationFrames(SpriteCache spriteCache, String[] images,
+	    int[] frameTimes, boolean oneShot) {
+	this(spriteCache);
+	reset(images, frameTimes, oneShot);
+    }
+
     public void reset(String[] imageNames, int[] renderTimes) {
 	reset(imageNames, renderTimes, false);
     }
 
-    // TODO an explosion shouldn't be reset into existing animation - use a
-    // constant(s) animation
     public void reset(String[] imageNames, int[] renderTimes, boolean oneShot) {
 	loadSprites(imageNames);
 	this.renderTimes = renderTimes;
