@@ -28,10 +28,8 @@ fPoints = 5
 #
 cImgPath = alien_c_1.png alien_c_2.png
 cRenderTimes = 1000 300
-#cRenderTicks = 10 10
 cPoints = 15
 #
 dImgPath = alien_d_1.png alien_d_2.png
-#dRenderTimes = 300 300
-dRenderTicks = 50 20
+dRenderTimes = 300 300
 dPoints = 15

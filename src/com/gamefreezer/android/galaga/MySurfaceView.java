@@ -1,5 +1,7 @@
 package com.gamefreezer.android.galaga;
 
+import com.gamefreezer.galaga.InputMessage;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
@@ -44,5 +46,27 @@ public class MySurfaceView extends SurfaceView implements
 	if (gameThread.isAlive()) {
 	    gameWrapper.setRunning(false);
 	}
+    }
+
+    public void feedInput(InputMessage message) {
+	gameWrapper.feedInput(message);
+
+    }
+
+    public boolean withinAreaOfInterest(float x, float y) {
+	return withinLeftButton(x, y) || withinRightButton(x, y)
+		|| withinFireButton(x, y);
+    }
+
+    public boolean withinLeftButton(float x, float y) {
+	return gameWrapper.withinLeftButton(x, y);
+    }
+
+    public boolean withinRightButton(float x, float y) {
+	return gameWrapper.withinRightButton(x, y);
+    }
+
+    public boolean withinFireButton(float x, float y) {
+	return gameWrapper.withinFireButton(x, y);
     }
 }
