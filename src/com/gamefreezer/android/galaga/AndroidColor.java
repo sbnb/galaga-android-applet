@@ -23,4 +23,9 @@ public class AndroidColor extends AbstractColor {
     public AbstractColor decode(String hex) {
 	return new AndroidColor(Color.parseColor(hex));
     }
+
+    @Override
+    public int getNativeColorAsInt() {
+	return color;
+    }
 }

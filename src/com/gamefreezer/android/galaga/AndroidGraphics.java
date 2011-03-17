@@ -33,8 +33,7 @@ public class AndroidGraphics extends AbstractGraphics {
 
     @Override
     public void setColor(AbstractColor color) {
-	// graphics.setColor((Color) color.getNativeColor());
-	paint.setColor((Integer) color.getNativeColor());
+	paint.setColor(color.getNativeColorAsInt());
     }
 
     @Override
