@@ -20,9 +20,8 @@ public class Formation extends AllocGuard {
     private int last = 0;
     private int[] xLocations;
     private int[] yLocations;
-    private String[] imagePaths;
-    private String[] renderTimesStore;
-    private String[] renderTicksStore;
+    private String[][] imageNamesStore;
+    private int[][] renderTimesStore;
     private int[] widths;
     private int[] heights;
     private int[] pointsStore;
@@ -36,9 +35,8 @@ public class Formation extends AllocGuard {
 	this.propertiesFileName = propertiesFileName;
 	xLocations = new int[cfg.MAX_FORMATION];
 	yLocations = new int[cfg.MAX_FORMATION];
-	imagePaths = new String[cfg.MAX_FORMATION];
-	renderTimesStore = new String[cfg.MAX_FORMATION];
-	renderTicksStore = new String[cfg.MAX_FORMATION];
+	imageNamesStore = new String[cfg.MAX_FORMATION][];
+	renderTimesStore = new int[cfg.MAX_FORMATION][];
 	widths = new int[cfg.MAX_FORMATION];
 	heights = new int[cfg.MAX_FORMATION];
 	pointsStore = new int[cfg.MAX_FORMATION];
@@ -85,8 +83,7 @@ public class Formation extends AllocGuard {
 	alien.moveTo(xLocations[i], yLocations[i]);
 	alien.setSpeed(alienSpeeds.get(100), 0);
 	alien.setMaxSpeed(alienSpeeds.get(100), alienSpeeds.get(100));
-	alien.setImagePath(imagePaths[i], renderTimesStore[i],
-		renderTicksStore[i]);
+	alien.setImagePath(imageNamesStore[i], renderTimesStore[i]);
 	alien.setDimensions(widths[i], heights[i]);
 	alien.setPoints(pointsStore[i]);
     }
@@ -172,34 +169,28 @@ public class Formation extends AllocGuard {
 	assert last < cfg.MAX_FORMATION : "MAX_FORMATION(" + cfg.MAX_FORMATION
 		+ ") <= last (" + last + "): increase it.";
 
-	String imagePath = getAlienImagePath(c);
-	String renderTimes = props.getString(c + "RenderTimes", "");
-	String renderTicks = props.getString(c + "RenderTicks", "");
-	int width = Util.widthFromSprite(spriteStore, imagePath);
-	int height = Util.heightFromSprite(spriteStore, imagePath);
+	String[] imageNames = getAlienImagePath(c);
+	int[] renderTimes = props.getIntArray(c + "RenderTimes", "0");
+	int width = Util.widthFromSprite(spriteStore, imageNames);
+	int height = Util.heightFromSprite(spriteStore, imageNames);
 	int points = props.getInt(c + "Points");
 
 	xLocations[last] = x;
 	yLocations[last] = y;
-	imagePaths[last] = imagePath;
+	imageNamesStore[last] = imageNames;
 	renderTimesStore[last] = renderTimes;
-	renderTicksStore[last] = renderTicks;
 	widths[last] = width;
 	heights[last] = height;
 	pointsStore[last] = points;
 	last++;
     }
 
-    private String getAlienImagePath(char c) {
-	assert props.containsKey(c + "ImgPath") : c
-		+ "ImgPath \nnot found in \n  " + propertiesFileName
-		+ ", \nbut " + c + " is used in layoutFile \n  " + layoutFile
-		+ " ";
-
+    private String[] getAlienImagePath(char c) {
 	if (props.containsKey(c + "ImgPath")) {
-	    return props.getString(c + "ImgPath");
+	    return props.getStringArray(c + "ImgPath");
 	}
-	return "bad image path";
+	assert false : c + "ImgPath not found in " + propertiesFileName + "!";
+	return null;
     }
 
     private void centerFormation() {

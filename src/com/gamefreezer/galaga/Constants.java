@@ -81,12 +81,13 @@ public class Constants {
 
 	// explosions and text effects
 	// TODO different explosions, even just simple color shifts
-	EXPL_IMGS = PROPS.getString("EXPL_IMGS");
-	EXPL_TIMES = PROPS.getString("EXPL_TIMES");
-	LEVEL_COMPLETE_IMGS = PROPS.getString("LEVEL_COMPLETE_IMGS");
-	LEVEL_COMPLETE_TIMES = PROPS.getString("LEVEL_COMPLETE_TIMES");
-	COUNTDOWN_IMGS = PROPS.getString("COUNTDOWN_IMGS");
-	COUNTDOWN_TIMES = PROPS.getString("COUNTDOWN_TIMES");
+	// TODO use arrays of strings and arrays of ints, not string fields
+	EXPL_IMGS = PROPS.getStringArray("EXPL_IMGS");
+	EXPL_TIMES = PROPS.getIntArray("EXPL_TIMES");
+	LEVEL_COMPLETE_IMGS = PROPS.getStringArray("LEVEL_COMPLETE_IMGS");
+	LEVEL_COMPLETE_TIMES = PROPS.getIntArray("LEVEL_COMPLETE_TIMES");
+	COUNTDOWN_IMGS = PROPS.getStringArray("COUNTDOWN_IMGS");
+	COUNTDOWN_TIMES = PROPS.getIntArray("COUNTDOWN_TIMES");
 
 	GET_READY = PROPS.getString("GET_READY");
 	GET_READY_X = PROPS.getInt("GET_READY_X");
@@ -228,15 +229,12 @@ public class Constants {
     public final int MAX_TIME_BETWEEN_RELEASES;
 
     // explosions and text effects
-    // TODO different explosions, even just simple color shifts
-    public final String EXPL_IMGS;
-    public final String EXPL_TIMES;
-    public final String LEVEL_COMPLETE_IMGS;
-
-    public final String LEVEL_COMPLETE_TIMES;
-
-    public final String COUNTDOWN_IMGS;
-    public final String COUNTDOWN_TIMES;
+    public final String[] EXPL_IMGS;
+    public final int[] EXPL_TIMES;
+    public final String[] LEVEL_COMPLETE_IMGS;
+    public final int[] LEVEL_COMPLETE_TIMES;
+    public final String[] COUNTDOWN_IMGS;
+    public final int[] COUNTDOWN_TIMES;
 
     public final String GET_READY;
     public final int GET_READY_X;

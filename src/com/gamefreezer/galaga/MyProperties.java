@@ -17,7 +17,7 @@ public class MyProperties {
 	    AbstractColor colorDecoder) {
 	this.colorDecoder = colorDecoder;
 	this.log = log;
-	log.i("GALAGA", "MyProperties(): constructor.");
+	this.log.i("GALAGA", "MyProperties(): constructor.");
 	readFromInputStream(in);
     }
 
@@ -79,6 +79,50 @@ public class MyProperties {
 
     public String getString(String key, String defaultValue) {
 	return properties.getProperty(key, defaultValue);
+    }
+
+    // return array of space delimited strings
+    public String[] getStringArray(String key) {
+	if (properties.containsKey(key)) {
+	    return (properties.getProperty(key)).split(" ");
+	}
+	throw new IllegalArgumentException("Key doesn't exist: " + key);
+    }
+
+    public String[] getStringArray(String key, String defaultValue) {
+	if (properties.containsKey(key)) {
+	    return getStringArray(key);
+	}
+	return defaultValue.split(" ");
+    }
+
+    // return array of ints from space delimited string of ints
+    public int[] getIntArray(String key) {
+	if (properties.containsKey(key)) {
+	    return stringToIntArray(properties.getProperty(key));
+	}
+	throw new IllegalArgumentException("Key doesn't exist: " + key);
+    }
+
+    public int[] getIntArray(String key, String defaultValue) {
+	if (properties.containsKey(key)) {
+	    return getIntArray(key);
+	}
+	return stringToIntArray(defaultValue);
+    }
+
+    private int[] stringToIntArray(String line) {
+	String[] entries = line.split(" ");
+	int[] theInts = new int[entries.length];
+	for (int i = 0; i < entries.length; i++) {
+	    try {
+		theInts[i] = Integer.parseInt(entries[i]);
+	    } catch (NumberFormatException e) {
+		assert false : "Bad number! line: " + line + "entries[i]: "
+			+ entries[i] + " entries.length: " + entries.length;
+	    }
+	}
+	return theInts;
     }
 
     public AbstractColor getColor(String key) {

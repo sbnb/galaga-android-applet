@@ -4,13 +4,11 @@ public class KillPoints extends AllocGuard {
     private Alien[] aliens;
     private SpriteCache spriteStore;
     private Constants cfg;
-    private Screen screen;
 
     public KillPoints(SpriteCache spriteStore, Constants cfg) {
 	super();
 	this.spriteStore = spriteStore;
 	this.cfg = cfg;
-	this.screen = cfg.SCREEN;
 	aliens = new Alien[cfg.KILLPOINTS_TRACKED];
     }
 

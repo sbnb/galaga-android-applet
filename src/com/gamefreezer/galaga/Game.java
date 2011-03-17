@@ -32,9 +32,6 @@ public class Game extends AllocGuard {
     private AnimationFrames shipExplosion;
     private KillPoints killPoints;
 
-    private static final int LEFT_ARROW = 37;
-    private static final int RIGHT_ARROW = 39;
-    private static final int SPACE_BAR = 32;
     private int state;
 
     private long stateTimer;
@@ -48,6 +45,10 @@ public class Game extends AllocGuard {
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
 	    InputMessage.INPUT_QUEUE_SIZE);
     private Object inputQueueMutex = new Object();
+
+    private Rectangle leftButton;
+    private Rectangle rightButton;
+    private Rectangle fireButton;
 
     public Game(Constants cfg, AbstractLog log,
 	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
@@ -94,8 +95,8 @@ public class Game extends AllocGuard {
 
 	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
+	createButtons();
 	AllocGuard.guardOn = true;
-
 	log("SpriteStore.size(): " + spriteCache.size());
     }
 
@@ -388,8 +389,8 @@ public class Game extends AllocGuard {
 
     private void preloadImages() {
 	AnimationFrames explosion = new AnimationFrames(spriteCache);
-	explosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, "", true);
-	shipExplosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, "", true);
+	explosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
+	shipExplosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
 	spriteCache.get(cfg.NUM_0);
 	spriteCache.get(cfg.NUM_1);
 	spriteCache.get(cfg.NUM_2);
@@ -403,9 +404,8 @@ public class Game extends AllocGuard {
 	// TODO magic strings here are also hard-coded elsewhere, fix
 	spriteCache.get(cfg.GET_READY);
 	spriteCache.get("text_level_complete.png");
-	textFx.reset(cfg.LEVEL_COMPLETE_IMGS, cfg.LEVEL_COMPLETE_TIMES, "",
-		true);
-	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, "", true);
+	textFx.reset(cfg.LEVEL_COMPLETE_IMGS, cfg.LEVEL_COMPLETE_TIMES, true);
+	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, true);
 	spriteCache.get(cfg.BONUS_DETAILS);
 	killPoints.preload();
     }
@@ -417,7 +417,8 @@ public class Game extends AllocGuard {
 	// .width() + 1, screen.height() + 1);
 	graphics.fillScreen();
 
-	showBorders(graphics);
+	drawBorders(graphics);
+	drawButtons(graphics);
 	// TODO magic string reference
 	// spriteCache.get("bg_starfield.png").draw(graphics,
 	// screen.leftIndent(),
@@ -430,7 +431,32 @@ public class Game extends AllocGuard {
 
     }
 
-    private void showBorders(AbstractGraphics graphics) {
+    private void drawButtons(AbstractGraphics graphics) {
+	graphics.setColor(colorDecoder.decode("#FFFF99"));
+	graphics.fillRect(leftButton.left, leftButton.top, leftButton.width(),
+		leftButton.height());
+	graphics.fillRect(rightButton.left, rightButton.top, rightButton
+		.width(), rightButton.height());
+	graphics.fillRect(fireButton.left, fireButton.top, fireButton.width(),
+		fireButton.height());
+    }
+
+    private void createButtons() {
+	// TODO magic numbers for buttons
+	int width = 30;
+	int height = 60;
+	int offset = 10;
+
+	leftButton = new Rectangle(0, 0, width, height);
+	leftButton.translate(offset, screen.height() - height - offset);
+	rightButton = new Rectangle(0, 0, width, height);
+	rightButton.translate(screen.width() - width - offset, screen.height()
+		- height - offset);
+	fireButton = new Rectangle(0, 0, width, height);
+	fireButton.translate(offset, screen.height() - height * 2 - offset * 2);
+    }
+
+    private void drawBorders(AbstractGraphics graphics) {
 	// left and right outer vertical borders
 	graphics.setColor(colorDecoder.decode("#333333"));
 	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen
@@ -502,4 +528,15 @@ public class Game extends AllocGuard {
 		.inGameWidth(), screen.bottomMaskHeight());
     }
 
+    public boolean withinLeftButton(float x, float y) {
+	return leftButton.contains(x, y);
+    }
+
+    public boolean withinRightButton(float x, float y) {
+	return rightButton.contains(x, y);
+    }
+
+    public boolean withinFireButton(float x, float y) {
+	return fireButton.contains(x, y);
+    }
 }

@@ -9,9 +9,11 @@ public class Ship extends Entity {
     private Gun gun;
     Location gunLocation;
 
+    // TODO would be superior to allow ship to animate - use array of imgnames
     public Ship(SpriteCache spriteStore, Screen screen, String imageName,
 	    Gun gun, Speed rightSpeed, Speed leftSpeed, Speed noSpeed) {
-	super(spriteStore, screen, new Location(), 0, 0, imageName, "", "");
+	super(spriteStore, screen, new Location(), 0, 0,
+		new String[] { imageName }, null);
 
 	assert gun != null : "gun is null!";
 	assert rightSpeed != null : "rightSpeed is null!";

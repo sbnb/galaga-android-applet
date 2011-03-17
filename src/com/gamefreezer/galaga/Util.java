@@ -16,25 +16,25 @@ public class Util {
     }
 
     // static function to return sprite width from imgUrl
-    public static int widthFromSprite(SpriteCache spriteStore, String aImageUrl) {
-	// TODO don't use List - it will need to be GC'd
-
+    public static int widthFromSprite(SpriteCache spriteStore,
+	    String[] imageNames) {
 	assert spriteStore != null : "spriteStore is null!";
-	assert aImageUrl != null : "aImageUrl is null!";
+	assert imageNames != null : "imageNames is null!";
+	assert imageNames.length != 0 : "imageNames is empty!";
 
-	String firstImage = Util.getStringAsList(aImageUrl).get(0);
-	Sprite aSprite = spriteStore.get(firstImage);
+	Sprite aSprite = spriteStore.get(imageNames[0]);
 	return aSprite.getWidth();
     }
 
     // static function to return sprite height from imgUrl
-    public static int heightFromSprite(SpriteCache spriteStore, String aImageUrl) {
+    public static int heightFromSprite(SpriteCache spriteStore,
+	    String[] imageNames) {
 
 	assert spriteStore != null : "spriteStore is null!";
-	assert aImageUrl != null : "aImageUrl is null!";
+	assert imageNames != null : "imageNames is null!";
+	assert imageNames.length != 0 : "imageNames is empty!";
 
-	String firstImage = Util.getStringAsList(aImageUrl).get(0);
-	Sprite aSprite = spriteStore.get(firstImage);
+	Sprite aSprite = spriteStore.get(imageNames[0]);
 	return aSprite.getHeight();
     }
 

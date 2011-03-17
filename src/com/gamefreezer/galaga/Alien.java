@@ -16,11 +16,10 @@ public class Alien extends Entity {
     // called by Sandbox.getAlien only, a non essential utility constructor
     // this is not chained, and shouldn't be, as it is a dev only convenience
     public Alien(SpriteCache spriteStore, Screen screen, Location location,
-	    int dx, int dy, int baseDx, int baseDy, String imgPath, int points,
-	    String renderTimes, String renderTicks) {
+	    int dx, int dy, int baseDx, int baseDy, int points,
+	    String[] imgNames, int[] renderTimes) {
 
-	super(spriteStore, screen, location, dx, dy, imgPath, renderTimes,
-		renderTicks);
+	super(spriteStore, screen, location, dx, dy, imgNames, renderTimes);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
     }

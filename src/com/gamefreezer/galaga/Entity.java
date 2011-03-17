@@ -16,33 +16,29 @@ public class Entity extends AllocGuard {
     protected Screen screen;
 
     public Entity(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
-	this(spriteStore, screen, new Location(), 0, 0, 0, 0, null, "", "",
+	this(spriteStore, screen, new Location(), 0, 0, 0, 0, null, null,
 		targettingSpeed);
     }
 
     public Entity(SpriteCache spriteStore, Screen screen, Location location,
-	    int horizontalMovement, int verticalMovement, String imageName,
-	    String renderTimes, String renderTicks) {
+	    int horizontalMovement, int verticalMovement, String[] imageNames,
+	    int[] renderTimes) {
 	this(spriteStore, screen, location, Util.widthFromSprite(spriteStore,
-		imageName), Util.heightFromSprite(spriteStore, imageName),
-		horizontalMovement, verticalMovement, imageName, renderTimes,
-		renderTicks, new Speed(0, 0));
+		imageNames), Util.heightFromSprite(spriteStore, imageNames),
+		horizontalMovement, verticalMovement, imageNames, renderTimes,
+		new Speed(0, 0));
     }
 
     public Entity(SpriteCache spriteStore, Screen screen, Location location,
 	    int width, int height, int horizontalMovement,
-	    int verticalMovement, String imageName, String renderTimes,
-	    String renderTicks, Speed targettingSpeed) {
+	    int verticalMovement, String[] imageNames, int[] renderTimes,
+	    Speed targettingSpeed) {
 	super();
 
-	// assert cfg != null : "cfg is null!";
 	assert spriteStore != null : "spriteStore is null!";
 	assert location != null : "location is null!";
-	assert renderTimes != null : "renderTimes is null!";
-	assert renderTicks != null : "renderTicks is null!";
 	assert targettingSpeed != null : "targettingSpeed is null!";
 
-	// this.cfg = cfg;
 	this.screen = screen;
 	this.width = width;
 	this.height = height;
@@ -51,15 +47,15 @@ public class Entity extends AllocGuard {
 		verticalMovement), targettingSpeed);
 	this.active = true;
 
-	if (imageName != null) {
-	    animation.reset(imageName, renderTimes, renderTicks);
+	if (imageNames != null) {
+	    animation.reset(imageNames, renderTimes);
 	}
     }
 
-    public void setImagePath(String imageName, String renderTimes,
-	    String renderTicks) {
-	assert imageName != null : "imageName is null!";
-	animation.reset(imageName, renderTimes, renderTicks);
+    public void setImagePath(String[] imageNames, int[] renderTimes) {
+	assert imageNames != null : "imageNames is null!";
+	assert imageNames.length > 0 : "imageNames is empty!";
+	animation.reset(imageNames, renderTimes);
     }
 
     public void move(int timeDelta) {
@@ -211,9 +207,9 @@ public class Entity extends AllocGuard {
 	active = false;
     }
 
-    public void explode(String explosionImages, String explosionTimes) {
+    public void explode(String[] explosionImages, int[] explosionTimes) {
 	exploding = true;
-	animation.reset(explosionImages, explosionTimes, "", true);
+	animation.reset(explosionImages, explosionTimes, true);
     }
 
     public void regenerate() {

@@ -38,12 +38,11 @@ public class Sandbox extends AllocGuard {
 	int dy = 0;
 	int baseDx = 100;
 	int baseDy = 100;
-	String imgPath = "alien_b.png";
+	String[] imgNames = new String[] { "alien_b.png" };
 	int points = 10;
-	String renderTimes = "";
-	String renderTicks = "";
+	int[] renderTimes = new int[] { 0 };
 
 	return new Alien(spriteStore, cfg.SCREEN, location, dx, dy, baseDx,
-		baseDy, imgPath, points, renderTimes, renderTicks);
+		baseDy, points, imgNames, renderTimes);
     }
 }
