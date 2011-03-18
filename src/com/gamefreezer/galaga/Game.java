@@ -8,7 +8,7 @@ import com.gamefreezer.utilities.Profiler;
 
 public class Game extends AllocGuard {
 
-    private boolean PROFILING = false;
+    private static boolean PROFILING = true;
 
     // TODO investigate making this instance variables, not static
     private static AbstractLog log = null;
@@ -26,6 +26,7 @@ public class Game extends AllocGuard {
     private CollisionDetector collisionDetector;
     private Sandbox sandbox;
     private Score score;
+    private HealthBar healthBar;
     private long cycles = 0; // elapsed cycles during game
     private int formationsIndex = 0;
     private long lastTime = 0;
@@ -41,10 +42,6 @@ public class Game extends AllocGuard {
     private Constants cfg;
     private Screen screen;
 
-    private int healthBarX;
-    private int healthBarY;
-    private int healthBarWidth;
-
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
 	    InputMessage.INPUT_QUEUE_SIZE);
     private Object inputQueueMutex = new Object();
@@ -52,13 +49,6 @@ public class Game extends AllocGuard {
     private Rectangle leftButton;
     private Rectangle rightButton;
     private Rectangle fireButton;
-
-    private AbstractColor buttonColorMain;
-    private AbstractColor outerVerticlBorderColor;
-    private AbstractColor innerVerticalBorderColor;
-    private AbstractColor outerHorizontalBorderColor;
-    private AbstractColor innerHorizontalBorderColor;
-    private AbstractColor cornerDotColors;
 
     public Game(Constants cfg, AbstractLog log,
 	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
@@ -76,6 +66,7 @@ public class Game extends AllocGuard {
 	collisionDetector = new CollisionDetector(cfg, explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
 	score = new Score(spriteCache, cfg);
+	healthBar = new HealthBar(cfg, score);
 	textFx = new AnimationFrames(spriteCache);
 	countDown = new AnimationFrames(spriteCache);
 	shipExplosion = new AnimationFrames(spriteCache);
@@ -92,22 +83,17 @@ public class Game extends AllocGuard {
 	final Speed NO_SPEED = new Speed(0, 0);
 	final Gun gun = new Gun(cfg.MIN_TIME_BETWEEN_BULLETS,
 		cfg.BULLET_MOVEMENT);
-	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGE, gun, RIGHT_SPEED,
-		LEFT_SPEED, NO_SPEED);
+	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGES, cfg.SHIP_TIMES,
+		gun, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
 
 	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
 		cfg.BULLET_IMAGE);
 	alienBullets = new Bullets(spriteCache, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGE);
 
-	healthBarX = screen.inGameLeft() + cfg.HEALTH_SIDE_INDENT;
-	healthBarY = screen.inGameBottom() + cfg.HEALTH_BOTTOM_INDENT;
-	healthBarWidth = screen.inGameWidth() - (cfg.HEALTH_SIDE_INDENT * 2);
-
 	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
 	initButtons();
-	initColors();
 	AllocGuard.guardOn = true;
 	log("SpriteStore.size(): " + spriteCache.size());
     }
@@ -173,7 +159,7 @@ public class Game extends AllocGuard {
 	endProfiler("Game.update");
 	cycles++;
 
-	if (PROFILING && cycles % 1000 == 0) {
+	if (PROFILING && cycles % 10000 == 0) {
 	    Game.log(Profiler.results());
 	}
 
@@ -273,8 +259,7 @@ public class Game extends AllocGuard {
 	if (state != cfg.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
-	    shipExplosion.draw(graphics, ship.getX(), ship.getY()
-		    + ship.getHeight());
+	    shipExplosion.draw(graphics, ship.getX(), ship.getY());
 	}
 	endProfiler("Ship.draw");
 
@@ -296,13 +281,12 @@ public class Game extends AllocGuard {
 	endProfiler("Explosions.draw");
 
 	startProfiler("Score_Health.draw");
-	drawScoreAndHealth(graphics);
-	drawBottomCover(graphics);
+	score.draw(graphics);
+	healthBar.draw(graphics);
 	endProfiler("Score_Health.draw");
 
 	// text messages drawn last based on state
 	if (state == cfg.READY_STATE) {
-	    // TODO magic string
 	    // TODO better placement of imgs using relative values
 	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
 	    spriteCache.get(cfg.GET_READY).draw(graphics, cfg.GET_READY_X,
@@ -311,6 +295,7 @@ public class Game extends AllocGuard {
 	    // ready.draw(graphics, screen.centerImageX(ready.getWidth()),
 	    // screen
 	    // .centerImageY(ready.getHeight()));
+	    // TODO magic numbers
 	    countDown.draw(graphics, 160, 270);
 	}
 
@@ -330,12 +315,12 @@ public class Game extends AllocGuard {
 	endProfiler("Game.draw");
     }
 
-    private void startProfiler(String name) {
+    public static void startProfiler(String name) {
 	if (PROFILING)
 	    Profiler.start(name);
     }
 
-    private void endProfiler(String name) {
+    public static void endProfiler(String name) {
 	if (PROFILING)
 	    Profiler.end(name);
     }
@@ -408,8 +393,9 @@ public class Game extends AllocGuard {
 	if (lastTime == 0) {
 	    tDelta = 0;
 	} else {
-	    // TODO throttle this to .1 second - see Chris Pruit reasoning
 	    tDelta = (int) (System.currentTimeMillis() - lastTime);
+	    // prevent big jumps in case of massive frame rate degradation
+	    tDelta = tDelta <= 100 ? tDelta : 100;
 	}
 	lastTime = System.currentTimeMillis();
 	return tDelta;
@@ -429,9 +415,7 @@ public class Game extends AllocGuard {
 	spriteCache.get(cfg.NUM_7);
 	spriteCache.get(cfg.NUM_8);
 	spriteCache.get(cfg.NUM_9);
-	// TODO magic strings here are also hard-coded elsewhere, fix
 	spriteCache.get(cfg.GET_READY);
-	spriteCache.get("text_level_complete.png");
 	textFx.reset(cfg.LEVEL_COMPLETE_IMGS, cfg.LEVEL_COMPLETE_TIMES, true);
 	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, true);
 	spriteCache.get(cfg.BONUS_DETAILS);
@@ -442,15 +426,15 @@ public class Game extends AllocGuard {
 	graphics.fillScreen();
 	drawBorders(graphics);
 	drawButtons(graphics);
-	graphics.setColor(cfg.BORDER);
-	graphics.drawRect(screen.verticalBorderWidths(), screen
-		.horizontalBorderWidths(), screen.inGameWidth(), screen
-		.inGameHeight());
+	// graphics.setColor(cfg.BORDER);
+	// graphics.drawRect(screen.verticalBorderWidths(), screen
+	// .horizontalBorderWidths(), screen.inGameWidth(), screen
+	// .inGameHeight());
 
     }
 
     private void drawButtons(AbstractGraphics graphics) {
-	graphics.setColor(buttonColorMain);
+	graphics.setColor(cfg.BUTTON_COLOR);
 	graphics.fillRect(leftButton.left, leftButton.top, leftButton.width(),
 		leftButton.height());
 	graphics.fillRect(rightButton.left, rightButton.top, rightButton
@@ -474,33 +458,23 @@ public class Game extends AllocGuard {
 	fireButton.translate(offset, screen.height() - height * 2 - offset * 2);
     }
 
-    private void initColors() {
-	// TODO magic numbers for button and border colors
-	buttonColorMain = colorDecoder.decode("#FFFF99");
-	outerVerticlBorderColor = colorDecoder.decode("#333333");
-	innerVerticalBorderColor = colorDecoder.decode("#777777");
-	outerHorizontalBorderColor = colorDecoder.decode("#333333");
-	innerHorizontalBorderColor = colorDecoder.decode("#777777");
-	cornerDotColors = colorDecoder.decode("#FF00FF");
-    }
-
     private void drawBorders(AbstractGraphics graphics) {
 	// left and right outer vertical borders
-	graphics.setColor(outerVerticlBorderColor);
+	graphics.setColor(cfg.OUTER_VERT_BORDER_COLOR);
 	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen
 		.height());
 	graphics.fillRect(screen.width() - screen.outerVerticalBorderWidth(),
 		0, screen.outerVerticalBorderWidth(), screen.height());
 
 	// left and right inner vertical borders
-	graphics.setColor(innerVerticalBorderColor);
+	graphics.setColor(cfg.INNER_VERT_BORDER_COLOR);
 	graphics.fillRect(screen.outerVerticalBorderWidth(), 0, screen
 		.innerVerticalBorderWidth(), screen.height());
 	graphics.fillRect(screen.width() - screen.verticalBorderWidths(), 0,
 		screen.innerVerticalBorderWidth(), screen.height());
 
 	// top and bottom outer horizontal borders
-	graphics.setColor(outerHorizontalBorderColor);
+	graphics.setColor(cfg.OUTER_HORIZ_BORDER_COLOR);
 	graphics.fillRect(0, 0, screen.width(), screen
 		.outerHorizontalBorderWidth());
 	graphics.fillRect(0, screen.height()
@@ -508,7 +482,7 @@ public class Game extends AllocGuard {
 		.outerHorizontalBorderWidth());
 
 	// top and bottom inner horizontal borders
-	graphics.setColor(innerHorizontalBorderColor);
+	graphics.setColor(cfg.INNER_HORIZ_BORDER_COLOR);
 	graphics.fillRect(screen.outerVerticalBorderWidth(), screen
 		.outerHorizontalBorderWidth(), screen.drawableWidth(), screen
 		.innerHorizontalBorderWidth());
@@ -517,43 +491,16 @@ public class Game extends AllocGuard {
 		screen.innerHorizontalBorderWidth());
 
 	// dot at each corner of playable game screen
-	int size = 5;
-	graphics.setColor(cornerDotColors);
-	graphics.fillRect(screen.inGameLeft(), screen.inGameTop(), size, size);
-	graphics.fillRect(screen.inGameRight() - size, screen.inGameTop(),
-		size, size);
-	graphics.fillRect(screen.inGameRight() - size, screen.inGameBottom()
-		- size, size, size);
-	graphics.fillRect(screen.inGameLeft(), screen.inGameBottom() - size,
-		size, size);
-    }
-
-    private void drawScoreAndHealth(AbstractGraphics graphics) {
-	score.draw(graphics);
-	drawHealthBar(graphics);
-    }
-
-    private void drawHealthBar(AbstractGraphics graphics) {
-	graphics.setColor(cfg.HEALTH_BAR_OUTLINE);
-	graphics.drawRect(healthBarX, healthBarY, healthBarWidth,
-		cfg.HEALTH_BAR_HEIGHT);
-
-	int newHealthBarLength = healthBarWidth + 1;
-	float percentageHealth = score.getHealth() / 100f;
-	newHealthBarLength = (int) (newHealthBarLength * percentageHealth);
-
-	graphics.setColor(cfg.HEALTH_BAR_HIGH);
-	if (percentageHealth < cfg.HEALTH_COLOR_CHANGE) {
-	    graphics.setColor(cfg.HEALTH_BAR_LOW);
-	}
-	graphics.fillRect(healthBarX, healthBarY, newHealthBarLength,
-		cfg.HEALTH_BAR_HEIGHT + 1);
-    }
-
-    private void drawBottomCover(AbstractGraphics graphics) {
-	graphics.setColor(cfg.BOTTOM_COVER);
-	graphics.fillRect(screen.inGameLeft(), screen.inGameBottom(), screen
-		.inGameWidth(), screen.bottomMaskHeight());
+	// int size = 5;
+	// graphics.setColor(cfg.CORNER_DOT_COLOR);
+	// graphics.fillRect(screen.inGameLeft(), screen.inGameTop(), size,
+	// size);
+	// graphics.fillRect(screen.inGameRight() - size, screen.inGameTop(),
+	// size, size);
+	// graphics.fillRect(screen.inGameRight() - size, screen.inGameBottom()
+	// - size, size, size);
+	// graphics.fillRect(screen.inGameLeft(), screen.inGameBottom() - size,
+	// size, size);
     }
 
     public boolean withinLeftButton(float x, float y) {

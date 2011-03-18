@@ -8,8 +8,6 @@ public class Sandbox extends AllocGuard {
     Location start;
     private Location target;
 
-    // private Controller controller;
-
     public Sandbox(SpriteCache spriteStore, Constants cfg) {
 	super();
 	this.spriteStore = spriteStore;
@@ -17,14 +15,10 @@ public class Sandbox extends AllocGuard {
 	start = new Location(cfg.SCREEN.inGameLeft() + 20, cfg.SCREEN
 		.inGameTop() + 50);
 	target = new Location(200, 200);
-	// controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
 	alien = getAlien(start);
     }
 
     public void update(int delta) {
-	// TODO resolve usage of adjust speed - it now lives in movement
-	// controller.adjustSpeed(alien.getSpeed(), alien.getLocation(),
-	// target);
 	alien.move(delta);
     }
 

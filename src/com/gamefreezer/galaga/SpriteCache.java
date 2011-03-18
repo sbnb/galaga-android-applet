@@ -12,8 +12,6 @@ public class SpriteCache {
 	this.bitmapReader = bitmapReader;
     }
 
-    // TODO optimization check how often this is being called, reduce if
-    // possible
     public Sprite get(String name) {
 	if (spriteIsInCache(name)) {
 	    return cache.get(name);

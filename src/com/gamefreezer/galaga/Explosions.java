@@ -11,8 +11,8 @@ public class Explosions {
 	initExplosions();
     }
 
+    // TODO different explosions, even just simple color shifts
     private void initExplosions() {
-	// TODO magic numbers and fodder for config file
 	mExplosions = new Explosion[cfg.MAX_EXPLOSIONS];
 	for (int i = 0; i < mExplosions.length; i++) {
 	    mExplosions[i] = new Explosion(spriteCache, cfg.EXPL_IMGS,
