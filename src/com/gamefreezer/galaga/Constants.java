@@ -97,7 +97,8 @@ public class Constants {
 	BULLET_MOVEMENT = PROPS.getInt("BULLET_MOVEMENT");
 	BULLETS_ON_SCREEN = PROPS.getInt("BULLETS_ON_SCREEN");
 	MIN_TIME_BETWEEN_BULLETS = PROPS.getInt("MIN_TIME_BETWEEN_BULLETS");
-	BULLET_IMAGE = PROPS.getString("BULLET_IMAGE");
+	BULLET_IMAGES = PROPS.getStringArray("BULLET_IMAGES");
+	BULLET_TIMES = PROPS.getIntArray("BULLET_TIMES");
 
 	// alien bullets
 	ALIEN_BULLET_MOVEMENT = PROPS.getInt("ALIEN_BULLET_MOVEMENT");
@@ -106,7 +107,8 @@ public class Constants {
 		.getInt("MIN_TIME_BETWEEN_ALIEN_BULLETS");
 	MAX_TIME_BETWEEN_ALIEN_BULLETS = PROPS
 		.getInt("MAX_TIME_BETWEEN_ALIEN_BULLETS");
-	ALIEN_BULLET_IMAGE = PROPS.getString("ALIEN_BULLET_IMAGE");
+	ALIEN_BULLET_IMAGES = PROPS.getStringArray("ALIEN_BULLET_IMAGES");
+	ALIEN_BULLET_TIMES = PROPS.getIntArray("ALIEN_BULLET_TIMES");
 
 	// stars
 	STAR_WIDTH = PROPS.getInt("STAR_WIDTH");
@@ -252,15 +254,16 @@ public class Constants {
     public final int BULLET_MOVEMENT;
     public final int BULLETS_ON_SCREEN;
     public final int MIN_TIME_BETWEEN_BULLETS;
-
-    public final String BULLET_IMAGE;
+    public final String[] BULLET_IMAGES;
+    public final int[] BULLET_TIMES;
 
     // alien bullets
     public final int ALIEN_BULLET_MOVEMENT;
     public final int ALIEN_BULLETS_ON_SCREEN;
     public final int MIN_TIME_BETWEEN_ALIEN_BULLETS;
     public final int MAX_TIME_BETWEEN_ALIEN_BULLETS;
-    public final String ALIEN_BULLET_IMAGE;
+    public final String[] ALIEN_BULLET_IMAGES;
+    public final int[] ALIEN_BULLET_TIMES;
 
     // stars
     public final int STAR_WIDTH;

@@ -87,9 +87,10 @@ public class Game extends AllocGuard {
 		gun, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
 
 	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
-		cfg.BULLET_IMAGE);
+		cfg.BULLET_IMAGES, cfg.BULLET_TIMES);
 	alienBullets = new Bullets(spriteCache, screen,
-		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGE);
+		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
+		cfg.ALIEN_BULLET_TIMES);
 
 	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
@@ -159,7 +160,7 @@ public class Game extends AllocGuard {
 	endProfiler("Game.update");
 	cycles++;
 
-	if (PROFILING && cycles % 10000 == 0) {
+	if (PROFILING && cycles % 5000 == 0) {
 	    Game.log(Profiler.results());
 	}
 

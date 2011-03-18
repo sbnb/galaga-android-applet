@@ -2,9 +2,10 @@ package com.gamefreezer.galaga;
 
 public class Bullet extends Entity {
 
-    public Bullet(SpriteCache spriteStore, Screen screen, String imageName) {
-	super(spriteStore, screen, new Location(0, 0), 0, 0,
-		new String[] { imageName }, null);
+    public Bullet(SpriteCache spriteStore, Screen screen, String[] imageNames,
+	    int[] bulletTimes) {
+	super(spriteStore, screen, new Location(0, 0), 0, 0, imageNames,
+		bulletTimes);
 	this.kill();
     }
 

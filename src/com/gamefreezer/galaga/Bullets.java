@@ -5,16 +5,18 @@ public class Bullets extends AllocGuard {
     private Bullet[] bulletsArray;
     private int bulletWidth;
 
+    // TODO: make bullet image an array and animated
     public Bullets(SpriteCache spriteStore, Screen screen,
-	    int numBulletsOnScreen, String bulletImage) {
+	    int numBulletsOnScreen, String[] bulletImages, int[] bulletTimes) {
 	super();
 
-	assert bulletImage != null : "bulletImage is null!";
-	assert bulletImage != "" : "bulletImage is empty string!";
+	assert bulletImages != null : "bulletImage is null!";
+	assert bulletImages[0] != "" : "bulletImage[0] is empty string!";
 
 	this.bulletsArray = new Bullet[numBulletsOnScreen];
 	for (int i = 0; i < bulletsArray.length; i++) {
-	    bulletsArray[i] = new Bullet(spriteStore, screen, bulletImage);
+	    bulletsArray[i] = new Bullet(spriteStore, screen, bulletImages,
+		    bulletTimes);
 	}
 	bulletWidth = bulletsArray[0].getWidth();
     }
