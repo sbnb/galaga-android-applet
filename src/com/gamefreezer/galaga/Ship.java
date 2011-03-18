@@ -9,11 +9,10 @@ public class Ship extends Entity {
     private Gun gun;
     Location gunLocation;
 
-    // TODO would be superior to allow ship to animate - use array of imgnames
-    public Ship(SpriteCache spriteStore, Screen screen, String imageName,
-	    Gun gun, Speed rightSpeed, Speed leftSpeed, Speed noSpeed) {
-	super(spriteStore, screen, new Location(), 0, 0,
-		new String[] { imageName }, null);
+    public Ship(SpriteCache spriteStore, Screen screen, String[] imageNames,
+	    int[] imageTimes, Gun gun, Speed rightSpeed, Speed leftSpeed,
+	    Speed noSpeed) {
+	super(spriteStore, screen, new Location(), 0, 0, imageNames, imageTimes);
 
 	assert gun != null : "gun is null!";
 	assert rightSpeed != null : "rightSpeed is null!";
@@ -25,16 +24,14 @@ public class Ship extends Entity {
 	NO_SPEED = noSpeed;
 	fireMode = false;
 	this.gun = gun;
-	this.moveTo(screen.middleX(), screen.inGameBottom() - height);
+	this.moveTo(screen.middleX(), screen.inGameBottom() - height - 3);
 	gunLocation = new Location(movement.getLocation());
     }
 
     /* The start location for bullets fired by the ship. */
     public Location getGunLocation(int bulletWidth) {
 	gunLocation.moveTo(this.getLocation());
-	// TODO bullet offset for ship should be configurable, or use ships
-	// bullet width
-	gunLocation.moveBy(width / 2 - bulletWidth / 2, 0);
+	gunLocation.moveBy(width / 2 - bulletWidth / 2, -5);
 	return gunLocation;
     }
 

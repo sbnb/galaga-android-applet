@@ -4,7 +4,6 @@ import java.util.SortedMap;
 
 public class Aliens extends AllocGuard {
 
-    public static Alien FIRST = null;
     private Alien[] aliens;
     private Formation formation;
     private Speed speed;
@@ -49,47 +48,12 @@ public class Aliens extends AllocGuard {
 	}
     }
 
-    // doubly link all aliens in a formation (regardless of state, living or
-    // dead)
-    public void link() {
-	FIRST = aliens[0];
-	Alien last = null;
-	for (int i = 0; i < formation.size(); i++) {
-	    aliens[i].prev = last;
-	    aliens[i].next = null;
-	    if (last != null) {
-		last.next = aliens[i];
-	    }
-	    last = aliens[i];
-	}
-    }
-
-    // insert b after a
-    public void insertAfter(Alien a, Alien b) {
-	if (a != null) {
-	    b.next = a.next; // a may be null
-	    b.prev = a;
-	    a.next = b; // but a may be null
-	    if (b.next != null) {
-		b.next.prev = b; // but b.next may be null
-	    }
-	} else {
-	    // inserting first elmt in list
-	    b.next = null;
-	    b.prev = null;
-	    FIRST = b;
-	}
-	// TODO if need to insert before (say first in existing list) need to
-	// write that method
-    }
-
     public void newLevel(Formation aFormation) {
 	this.formation = aFormation;
 	aFormation.createAliens(aliens);
 	livingAliens = aFormation.size();
 	currentMaxSpeed = aFormation.getAlienSpeeds().get(100);
 	speed.reset(currentMaxSpeed, 0);
-	link();
 	anchor.moveTo(aliens[0].getLocation());
 	setRelativeToAnchor();
     }

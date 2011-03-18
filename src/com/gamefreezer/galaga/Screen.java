@@ -98,8 +98,4 @@ public class Screen {
     public int innerHorizontalBorderWidth() {
 	return cfg.INNER_HORIZONTAL_BORDER;
     }
-
-    public int bottomMaskHeight() {
-	return cfg.BOTTOM_MASK_HEIGHT;
-    }
 }

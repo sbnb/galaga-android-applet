@@ -4,9 +4,10 @@ public class Score extends AllocGuard {
 
     private SpriteCache spriteStore;
     private Constants cfg;
+    private Screen screen;
     private int lives = 0;
     private int health = 100;
-    private int totalScore = 0;
+    private int totalScore = 2999456;
     private int levelScore = 0;
     private int totalShotsFired = 0;
     private int levelShotsFired = 0;
@@ -18,6 +19,7 @@ public class Score extends AllocGuard {
     public Score(SpriteCache spriteStore, Constants cfg) {
 	super();
 	this.cfg = cfg;
+	this.screen = cfg.SCREEN;
 	this.spriteStore = spriteStore;
     }
 
@@ -130,14 +132,16 @@ public class Score extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-	Util.drawNumber(spriteStore, cfg, graphics, cfg.SCORE_LEFT,
-		cfg.SCORE_TOP, cfg.SCORE_SPACING, cfg.SCORE_COMMAS, totalScore);
+	// Util.drawNumber(spriteStore, cfg, graphics, cfg.SCORE_LEFT,
+	// cfg.SCORE_TOP, cfg.SCORE_SPACING, cfg.SCORE_COMMAS, totalScore);
+	Util.drawNumber(spriteStore, cfg, graphics, screen.inGameLeft(), screen
+		.inGameTop() + 5, cfg.SCORE_SPACING, cfg.SCORE_COMMAS,
+		totalScore);
     }
 
     public void drawBonuses(AbstractGraphics graphics) {
 	// TODO replace magic numbers for bonus details placement
 	// shots fired
-	// System.out.println("draw levelShotsFired: " + levelShotsFired);
 	Util.drawNumber(spriteStore, cfg, graphics, 170, 168,
 		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelShotsFired);
 	// hits made

@@ -19,11 +19,10 @@ public class Constants {
 	OUTER_HORIZONTAL_BORDER = PROPS.getInt("OUTER_HORIZONTAL_BORDER");
 	INNER_HORIZONTAL_BORDER = PROPS.getInt("INNER_HORIZONTAL_BORDER");
 
-	BOTTOM_MASK_HEIGHT = PROPS.getInt("BOTTOM_MASK_HEIGHT");
-
 	// health bar
 	HEALTH_SIDE_INDENT = PROPS.getInt("HEALTH_SIDE_INDENT");
 	HEALTH_BOTTOM_INDENT = PROPS.getInt("HEALTH_BOTTOM_INDENT");
+	HEALTH_BAR_WIDTH = PROPS.getInt("HEALTH_BAR_WIDTH");
 	HEALTH_BAR_HEIGHT = PROPS.getInt("HEALTH_BAR_HEIGHT");
 	HEALTH_COLOR_CHANGE = PROPS.getFloat("HEALTH_COLOR_CHANGE");
 
@@ -53,7 +52,8 @@ public class Constants {
 
 	// player ship
 	SHIP_MOVEMENT = PROPS.getInt("SHIP_MOVEMENT");
-	SHIP_IMAGE = PROPS.getString("SHIP_IMAGE");
+	SHIP_IMAGES = PROPS.getStringArray("SHIP_IMAGES");
+	SHIP_TIMES = PROPS.getIntArray("SHIP_TIMES");
 
 	// aliens
 	ALIEN_POOL_SIZE = PROPS.getInt("ALIEN_POOL_SIZE");
@@ -77,7 +77,6 @@ public class Constants {
 	MAX_TIME_BETWEEN_RELEASES = PROPS.getInt("MAX_TIME_BETWEEN_RELEASES");
 
 	// explosions and text effects
-	// TODO different explosions, even just simple color shifts
 	MAX_EXPLOSIONS = PROPS.getInt("MAX_EXPLOSIONS");
 	EXPL_IMGS = PROPS.getStringArray("EXPL_IMGS");
 	EXPL_TIMES = PROPS.getIntArray("EXPL_TIMES");
@@ -122,9 +121,15 @@ public class Constants {
 	HEALTH_BAR_HIGH = PROPS.getColor("HEALTH_BAR_HIGH");
 	HEALTH_BAR_LOW = PROPS.getColor("HEALTH_BAR_LOW");
 	SCORE = PROPS.getColor("SCORE");
-	BOTTOM_COVER = PROPS.getColor("BOTTOM_COVER");
 	BACKGROUND = PROPS.getColor("BACKGROUND");
 	BORDER = PROPS.getColor("BORDER");
+
+	BUTTON_COLOR = PROPS.getColor("BUTTON_COLOR");
+	OUTER_VERT_BORDER_COLOR = PROPS.getColor("OUTER_VERT_BORDER_COLOR");
+	INNER_VERT_BORDER_COLOR = PROPS.getColor("INNER_VERT_BORDER_COLOR");
+	OUTER_HORIZ_BORDER_COLOR = PROPS.getColor("OUTER_HORIZ_BORDER_COLOR");
+	INNER_HORIZ_BORDER_COLOR = PROPS.getColor("INNER_HORIZ_BORDER_COLOR");
+	CORNER_DOT_COLOR = PROPS.getColor("CORNER_DOT_COLOR");
 
 	// states
 	INTRO_STATE = 0;
@@ -161,13 +166,13 @@ public class Constants {
     public final int INNER_VERTICAL_BORDER;
     public final int OUTER_HORIZONTAL_BORDER;
     public final int INNER_HORIZONTAL_BORDER;
-    public final int BOTTOM_MASK_HEIGHT;
 
     public final Screen SCREEN;
 
     // health bar
     public final int HEALTH_SIDE_INDENT;
     public final int HEALTH_BOTTOM_INDENT;
+    public final int HEALTH_BAR_WIDTH;
     public final int HEALTH_BAR_HEIGHT;
     public final float HEALTH_COLOR_CHANGE;
 
@@ -197,7 +202,8 @@ public class Constants {
 
     // player ship
     public final int SHIP_MOVEMENT;
-    public final String SHIP_IMAGE;
+    public final String[] SHIP_IMAGES;
+    public final int[] SHIP_TIMES;
 
     // aliens
     public final int ALIEN_POOL_SIZE;
@@ -272,9 +278,14 @@ public class Constants {
     public final AbstractColor HEALTH_BAR_HIGH;
     public final AbstractColor HEALTH_BAR_LOW;
     public final AbstractColor SCORE;
-    public final AbstractColor BOTTOM_COVER;
     public final AbstractColor BACKGROUND;
     public final AbstractColor BORDER;
+    public final AbstractColor BUTTON_COLOR;
+    public final AbstractColor OUTER_VERT_BORDER_COLOR;
+    public final AbstractColor INNER_VERT_BORDER_COLOR;
+    public final AbstractColor OUTER_HORIZ_BORDER_COLOR;
+    public final AbstractColor INNER_HORIZ_BORDER_COLOR;
+    public final AbstractColor CORNER_DOT_COLOR;
 
     // states
     public final int INTRO_STATE;

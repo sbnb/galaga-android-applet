@@ -27,13 +27,11 @@ public class Alien extends Entity {
     @Override
     public void kill() {
 	active = false;
-	delink();
     }
 
     @Override
     public void setSolo(boolean solo) {
 	this.solo = solo;
-	delink();
     }
 
     public void flip() {
@@ -47,7 +45,7 @@ public class Alien extends Entity {
 
     @Override
     protected void adjustIfOffScreenBottom() {
-	if (offScreenBottom(screen.bottomMaskHeight())) {
+	if (offScreenBottom(screen.horizontalBorderWidths())) {
 	    movement.getLocation().setY(screen.inGameTop());
 	    diveComplete = true;
 	}
@@ -56,19 +54,6 @@ public class Alien extends Entity {
     @Override
     protected void killIfOffScreen() {
 	// NOP - don't kill alien for going off screen
-    }
-
-    private void delink() {
-	if (prev != null) {
-	    prev.next = next;
-
-	} else {
-	    Aliens.FIRST = next; // this was FIRST, now next is
-	}
-	if (next != null) {
-	    next.prev = prev;
-	}
-	prev = next = null;
     }
 
     public void setRelativeToAnchor(Location anchor) {
