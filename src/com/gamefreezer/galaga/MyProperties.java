@@ -176,6 +176,7 @@ public class MyProperties {
 	}
     }
 
+    @Override
     public String toString() {
 	return properties.toString();
     }

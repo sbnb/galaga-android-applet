@@ -22,11 +22,12 @@ public class Explosions {
 
     public void newExplosion(Entity entity) {
 	Explosion explosion = findAvailableExplosion();
-	assert explosion != null : "No free explosions, increase pool size!";
 	if (explosion != null) {
 	    explosion.use(entity);
+	} else {
+	    // too many explosions, drop this one
+	    assert false : "No free explosions, increase pool size!";
 	}
-	// too many explosions, drop this one
     }
 
     private Explosion findAvailableExplosion() {
