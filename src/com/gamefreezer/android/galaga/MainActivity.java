@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
 	try {
 	    Thread.sleep(16);
 	} catch (InterruptedException e) {
+	    //NOP
 	}
 	return true;
     }
