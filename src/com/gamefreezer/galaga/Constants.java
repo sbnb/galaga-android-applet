@@ -124,14 +124,12 @@ public class Constants {
 	HEALTH_BAR_LOW = PROPS.getColor("HEALTH_BAR_LOW");
 	SCORE = PROPS.getColor("SCORE");
 	BACKGROUND = PROPS.getColor("BACKGROUND");
-	BORDER = PROPS.getColor("BORDER");
 
 	BUTTON_COLOR = PROPS.getColor("BUTTON_COLOR");
 	OUTER_VERT_BORDER_COLOR = PROPS.getColor("OUTER_VERT_BORDER_COLOR");
 	INNER_VERT_BORDER_COLOR = PROPS.getColor("INNER_VERT_BORDER_COLOR");
 	OUTER_HORIZ_BORDER_COLOR = PROPS.getColor("OUTER_HORIZ_BORDER_COLOR");
 	INNER_HORIZ_BORDER_COLOR = PROPS.getColor("INNER_HORIZ_BORDER_COLOR");
-	CORNER_DOT_COLOR = PROPS.getColor("CORNER_DOT_COLOR");
 
 	// states
 	INTRO_STATE = 0;
@@ -282,13 +280,11 @@ public class Constants {
     public final AbstractColor HEALTH_BAR_LOW;
     public final AbstractColor SCORE;
     public final AbstractColor BACKGROUND;
-    public final AbstractColor BORDER;
     public final AbstractColor BUTTON_COLOR;
     public final AbstractColor OUTER_VERT_BORDER_COLOR;
     public final AbstractColor INNER_VERT_BORDER_COLOR;
     public final AbstractColor OUTER_HORIZ_BORDER_COLOR;
     public final AbstractColor INNER_HORIZ_BORDER_COLOR;
-    public final AbstractColor CORNER_DOT_COLOR;
 
     // states
     public final int INTRO_STATE;

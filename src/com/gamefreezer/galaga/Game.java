@@ -18,6 +18,7 @@ public class Game extends AllocGuard {
 
     // objects used in the game
     private SpriteCache spriteCache;
+    private State state;
     private List<Formation> formations;
     private Ship ship = null;
     private Bullets playerBullets = null;
@@ -28,7 +29,6 @@ public class Game extends AllocGuard {
     private Score score;
     private HealthBar healthBar;
     private long cycles = 0; // elapsed cycles during game
-    private int formationsIndex = 0;
     private long lastTime = 0;
     private AnimationFrames textFx;
     private AnimationFrames countDown;
@@ -36,9 +36,6 @@ public class Game extends AllocGuard {
     private Explosions explosions;
     private KillPoints killPoints;
 
-    private int state;
-
-    private long stateTimer;
     private Constants cfg;
     private Screen screen;
 
@@ -55,7 +52,6 @@ public class Game extends AllocGuard {
 	this.cfg = cfg;
 	screen = cfg.SCREEN;
 	setAbstractInterfaceVars(log, colorDecoder, fileOpener, fileLister);
-	state = cfg.READY_STATE;
 
 	log("Game(): constructor.");
 
@@ -74,7 +70,13 @@ public class Game extends AllocGuard {
 	final Speed targettingSpeed = new Speed(cfg.RETURN_SPEED_X,
 		cfg.RETURN_SPEED_Y);
 	aliens = new Aliens(spriteCache, cfg, targettingSpeed);
-	changeFormation();
+	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
+		cfg.BULLET_IMAGES, cfg.BULLET_TIMES);
+	alienBullets = new Bullets(spriteCache, screen,
+		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
+		cfg.ALIEN_BULLET_TIMES);
+	state = new State(cfg, aliens, formations, score, playerBullets,
+		alienBullets, shipExplosion, countDown, textFx);
 
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
@@ -84,15 +86,9 @@ public class Game extends AllocGuard {
 	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGES, cfg.SHIP_TIMES,
 		gun, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
 
-	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
-		cfg.BULLET_IMAGES, cfg.BULLET_TIMES);
-	alienBullets = new Bullets(spriteCache, screen,
-		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
-		cfg.ALIEN_BULLET_TIMES);
-
-	setStateTimer(cfg.LEVEL_DELAY);
 	preloadImages();
 	buttons = new Buttons(cfg);
+	borders = new Borders(cfg);
 
 	AllocGuard.guardOn = true;
 	log("SpriteStore.size(): " + spriteCache.size());
@@ -133,31 +129,29 @@ public class Game extends AllocGuard {
     }
 
     public void update() {
-	int timeDelta = getTimeDelta();
-
-	updateState();
-	processInput();
-
 	startProfiler("Game.update");
 
-	if (state == cfg.PLAYING_STATE) {
-	    updateAssetsThatCanBeFrozen(timeDelta);
-	    updateAssetsThatCantBeFrozen(timeDelta);
+	int timeDelta = getTimeDelta();
+	state.update();
+	processInput();
+
+	if (state.current() == cfg.PLAYING_STATE) {
+	    updatePausablePhysics(timeDelta);
+	    updateUnpausablePhysics(timeDelta);
 	    collisionDetector.checkCollisions(aliens, ship, score,
 		    playerBullets, alienBullets, killPoints);
 	    sandbox.update(timeDelta);
 	} else {
-	    updateAssetsThatCantBeFrozen(timeDelta);
+	    updateUnpausablePhysics(timeDelta);
 	}
 
-	if (state == cfg.BONUS_PAYOUT_STATE && score.bonusRemaining()) {
+	if (state.current() == cfg.BONUS_PAYOUT_STATE && score.bonusRemaining()) {
 	    score.transferSomeBonus();
 	}
 
 	killPoints.clear();
-
-	endProfiler("Game.update");
 	cycles++;
+	endProfiler("Game.update");
 
 	if (PROFILING && cycles % 5000 == 0) {
 	    Game.log(Profiler.results());
@@ -170,7 +164,7 @@ public class Game extends AllocGuard {
 	graphics.fillScreen();
 	borders.drawBorders(graphics);
 	buttons.draw(graphics);
-	if (state != cfg.BETWEEN_LIVES_STATE)
+	if (state.current() != cfg.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
 	    shipExplosion.draw(graphics, ship.getX(), ship.getY());
@@ -183,7 +177,7 @@ public class Game extends AllocGuard {
 	score.draw(graphics);
 	healthBar.draw(graphics);
 	// text messages drawn last based on state
-	if (state == cfg.READY_STATE) {
+	if (state.current() == cfg.READY_STATE) {
 	    // TODO better placement of imgs using relative values
 	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
 	    spriteCache.get(cfg.GET_READY).draw(graphics, cfg.GET_READY_X,
@@ -191,11 +185,12 @@ public class Game extends AllocGuard {
 	    // TODO magic numbers
 	    countDown.draw(graphics, 160, 270);
 	}
-	if (state == cfg.LEVEL_CLEARED_STATE
-		|| state == cfg.BONUS_MESSAGE_STATE) {
+	if (state.current() == cfg.LEVEL_CLEARED_STATE
+		|| state.current() == cfg.BONUS_MESSAGE_STATE) {
 	    textFx.draw(graphics, 28, 100);
 	}
-	if (state == cfg.BONUS_MESSAGE_STATE || state == cfg.BONUS_PAYOUT_STATE) {
+	if (state.current() == cfg.BONUS_MESSAGE_STATE
+		|| state.current() == cfg.BONUS_PAYOUT_STATE) {
 	    // TODO keep a copy of the Sprite (in Game, final)
 	    spriteCache.get(cfg.BONUS_DETAILS).draw(graphics,
 		    cfg.BONUS_DETAILS_X, cfg.BONUS_DETAILS_Y);
@@ -230,101 +225,19 @@ public class Game extends AllocGuard {
 	return buttons.withinFireButton(x, y);
     }
 
-    private void updateState() {
-
-	// BETWEEN_LIVES_STATE
-	if (state == cfg.PLAYING_STATE && score.getHealth() == 0) {
-	    state = cfg.BETWEEN_LIVES_STATE;
-	    playerBullets.killOnscreenBullets();
-	    alienBullets.killOnscreenBullets();
-	    shipExplosion.reset();
-	    setStateTimer(cfg.BETWEEN_LIVES_STATE_TIMER);
-	    System.out.println("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
-	    // TODO aliens should move in BETWEEN_LIVES_STATE, but no shoot or
-	    // collisions
-	}
-
-	// READY_STATE
-	if (state == cfg.BETWEEN_LIVES_STATE && timeUpInState()) {
-	    state = cfg.READY_STATE;
-	    countDown.reset();
-	    score.restoreHealth();
-	    aliens.resetLivingAliens();
-	    System.out.println("BETWEEN_LIVES_STATE ==> READY_STATE");
-	}
-
-	// WAIT_CLEAR_STATE
-	if (state == cfg.PLAYING_STATE && aliens.levelCleared()) {
-	    state = cfg.WAIT_CLEAR_STATE;
-	    setStateTimer(500);
-	    // or wait for bullets
-	    System.out.println("PLAYING_STATE ==> WAIT_CLEAR_STATE");
-	}
-
-	// LEVEL_CLEARED_STATE
-	if (state == cfg.WAIT_CLEAR_STATE && timeUpInState()) {
-	    state = cfg.LEVEL_CLEARED_STATE;
-	    textFx.reset();
-	    setStateTimer(1000);
-	    System.out.println("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
-	}
-
-	// BONUS_MESSAGE_STATE
-	if (state == cfg.LEVEL_CLEARED_STATE && timeUpInState()) {
-	    state = cfg.BONUS_MESSAGE_STATE;
-	    // score.addLevelBonus();
-	    // score.clearLevelScore();
-	    score.calculateBonus();
-	    setStateTimer(3000);
-	    System.out.println("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
-	}
-
-	// BONUS_PAYOUT_STATE
-	if (state == cfg.BONUS_MESSAGE_STATE && timeUpInState()) {
-	    state = cfg.BONUS_PAYOUT_STATE;
-	    setStateTimer(3000);
-	    System.out.println("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
-	}
-
-	// READY_STATE
-	if (state == cfg.BONUS_PAYOUT_STATE && !score.bonusRemaining()
-		&& timeUpInState()) {
-	    state = cfg.READY_STATE;
-	    score.clearLevelScore();
-	    countDown.reset();
-	    changeFormation();
-	    System.out.println("BONUS_PAYOUT_STATE ==> READY_STATE");
-	}
-
-	// PLAYING_STATE
-	if (state == cfg.READY_STATE && countDown.finished()) {
-	    state = cfg.PLAYING_STATE;
-	    System.out.println("READY_STATE ==> PLAYING_STATE");
-	}
-
-    }
-
-    private void updateAssetsThatCantBeFrozen(int timeDelta) {
-	if (state != cfg.BETWEEN_LIVES_STATE)
+    private void updateUnpausablePhysics(int timeDelta) {
+	if (state.current() != cfg.BETWEEN_LIVES_STATE)
 	    ship.move(timeDelta);
 	playerBullets.move(timeDelta);
 	alienBullets.move(timeDelta);
     }
 
-    private void updateAssetsThatCanBeFrozen(int timeDelta) {
+    private void updatePausablePhysics(int timeDelta) {
 	if (ship.triggerDown()) {
 	    ship.shoot(playerBullets, score);
 	}
 	aliens.shoot(alienBullets);
 	aliens.update(timeDelta);
-    }
-
-    private boolean timeUpInState() {
-	return System.currentTimeMillis() > stateTimer;
-    }
-
-    private void setStateTimer(int stateInterval) {
-	stateTimer = System.currentTimeMillis() + stateInterval;
     }
 
     public static void startProfiler(String name) {
@@ -361,13 +274,6 @@ public class Game extends AllocGuard {
 		    log(e.getMessage() + e);
 		}
 	    }
-	}
-    }
-
-    private void changeFormation() {
-	aliens.newLevel(formations.get(formationsIndex++));
-	if (formationsIndex == formations.size()) {
-	    formationsIndex = 0;
 	}
     }
 
