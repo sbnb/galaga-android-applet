@@ -44,9 +44,9 @@ public class Game extends AllocGuard {
 
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
 	    InputMessage.INPUT_QUEUE_SIZE);
-    private Object inputQueueMutex = new Object();
-
     private Buttons buttons;
+    private Borders borders;
+    private Object inputQueueMutex = new Object();
 
     public Game(Constants cfg, AbstractLog log,
 	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
@@ -166,97 +166,68 @@ public class Game extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-    
-        startProfiler("Game.draw");
-    
-        startProfiler("Game.drawBackground");
-        drawBackground(graphics);
-        endProfiler("Game.drawBackground");
-    
-        startProfiler("Ship.draw");
-        if (state != cfg.BETWEEN_LIVES_STATE)
-            ship.draw(graphics);
-        else {
-            shipExplosion.draw(graphics, ship.getX(), ship.getY());
-        }
-        endProfiler("Ship.draw");
-    
-        startProfiler("Killpoints.draw");
-        killPoints.draw(graphics);
-        endProfiler("Killpoints.draw");
-    
-        startProfiler("Bullets.draw");
-        playerBullets.draw(graphics);
-        alienBullets.draw(graphics);
-        endProfiler("Bullets.draw");
-    
-        startProfiler("Aliens.draw");
-        aliens.draw(graphics);
-        endProfiler("Aliens.draw");
-    
-        startProfiler("Explosions.draw");
-        explosions.draw(graphics);
-        endProfiler("Explosions.draw");
-    
-        startProfiler("Score_Health.draw");
-        score.draw(graphics);
-        healthBar.draw(graphics);
-        endProfiler("Score_Health.draw");
-    
-        // text messages drawn last based on state
-        if (state == cfg.READY_STATE) {
-            // TODO better placement of imgs using relative values
-            // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
-            spriteCache.get(cfg.GET_READY).draw(graphics, cfg.GET_READY_X,
-        	    cfg.GET_READY_Y);
-            // Sprite ready = spriteCache.get(cfg.GET_READY);
-            // ready.draw(graphics, screen.centerImageX(ready.getWidth()),
-            // screen
-            // .centerImageY(ready.getHeight()));
-            // TODO magic numbers
-            countDown.draw(graphics, 160, 270);
-        }
-    
-        if (state == cfg.LEVEL_CLEARED_STATE
-        	|| state == cfg.BONUS_MESSAGE_STATE) {
-            textFx.draw(graphics, 28, 100);
-        }
-    
-        if (state == cfg.BONUS_MESSAGE_STATE || state == cfg.BONUS_PAYOUT_STATE) {
-            // TODO keep a copy of the Sprite (in Game, final)
-            spriteCache.get(cfg.BONUS_DETAILS).draw(graphics,
-        	    cfg.BONUS_DETAILS_X, cfg.BONUS_DETAILS_Y);
-            score.drawBonuses(graphics);
-        }
-        // sandbox.draw(graphics);
-    
-        endProfiler("Game.draw");
+	startProfiler("Game.draw");
+	graphics.fillScreen();
+	borders.drawBorders(graphics);
+	buttons.draw(graphics);
+	if (state != cfg.BETWEEN_LIVES_STATE)
+	    ship.draw(graphics);
+	else {
+	    shipExplosion.draw(graphics, ship.getX(), ship.getY());
+	}
+	killPoints.draw(graphics);
+	playerBullets.draw(graphics);
+	alienBullets.draw(graphics);
+	aliens.draw(graphics);
+	explosions.draw(graphics);
+	score.draw(graphics);
+	healthBar.draw(graphics);
+	// text messages drawn last based on state
+	if (state == cfg.READY_STATE) {
+	    // TODO better placement of imgs using relative values
+	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
+	    spriteCache.get(cfg.GET_READY).draw(graphics, cfg.GET_READY_X,
+		    cfg.GET_READY_Y);
+	    // TODO magic numbers
+	    countDown.draw(graphics, 160, 270);
+	}
+	if (state == cfg.LEVEL_CLEARED_STATE
+		|| state == cfg.BONUS_MESSAGE_STATE) {
+	    textFx.draw(graphics, 28, 100);
+	}
+	if (state == cfg.BONUS_MESSAGE_STATE || state == cfg.BONUS_PAYOUT_STATE) {
+	    // TODO keep a copy of the Sprite (in Game, final)
+	    spriteCache.get(cfg.BONUS_DETAILS).draw(graphics,
+		    cfg.BONUS_DETAILS_X, cfg.BONUS_DETAILS_Y);
+	    score.drawBonuses(graphics);
+	}
+	endProfiler("Game.draw");
     }
 
     public void feedInput(InputMessage input) {
-        synchronized (inputQueueMutex) {
-            if (inputQueue.size() == InputMessage.INPUT_QUEUE_SIZE) {
-        	log("Game.feedInput(): Ignoring message, queue is full!");
-        	return;
-            }
-            try {
-        	inputQueue.put(input);
-            } catch (InterruptedException e) {
-        	log(e.getMessage() + e);
-            }
-        }
+	synchronized (inputQueueMutex) {
+	    if (inputQueue.size() == InputMessage.INPUT_QUEUE_SIZE) {
+		log("Game.feedInput(): Ignoring message, queue is full!");
+		return;
+	    }
+	    try {
+		inputQueue.put(input);
+	    } catch (InterruptedException e) {
+		log(e.getMessage() + e);
+	    }
+	}
     }
 
     public boolean withinLeftButton(float x, float y) {
-        return buttons.withinLeftButton(x, y);
+	return buttons.withinLeftButton(x, y);
     }
 
     public boolean withinRightButton(float x, float y) {
-        return buttons.withinRightButton(x, y);
+	return buttons.withinRightButton(x, y);
     }
 
     public boolean withinFireButton(float x, float y) {
-        return buttons.withinFireButton(x, y);
+	return buttons.withinFireButton(x, y);
     }
 
     private void updateState() {
@@ -334,18 +305,18 @@ public class Game extends AllocGuard {
     }
 
     private void updateAssetsThatCantBeFrozen(int timeDelta) {
-        if (state != cfg.BETWEEN_LIVES_STATE)
-            ship.move(timeDelta);
-        playerBullets.move(timeDelta);
-        alienBullets.move(timeDelta);
+	if (state != cfg.BETWEEN_LIVES_STATE)
+	    ship.move(timeDelta);
+	playerBullets.move(timeDelta);
+	alienBullets.move(timeDelta);
     }
 
     private void updateAssetsThatCanBeFrozen(int timeDelta) {
-        if (ship.triggerDown()) {
-            ship.shoot(playerBullets, score);
-        }
-        aliens.shoot(alienBullets);
-        aliens.update(timeDelta);
+	if (ship.triggerDown()) {
+	    ship.shoot(playerBullets, score);
+	}
+	aliens.shoot(alienBullets);
+	aliens.update(timeDelta);
     }
 
     private boolean timeUpInState() {
@@ -432,61 +403,5 @@ public class Game extends AllocGuard {
 	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, true);
 	spriteCache.get(cfg.BONUS_DETAILS);
 	killPoints.preload();
-    }
-
-    private void drawBackground(AbstractGraphics graphics) {
-	graphics.fillScreen();
-	drawBorders(graphics);
-	buttons.draw(graphics);
-	// graphics.setColor(cfg.BORDER);
-	// graphics.drawRect(screen.verticalBorderWidths(), screen
-	// .horizontalBorderWidths(), screen.inGameWidth(), screen
-	// .inGameHeight());
-
-    }
-
-    private void drawBorders(AbstractGraphics graphics) {
-	// left and right outer vertical borders
-	graphics.setColor(cfg.OUTER_VERT_BORDER_COLOR);
-	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen
-		.height());
-	graphics.fillRect(screen.width() - screen.outerVerticalBorderWidth(),
-		0, screen.outerVerticalBorderWidth(), screen.height());
-
-	// left and right inner vertical borders
-	graphics.setColor(cfg.INNER_VERT_BORDER_COLOR);
-	graphics.fillRect(screen.outerVerticalBorderWidth(), 0, screen
-		.innerVerticalBorderWidth(), screen.height());
-	graphics.fillRect(screen.width() - screen.verticalBorderWidths(), 0,
-		screen.innerVerticalBorderWidth(), screen.height());
-
-	// top and bottom outer horizontal borders
-	graphics.setColor(cfg.OUTER_HORIZ_BORDER_COLOR);
-	graphics.fillRect(0, 0, screen.width(), screen
-		.outerHorizontalBorderWidth());
-	graphics.fillRect(0, screen.height()
-		- screen.outerHorizontalBorderWidth(), screen.width(), screen
-		.outerHorizontalBorderWidth());
-
-	// top and bottom inner horizontal borders
-	graphics.setColor(cfg.INNER_HORIZ_BORDER_COLOR);
-	graphics.fillRect(screen.outerVerticalBorderWidth(), screen
-		.outerHorizontalBorderWidth(), screen.drawableWidth(), screen
-		.innerHorizontalBorderWidth());
-	graphics.fillRect(screen.outerVerticalBorderWidth(), screen.height()
-		- screen.horizontalBorderWidths(), screen.drawableWidth(),
-		screen.innerHorizontalBorderWidth());
-
-	// dot at each corner of playable game screen
-	// int size = 5;
-	// graphics.setColor(cfg.CORNER_DOT_COLOR);
-	// graphics.fillRect(screen.inGameLeft(), screen.inGameTop(), size,
-	// size);
-	// graphics.fillRect(screen.inGameRight() - size, screen.inGameTop(),
-	// size, size);
-	// graphics.fillRect(screen.inGameRight() - size, screen.inGameBottom()
-	// - size, size, size);
-	// graphics.fillRect(screen.inGameLeft(), screen.inGameBottom() - size,
-	// size, size);
     }
 }
