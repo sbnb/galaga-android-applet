@@ -19,13 +19,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.InputMessage;
+import com.gamefreezer.galaga.Tools;
 import com.gamefreezer.utilities.Profiler;
 
 @SuppressWarnings("serial")
 public class SpaceWar extends Applet implements Runnable, KeyListener {
 
     public final static String DATA_DIR = "data";
-
     private Constants cfg;
 
     // Thread control variables.
@@ -68,11 +68,11 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	AppletBitmapReader bitmapReader = new AppletBitmapReader();
 	AppletColor colorDecoder = new AppletColor(Color.BLACK);
 	AppletFileLister fileLister = new AppletFileLister();
+	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
+		fileOpener, fileLister);
 	cfg = new Constants(fileOpener, log, colorDecoder);
-
 	appletGraphics = new AppletGraphics(cfg);
-	game = new Game(cfg, log, bitmapReader, colorDecoder, fileOpener,
-		fileLister);
+	game = new Game(cfg);
 	createInputMessagePool();
     }
 
@@ -131,7 +131,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 
     private void convertToMyInput(boolean keyPressed, KeyEvent keyEvent) {
 	if (inputMessagePool.size() == 0) {
-	    Game.log("SpaceWar.convertToMyInput(): message "
+	    Tools.log("SpaceWar.convertToMyInput(): message "
 		    + "pool is exhausted, can't send messages.");
 	    return;
 	}
@@ -155,7 +155,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 		break;
 	    }
 	} catch (InterruptedException e) {
-	    Game.log(e.toString());
+	    Tools.log(e.toString());
 	}
     }
 
