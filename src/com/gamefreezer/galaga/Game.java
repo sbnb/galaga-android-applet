@@ -1,6 +1,5 @@
 package com.gamefreezer.galaga;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -9,12 +8,6 @@ import com.gamefreezer.utilities.Profiler;
 public class Game extends AllocGuard {
 
     private static boolean PROFILING = true;
-
-    // TODO investigate making this instance variables, not static
-    private static AbstractLog log = null;
-    private static AbstractColor colorDecoder = null;
-    private static AbstractFileOpener fileOpener = null;
-    private static AbstractFileLister fileLister = null;
 
     // objects used in the game
     private SpriteCache spriteCache;
@@ -45,17 +38,14 @@ public class Game extends AllocGuard {
     private Borders borders;
     private Object inputQueueMutex = new Object();
 
-    public Game(Constants cfg, AbstractLog log,
-	    AbstractBitmapReader bitmapReader, AbstractColor colorDecoder,
-	    AbstractFileOpener fileOpener, AbstractFileLister fileLister) {
+    public Game(Constants cfg) {
 	super();
+	assert Tools.initialised : "Tools not initialised!";
+	Tools.log("Game(): constructor.");
+
 	this.cfg = cfg;
 	screen = cfg.SCREEN;
-	setAbstractInterfaceVars(log, colorDecoder, fileOpener, fileLister);
-
-	log("Game(): constructor.");
-
-	spriteCache = new SpriteCache(bitmapReader);
+	spriteCache = new SpriteCache(Tools.bitmapReader);
 	explosions = new Explosions(spriteCache, cfg);
 	collisionDetector = new CollisionDetector(cfg, explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
@@ -91,41 +81,7 @@ public class Game extends AllocGuard {
 	borders = new Borders(cfg);
 
 	AllocGuard.guardOn = true;
-	log("SpriteStore.size(): " + spriteCache.size());
-    }
-
-    public static void setAbstractInterfaceVars(AbstractLog log,
-	    AbstractColor colorDecoder, AbstractFileOpener fileOpener,
-	    AbstractFileLister fileLister) {
-	Game.log = log;
-	Game.colorDecoder = colorDecoder;
-	Game.fileOpener = fileOpener;
-	Game.fileLister = fileLister;
-    }
-
-    public static String[] listFiles() {
-	assert fileLister != null : "Game.fileLister is null!";
-	return fileLister.list();
-    }
-
-    public static InputStream openFile(String name) {
-	assert fileOpener != null : "Game.fileOpener is null!";
-	return fileOpener.open(name);
-    }
-
-    public static AbstractColor decodeColor(String property) {
-	assert colorDecoder != null : "Game.colorDecoder is null!";
-	return colorDecoder.decode(property);
-    }
-
-    public static void log(String tag, String message) {
-	assert Game.log != null : "Game.log is null!";
-	Game.log.i(tag, message);
-    }
-
-    public static void log(String message) {
-	assert Game.log != null : "Game.log is null!";
-	Game.log.i(message);
+	Tools.log("SpriteStore.size(): " + spriteCache.size());
     }
 
     public void update() {
@@ -154,7 +110,7 @@ public class Game extends AllocGuard {
 	endProfiler("Game.update");
 
 	if (PROFILING && cycles % 5000 == 0) {
-	    Game.log(Profiler.results());
+	    Tools.log(Profiler.results());
 	}
 
     }
@@ -202,13 +158,13 @@ public class Game extends AllocGuard {
     public void feedInput(InputMessage input) {
 	synchronized (inputQueueMutex) {
 	    if (inputQueue.size() == InputMessage.INPUT_QUEUE_SIZE) {
-		log("Game.feedInput(): Ignoring message, queue is full!");
+		Tools.log("Game.feedInput(): Ignoring message, queue is full!");
 		return;
 	    }
 	    try {
 		inputQueue.put(input);
 	    } catch (InterruptedException e) {
-		log(e.getMessage() + e);
+		Tools.log(e.getMessage() + e);
 	    }
 	}
     }
@@ -271,7 +227,7 @@ public class Game extends AllocGuard {
 		    }
 		    input.returnToPool();
 		} catch (InterruptedException e) {
-		    log(e.getMessage() + e);
+		    Tools.log(e.getMessage() + e);
 		}
 	    }
 	}

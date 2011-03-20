@@ -17,10 +17,10 @@ public class State {
     private List<Formation> formations;
     private int formationsIndex = 0;
 
-    public State(Constants cfg, Aliens aliens,
-	    List<Formation> formations, Score score, Bullets playerBullets,
-	    Bullets alienBullets, AnimationFrames shipExplosion,
-	    AnimationFrames countDown, AnimationFrames textFx) {
+    public State(Constants cfg, Aliens aliens, List<Formation> formations,
+	    Score score, Bullets playerBullets, Bullets alienBullets,
+	    AnimationFrames shipExplosion, AnimationFrames countDown,
+	    AnimationFrames textFx) {
 	this.cfg = cfg;
 	this.aliens = aliens;
 	this.formations = formations;
@@ -60,7 +60,7 @@ public class State {
 	    alienBullets.killOnscreenBullets();
 	    shipExplosion.reset();
 	    setStateTimer(cfg.BETWEEN_LIVES_STATE_TIMER);
-	    Game.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
+	    Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
 	    // TODO aliens should move in BETWEEN_LIVES_STATE, but no shoot or
 	    // collisions
 	}
@@ -71,7 +71,7 @@ public class State {
 	    countDown.reset();
 	    score.restoreHealth();
 	    aliens.resetLivingAliens();
-	    Game.log("BETWEEN_LIVES_STATE ==> READY_STATE");
+	    Tools.log("BETWEEN_LIVES_STATE ==> READY_STATE");
 	}
 
 	// WAIT_CLEAR_STATE
@@ -79,7 +79,7 @@ public class State {
 	    state = cfg.WAIT_CLEAR_STATE;
 	    setStateTimer(500);
 	    // or wait for bullets
-	    Game.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
+	    Tools.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
 	}
 
 	// LEVEL_CLEARED_STATE
@@ -87,7 +87,7 @@ public class State {
 	    state = cfg.LEVEL_CLEARED_STATE;
 	    textFx.reset();
 	    setStateTimer(1000);
-	    Game.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
+	    Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
 	}
 
 	// BONUS_MESSAGE_STATE
@@ -97,14 +97,14 @@ public class State {
 	    // score.clearLevelScore();
 	    score.calculateBonus();
 	    setStateTimer(3000);
-	    Game.log("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
+	    Tools.log("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
 	}
 
 	// BONUS_PAYOUT_STATE
 	if (state == cfg.BONUS_MESSAGE_STATE && timeUpInState()) {
 	    state = cfg.BONUS_PAYOUT_STATE;
 	    setStateTimer(3000);
-	    Game.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
+	    Tools.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
 	}
 
 	// READY_STATE
@@ -114,13 +114,13 @@ public class State {
 	    score.clearLevelScore();
 	    countDown.reset();
 	    changeFormation();
-	    Game.log("BONUS_PAYOUT_STATE ==> READY_STATE");
+	    Tools.log("BONUS_PAYOUT_STATE ==> READY_STATE");
 	}
 
 	// PLAYING_STATE
 	if (state == cfg.READY_STATE && countDown.finished()) {
 	    state = cfg.PLAYING_STATE;
-	    Game.log("READY_STATE ==> PLAYING_STATE");
+	    Tools.log("READY_STATE ==> PLAYING_STATE");
 	}
 
     }

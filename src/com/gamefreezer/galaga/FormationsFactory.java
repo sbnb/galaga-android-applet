@@ -12,7 +12,7 @@ public class FormationsFactory {
     public static List<Formation> createFormations(SpriteCache spriteStore,
 	    Constants cfg) {
 	List<Formation> formations = new ArrayList<Formation>();
-	List<String> names = Arrays.asList(Game.listFiles());
+	List<String> names = Arrays.asList(Tools.listFiles());
 	Collections.sort(names);
 
 	for (String name : names) {

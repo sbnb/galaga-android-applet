@@ -116,9 +116,9 @@ public class Formation extends AllocGuard {
     }
 
     private void loadProperties() {
-	Game.log("Formation.loadProperties(): new MyProperties("
+	Tools.log("Formation.loadProperties(): new MyProperties("
 		+ propertiesFileName + ")");
-	props = new MyProperties(Game.openFile(propertiesFileName));
+	props = new MyProperties(Tools.openFile(propertiesFileName));
     }
 
     private void initializeFromProperties() {
@@ -134,7 +134,7 @@ public class Formation extends AllocGuard {
     private void createLayout() {
 	assert !layoutFile.equals("") : "No layoutFile supplied in properties file "
 		+ propertiesFileName;
-	InputStream in = Game.openFile(layoutFile);
+	InputStream in = Tools.openFile(layoutFile);
 	try {
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String line;
@@ -148,7 +148,7 @@ public class Formation extends AllocGuard {
 	    }
 	    in.close();
 	} catch (Exception e) {
-	    Game.log("Exception reading layoutfile: " + e);
+	    Tools.log("Exception reading layoutfile: " + e);
 	    throw new AssertionError("Cannot read layoutFile at " + layoutFile
 		    + " " + e);
 	}

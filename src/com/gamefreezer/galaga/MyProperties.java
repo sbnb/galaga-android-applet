@@ -22,7 +22,7 @@ public class MyProperties {
     }
 
     public MyProperties(InputStream in) {
-	Game.log("MyProperties(): constructor.");
+	Tools.log("MyProperties(): constructor.");
 	readFromInputStream(in);
     }
 
