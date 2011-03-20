@@ -2,8 +2,8 @@ package com.gamefreezer.android.galaga;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.InputMessage;
+import com.gamefreezer.galaga.Tools;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 	try {
 	    super.onCreate(savedInstanceState);
-	    // Game.log("MainActivity(): constructor.");
+	    // Tools.log("MainActivity(): constructor.");
 	    int flags = WindowManager.LayoutParams.FLAG_FULLSCREEN
 		    | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 	    getWindow().addFlags(flags);
@@ -92,10 +92,10 @@ public class MainActivity extends Activity {
 			message.eventType = eventType;
 			mySurfaceView.feedInput(message);
 		    } catch (InterruptedException e) {
-			Game.log(e.toString());
+			Tools.log(e.toString());
 		    }
 		} else {
-		    Game.log("MainActivity.onTouchEvent(): "
+		    Tools.log("MainActivity.onTouchEvent(): "
 			    + "message pool exhausted!");
 		}
 	    }
@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
 	try {
 	    Thread.sleep(16);
 	} catch (InterruptedException e) {
-	    //NOP
+	    // NOP
 	}
 	return true;
     }

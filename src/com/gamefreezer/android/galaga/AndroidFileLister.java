@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.gamefreezer.galaga.AbstractFileLister;
-import com.gamefreezer.galaga.Game;
+import com.gamefreezer.galaga.Tools;
 
 public class AndroidFileLister extends AbstractFileLister {
 
@@ -22,7 +22,7 @@ public class AndroidFileLister extends AbstractFileLister {
 	try {
 	    files = assetManager.list(GameWrapper.DATA_DIR);
 	} catch (IOException e) {
-	    Game.log(e.getMessage());
+	    Tools.log(e.getMessage());
 	}
 	return files;
     }

@@ -12,6 +12,7 @@ import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.InputMessage;
 import com.gamefreezer.galaga.Screen;
+import com.gamefreezer.galaga.Tools;
 
 public class GameWrapper implements Runnable {
 
@@ -20,23 +21,13 @@ public class GameWrapper implements Runnable {
     private SurfaceHolder surfaceHolder;
     private boolean running;
 
-    private Constants cfg;
     private AndroidGraphics androidGraphics;
-    private AndroidLog log;
-    private AndroidBitmapReader bitmapReader;
-    private AndroidColor colorDecoder;
-    private AndroidFileOpener fileOpener;
-    private AndroidFileLister fileLister;
     private Game game;
 
     public GameWrapper(SurfaceView surfaceView, Context appContext) {
 	Log.i("GALAGA", "MyGameWrapper(): constructor.");
 	this.surfaceHolder = surfaceView.getHolder();
 	this.appContext = appContext;
-	fileOpener = new AndroidFileOpener(appContext);
-	log = new AndroidLog();
-	colorDecoder = new AndroidColor(Color.GREEN);
-	this.cfg = new Constants(fileOpener, log, colorDecoder);
 	initGame();
     }
 
@@ -68,20 +59,25 @@ public class GameWrapper implements Runnable {
 
     private void initGame() {
 	androidGraphics = new AndroidGraphics();
-	bitmapReader = new AndroidBitmapReader(appContext);
-	colorDecoder = new AndroidColor(Color.GREEN);
-	fileLister = new AndroidFileLister(appContext);
-	log.i("GALAGA", "Game.log(msg): now available");
+	AndroidLog log = new AndroidLog();
+	AndroidColor colorDecoder = new AndroidColor(Color.GREEN);
+	AndroidFileOpener fileOpener = new AndroidFileOpener(appContext);
+	AndroidBitmapReader bitmapReader = new AndroidBitmapReader(appContext);
+	AndroidFileLister fileLister = new AndroidFileLister(appContext);
+	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
+		fileOpener, fileLister);
+	Constants cfg = new Constants(fileOpener, log, colorDecoder);
 
-	log.i("GALAGA", "GameWrapper.initGame(): setting Screen.x dimensions");
+	Tools.log("Tools.log(msg): now available");
+
+	Tools.log("GameWrapper.initGame(): setting Screen.x dimensions");
 	Screen.x = 0;
 	Screen.y = 0;
 	Screen.w = MainActivity.metrics.widthPixels;
 	Screen.y = MainActivity.metrics.heightPixels;
 
-	log.i("GALAGA", "GameWrapper.initGame(): about to init Game()");
-	game = new Game(cfg, log, bitmapReader, colorDecoder, fileOpener,
-		fileLister);
+	Tools.log("GameWrapper.initGame(): about to init Game()");
+	game = new Game(cfg);
     }
 
     private Paint paint = new Paint();

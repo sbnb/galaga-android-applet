@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.gamefreezer.galaga.AbstractFileOpener;
-import com.gamefreezer.galaga.Game;
+import com.gamefreezer.galaga.Tools;
 
 public class AndroidFileOpener extends AbstractFileOpener {
 
@@ -23,7 +23,7 @@ public class AndroidFileOpener extends AbstractFileOpener {
 	try {
 	    inputStream = assetManager.open(GameWrapper.DATA_DIR + "/" + name);
 	} catch (IOException e) {
-	    Game.log(e.getMessage());
+	    Tools.log(e.getMessage());
 	}
 	return inputStream;
     }
