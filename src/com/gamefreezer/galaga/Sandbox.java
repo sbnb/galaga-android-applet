@@ -6,14 +6,15 @@ public class Sandbox extends AllocGuard {
     private SpriteCache spriteStore;
     private Alien alien;
     Location start;
+    @SuppressWarnings("unused")
     private Location target;
 
     public Sandbox(SpriteCache spriteStore, Constants cfg) {
 	super();
 	this.spriteStore = spriteStore;
 	this.cfg = cfg;
-	start = new Location(cfg.SCREEN.inGameLeft() + 20, cfg.SCREEN
-		.inGameTop() + 50);
+	start = new Location(cfg.SCREEN.inGameLeft(),
+		cfg.SCREEN.inGameTop() - 10);
 	target = new Location(200, 200);
 	alien = getAlien(start);
     }
@@ -23,8 +24,8 @@ public class Sandbox extends AllocGuard {
     }
 
     public void draw(AbstractGraphics graphics) {
-	alien.draw(graphics);
-	graphics.drawRect(target.getX(), target.getY(), 1, 1);
+	// alien.draw(graphics);
+	// graphics.drawRect(target.getX(), target.getY(), 1, 1);
     }
 
     public Alien getAlien(Location location) {

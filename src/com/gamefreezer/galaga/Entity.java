@@ -7,6 +7,10 @@ public class Entity extends AllocGuard {
     protected Speed maxSpeed = new Speed();
     protected int width = 0;
     protected int height = 0;
+    protected boolean stopIfPartiallyOffScreenLeftOrRight = true;
+    protected boolean stopIfPartiallyOffScreenTopOrBottom = true;
+    protected boolean killIfPartiallyOffScreen = true;
+    protected boolean killIfCompletelyOffScreen = true;
     protected boolean active = true;
     protected boolean exploding = false;
     protected boolean solo = false;
@@ -60,7 +64,8 @@ public class Entity extends AllocGuard {
 
     public void move(int timeDelta) {
 	movement.update(timeDelta);
-	adjustIfOffScreen();
+	adjustIfPartiallyOffScreen();
+	adjustIfCompletelyOffScreen();
 	killIfOffScreen();
     }
 
@@ -222,74 +227,88 @@ public class Entity extends AllocGuard {
 	this.points = points;
     }
 
-    protected boolean stopIfOffScreenLeftOrRight() {
-	return true;
+    private void adjustIfPartiallyOffScreen() {
+	adjustIfPartiallyOffScreenLeft();
+	adjustIfPartiallyOffScreenRight();
+	adjustIfPartiallyOffScreenTop();
+	adjustIfPartiallyOffScreenBottom();
     }
 
-    protected boolean stopIfOffScreenTopOrBottom() {
-	return true;
-    }
-
-    private void adjustIfOffScreen() {
-	adjustIfOffScreenLeft();
-	adjustIfOffScreenRight();
-	adjustIfOffScreenTop();
-	adjustIfOffScreenBottom();
-    }
-
-    private void adjustIfOffScreenLeft() {
-	if (offScreenLeft() && stopIfOffScreenLeftOrRight()) {
+    private void adjustIfPartiallyOffScreenLeft() {
+	if (stopIfPartiallyOffScreenLeftOrRight && partiallyOffScreenLeft()) {
 	    movement.getLocation().setX(screen.inGameLeft());
 	}
     }
 
-    private void adjustIfOffScreenRight() {
-	if (offScreenRight() && stopIfOffScreenLeftOrRight()) {
+    private void adjustIfPartiallyOffScreenRight() {
+	if (stopIfPartiallyOffScreenLeftOrRight && partiallyOffScreenRight()) {
 	    movement.getLocation().setX(screen.inGameRight() - width);
 	}
     }
 
-    private void adjustIfOffScreenTop() {
-	if (offScreenTop() && stopIfOffScreenTopOrBottom()) {
-	    System.out.println("Entity.adjustIfOffScreenTop() fired");
+    private void adjustIfPartiallyOffScreenTop() {
+	if (stopIfPartiallyOffScreenTopOrBottom && partiallyOffScreenTop()) {
 	    movement.getLocation().setY(screen.inGameTop());
 	}
     }
 
-    protected void adjustIfOffScreenBottom() {
-	if (offScreenBottom() && stopIfOffScreenTopOrBottom()) {
-	    System.out.println("Entity.adjustIfOffScreenBottom() fired");
+    protected void adjustIfPartiallyOffScreenBottom() {
+	if (stopIfPartiallyOffScreenTopOrBottom && partiallyOffScreenBottom()) {
 	    movement.getLocation().setY(screen.inGameBottom() - height);
 	}
     }
 
-    private boolean offScreen() {
-	return offScreenLeft() || offScreenRight() || offScreenTop()
-		|| offScreenBottom();
+    private boolean partiallyOffScreen() {
+	return partiallyOffScreenLeft() || partiallyOffScreenRight()
+		|| partiallyOffScreenTop() || partiallyOffScreenBottom();
     }
 
-    private boolean offScreenLeft() {
+    private boolean partiallyOffScreenLeft() {
 	return getX() < screen.inGameLeft();
     }
 
-    private boolean offScreenRight() {
+    private boolean partiallyOffScreenRight() {
 	return rightEdge() > screen.inGameRight();
     }
 
-    private boolean offScreenTop() {
+    private boolean partiallyOffScreenTop() {
 	return getY() < screen.inGameTop();
     }
 
-    private boolean offScreenBottom() {
+    private boolean partiallyOffScreenBottom() {
 	return getY() + height > screen.inGameBottom();
     }
 
-    protected boolean offScreenBottom(int offset) {
-	return getY() + height > screen.inGameBottom() + offset;
+    protected void adjustIfCompletelyOffScreen() {
+	// NOP - behaviour deferred to subclasses
+    }
+
+    private boolean completelyOffScreen() {
+	return completelyOffScreenLeft() || completelyOffScreenRight()
+		|| completelyOffScreenTop() || completelyOffScreenBottom();
+    }
+
+    private boolean completelyOffScreenLeft() {
+	return rightEdge() < screen.inGameLeft();
+    }
+
+    private boolean completelyOffScreenRight() {
+	return getX() > screen.inGameRight();
+    }
+
+    private boolean completelyOffScreenTop() {
+	return getY() + height < screen.inGameTop();
+    }
+
+    protected boolean completelyOffScreenBottom() {
+	return getY() > screen.inGameBottom();
     }
 
     protected void killIfOffScreen() {
-	if (offScreen()) {
+	if (killIfPartiallyOffScreen && partiallyOffScreen()) {
+	    this.kill();
+	}
+	if (killIfCompletelyOffScreen && completelyOffScreen()) {
 	    this.kill();
 	}
     }

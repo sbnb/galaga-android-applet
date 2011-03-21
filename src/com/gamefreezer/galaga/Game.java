@@ -118,8 +118,6 @@ public class Game extends AllocGuard {
     public void draw(AbstractGraphics graphics) {
 	startProfiler("Game.draw");
 	graphics.fillScreen();
-	borders.drawBorders(graphics);
-	buttons.draw(graphics);
 	if (state.current() != cfg.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
@@ -132,6 +130,7 @@ public class Game extends AllocGuard {
 	explosions.draw(graphics);
 	score.draw(graphics);
 	healthBar.draw(graphics);
+	sandbox.draw(graphics);
 	// text messages drawn last based on state
 	if (state.current() == cfg.READY_STATE) {
 	    // TODO better placement of imgs using relative values
@@ -152,6 +151,8 @@ public class Game extends AllocGuard {
 		    cfg.BONUS_DETAILS_X, cfg.BONUS_DETAILS_Y);
 	    score.drawBonuses(graphics);
 	}
+	borders.draw(graphics);
+	buttons.draw(graphics);
 	endProfiler("Game.draw");
     }
 

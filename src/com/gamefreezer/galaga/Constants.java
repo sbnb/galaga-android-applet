@@ -130,6 +130,7 @@ public class Constants {
 	INNER_VERT_BORDER_COLOR = PROPS.getColor("INNER_VERT_BORDER_COLOR");
 	OUTER_HORIZ_BORDER_COLOR = PROPS.getColor("OUTER_HORIZ_BORDER_COLOR");
 	INNER_HORIZ_BORDER_COLOR = PROPS.getColor("INNER_HORIZ_BORDER_COLOR");
+	BOTTOM_COLOR = PROPS.getColor("BOTTOM_COLOR");
 
 	// states
 	INTRO_STATE = 0;
@@ -275,7 +276,6 @@ public class Constants {
 
     // colors
     public final AbstractColor HEALTH_BAR_OUTLINE;
-
     public final AbstractColor HEALTH_BAR_HIGH;
     public final AbstractColor HEALTH_BAR_LOW;
     public final AbstractColor SCORE;
@@ -285,6 +285,7 @@ public class Constants {
     public final AbstractColor INNER_VERT_BORDER_COLOR;
     public final AbstractColor OUTER_HORIZ_BORDER_COLOR;
     public final AbstractColor INNER_HORIZ_BORDER_COLOR;
+    public final AbstractColor BOTTOM_COLOR;
 
     // states
     public final int INTRO_STATE;

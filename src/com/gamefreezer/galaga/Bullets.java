@@ -5,7 +5,6 @@ public class Bullets extends AllocGuard {
     private Bullet[] bulletsArray;
     private int bulletWidth;
 
-    // TODO: make bullet image an array and animated
     public Bullets(SpriteCache spriteStore, Screen screen,
 	    int numBulletsOnScreen, String[] bulletImages, int[] bulletTimes) {
 	super();

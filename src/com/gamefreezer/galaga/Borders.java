@@ -10,7 +10,7 @@ public class Borders {
 	this.screen = cfg.SCREEN;
     }
 
-    public void drawBorders(AbstractGraphics graphics) {
+    public void draw(AbstractGraphics graphics) {
 	// left and right outer vertical borders
 	graphics.setColor(cfg.OUTER_VERT_BORDER_COLOR);
 	graphics.fillRect(0, 0, screen.outerVerticalBorderWidth(), screen

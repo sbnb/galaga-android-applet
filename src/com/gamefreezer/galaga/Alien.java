@@ -11,17 +11,25 @@ public class Alien extends Entity {
     // reset.. methods in Formation handle the bulk of the Alien member settings
     public Alien(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
 	super(spriteStore, screen, targettingSpeed);
+	stopIfPartiallyOffScreenTopOrBottom = false;
+	stopIfPartiallyOffScreenLeftOrRight = true;
+	killIfPartiallyOffScreen = false;
+	killIfCompletelyOffScreen = false;
     }
 
     // called by Sandbox.getAlien only, a non essential utility constructor
-    // this is not chained, and shouldn't be, as it is a dev only convenience
-    public Alien(SpriteCache spriteStore, Screen screen, Location location,
+    public Alien(SpriteCache spriteStore, Screen screen,
+	    Location location,
+	    // this is not chained, and shouldn't be, as it is a dev only
+	    // convenience
 	    int dx, int dy, int baseDx, int baseDy, int points,
 	    String[] imgNames, int[] renderTimes) {
 
 	super(spriteStore, screen, location, dx, dy, imgNames, renderTimes);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
+	stopIfPartiallyOffScreenTopOrBottom = false;
+	killIfPartiallyOffScreen = false;
     }
 
     @Override
@@ -39,21 +47,11 @@ public class Alien extends Entity {
     }
 
     @Override
-    protected boolean stopIfOffScreenTopOrBottom() {
-	return false;
-    }
-
-    @Override
-    protected void adjustIfOffScreenBottom() {
-	if (offScreenBottom(screen.horizontalBorderWidths())) {
-	    movement.getLocation().setY(screen.inGameTop());
+    protected void adjustIfCompletelyOffScreen() {
+	if (completelyOffScreenBottom()) {
+	    movement.getLocation().setY(screen.inGameTop() - height);
 	    diveComplete = true;
 	}
-    }
-
-    @Override
-    protected void killIfOffScreen() {
-	// NOP - don't kill alien for going off screen
     }
 
     public void setRelativeToAnchor(Location anchor) {
