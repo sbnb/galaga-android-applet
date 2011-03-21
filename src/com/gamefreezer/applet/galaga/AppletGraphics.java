@@ -55,6 +55,5 @@ public class AppletGraphics extends AbstractGraphics {
 	graphics.setColor(Color.BLACK);
 	// TODO can reduce the blit to inGameWidth or drawableWidth etc
 	graphics.fillRect(0, 0, screen.width(), screen.height());
-
     }
 }

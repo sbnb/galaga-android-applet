@@ -175,7 +175,9 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	createOffScreenGraphicsContext();
 	appletGraphics.set(offScreen);
 	game.draw(appletGraphics);
-	// game.draw(offScreen);
+	// draw applet specific bottom cover
+	appletGraphics.setColor(cfg.BOTTOM_COLOR);
+	appletGraphics.fillRect(0, cfg.SCREEN.height(), cfg.SCREEN.width(), 20);
 	// copy the buffered image to screen
 	g.drawImage(offScreenImage, 0, 0, this);
     }
