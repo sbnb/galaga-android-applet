@@ -106,24 +106,7 @@ public class Constants {
     public final AbstractColor BUTTON_COLOR;
     public final AbstractColor INNER_BORDER_COLOR;
     public final AbstractColor OUTER_BORDER_COLOR;
-
     public final AbstractColor BOTTOM_COLOR;
-
-    // states
-    // TODO these should be in State class, and static
-    public final int INTRO_STATE;
-    public final int BETWEEN_LIVES_STATE;
-    public final int DEAD_STATE;
-    public final int GAME_OVER_STATE;
-    public final int PLAYING_STATE;
-    public final int FROZEN_STATE;
-    public final int LEVEL_CLEARED_STATE;
-    public final int BONUS_MESSAGE_STATE;
-    public final int READY_STATE;
-    public final int WAIT_CLEAR_STATE;
-    public final int BONUS_PAYOUT_STATE;
-
-    public final int BETWEEN_LIVES_STATE_TIMER;
 
     public Constants(AbstractFileOpener fileOpener, AbstractLog log,
 	    AbstractColor colorDecoder) {
@@ -229,27 +212,10 @@ public class Constants {
 	HEALTH_BAR_LOW = PROPS.getColor("HEALTH_BAR_LOW");
 	SCORE = PROPS.getColor("SCORE");
 	BACKGROUND = PROPS.getColor("BACKGROUND");
-
 	BUTTON_COLOR = PROPS.getColor("BUTTON_COLOR");
 	INNER_BORDER_COLOR = PROPS.getColor("INNER_BORDER_COLOR");
 	OUTER_BORDER_COLOR = PROPS.getColor("OUTER_BORDER_COLOR");
-
 	BOTTOM_COLOR = PROPS.getColor("BOTTOM_COLOR");
-
-	// states
-	INTRO_STATE = 0;
-	BETWEEN_LIVES_STATE = 1;
-	DEAD_STATE = 2;
-	GAME_OVER_STATE = 3;
-	PLAYING_STATE = 4;
-	FROZEN_STATE = 5;
-	LEVEL_CLEARED_STATE = 6;
-	BONUS_MESSAGE_STATE = 7;
-	READY_STATE = 8;
-	WAIT_CLEAR_STATE = 9;
-	BONUS_PAYOUT_STATE = 10;
-
-	BETWEEN_LIVES_STATE_TIMER = 2000;
 
 	SCREEN = new Screen(this, OUTER_BORDER, INNER_BORDER);
     }

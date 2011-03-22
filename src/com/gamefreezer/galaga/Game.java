@@ -65,8 +65,8 @@ public class Game extends AllocGuard {
 	alienBullets = new Bullets(spriteCache, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
 		cfg.ALIEN_BULLET_TIMES);
-	state = new State(cfg, aliens, formations, score, playerBullets,
-		alienBullets, shipExplosion, countDown, textFx);
+	state = new State(cfg.LEVEL_DELAY, aliens, formations, score,
+		playerBullets, alienBullets, shipExplosion, countDown, textFx);
 
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
@@ -92,7 +92,7 @@ public class Game extends AllocGuard {
 	state.update();
 	processInput();
 
-	if (state.current() == cfg.PLAYING_STATE) {
+	if (state.current() == State.PLAYING_STATE) {
 	    updatePausablePhysics(timeDelta);
 	    updateUnpausablePhysics(timeDelta);
 	    collisionDetector.checkCollisions(aliens, ship, score,
@@ -102,7 +102,8 @@ public class Game extends AllocGuard {
 	    updateUnpausablePhysics(timeDelta);
 	}
 
-	if (state.current() == cfg.BONUS_PAYOUT_STATE && score.bonusRemaining()) {
+	if (state.current() == State.BONUS_PAYOUT_STATE
+		&& score.bonusRemaining()) {
 	    score.transferSomeBonus();
 	}
 
@@ -119,7 +120,7 @@ public class Game extends AllocGuard {
     public void draw(AbstractGraphics graphics) {
 	startProfiler("Game.draw");
 	graphics.fillScreen();
-	if (state.current() != cfg.BETWEEN_LIVES_STATE)
+	if (state.current() != State.BETWEEN_LIVES_STATE)
 	    ship.draw(graphics);
 	else {
 	    shipExplosion.draw(graphics, ship.getX(), ship.getY());
@@ -133,7 +134,7 @@ public class Game extends AllocGuard {
 	healthBar.draw(graphics);
 	sandbox.draw(graphics);
 	// text messages drawn last based on state
-	if (state.current() == cfg.READY_STATE) {
+	if (state.current() == State.READY_STATE) {
 	    // TODO better placement of imgs using relative values
 	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
 	    spriteCache.get(cfg.GET_READY_IMG).draw(graphics,
@@ -141,12 +142,12 @@ public class Game extends AllocGuard {
 	    // TODO magic numbers
 	    countDown.draw(graphics, 160, 270);
 	}
-	if (state.current() == cfg.LEVEL_CLEARED_STATE
-		|| state.current() == cfg.BONUS_MESSAGE_STATE) {
+	if (state.current() == State.LEVEL_CLEARED_STATE
+		|| state.current() == State.BONUS_MESSAGE_STATE) {
 	    textFx.draw(graphics, 28, 100);
 	}
-	if (state.current() == cfg.BONUS_MESSAGE_STATE
-		|| state.current() == cfg.BONUS_PAYOUT_STATE) {
+	if (state.current() == State.BONUS_MESSAGE_STATE
+		|| state.current() == State.BONUS_PAYOUT_STATE) {
 	    // TODO keep a copy of the Sprite (in Game, final)
 	    spriteCache.get(cfg.BONUS_DETAILS_IMG).draw(graphics,
 		    cfg.BONUS_DETAILS_TOPLEFT);
@@ -184,7 +185,7 @@ public class Game extends AllocGuard {
     }
 
     private void updateUnpausablePhysics(int timeDelta) {
-	if (state.current() != cfg.BETWEEN_LIVES_STATE)
+	if (state.current() != State.BETWEEN_LIVES_STATE)
 	    ship.move(timeDelta);
 	playerBullets.move(timeDelta);
 	alienBullets.move(timeDelta);

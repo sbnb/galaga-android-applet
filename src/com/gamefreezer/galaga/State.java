@@ -4,7 +4,18 @@ import java.util.List;
 
 public class State {
 
-    private Constants cfg;
+    public static int INTRO_STATE = 0;
+    public static int BETWEEN_LIVES_STATE = 1;
+    public static int DEAD_STATE = 2;
+    public static int GAME_OVER_STATE = 3;
+    public static int PLAYING_STATE = 4;
+    public static int FROZEN_STATE = 5;
+    public static int LEVEL_CLEARED_STATE = 6;
+    public static int BONUS_MESSAGE_STATE = 7;
+    public static int READY_STATE = 8;
+    public static int WAIT_CLEAR_STATE = 9;
+    public static int BONUS_PAYOUT_STATE = 10;
+
     private int state;
     private long stateTimer;
     private Score score;
@@ -17,11 +28,10 @@ public class State {
     private List<Formation> formations;
     private int formationsIndex = 0;
 
-    public State(Constants cfg, Aliens aliens, List<Formation> formations,
+    public State(int levelDelay, Aliens aliens, List<Formation> formations,
 	    Score score, Bullets playerBullets, Bullets alienBullets,
 	    AnimationFrames shipExplosion, AnimationFrames countDown,
 	    AnimationFrames textFx) {
-	this.cfg = cfg;
 	this.aliens = aliens;
 	this.formations = formations;
 	this.score = score;
@@ -31,13 +41,12 @@ public class State {
 	this.countDown = countDown;
 	this.textFx = textFx;
 	enforcePreconditions();
-	state = cfg.READY_STATE;
-	setStateTimer(cfg.LEVEL_DELAY);
+	state = READY_STATE;
+	setStateTimer(levelDelay);
 	changeFormation();
     }
 
     private void enforcePreconditions() {
-	assert cfg != null : "cfg is null!";
 	assert aliens != null : "aliens is null!";
 	assert formations != null : "formations is null!";
 	assert score != null : "score is null!";
@@ -54,20 +63,20 @@ public class State {
 
     public void update() {
 	// BETWEEN_LIVES_STATE
-	if (state == cfg.PLAYING_STATE && score.getHealth() == 0) {
-	    state = cfg.BETWEEN_LIVES_STATE;
+	if (state == PLAYING_STATE && score.getHealth() == 0) {
+	    state = BETWEEN_LIVES_STATE;
 	    playerBullets.killOnscreenBullets();
 	    alienBullets.killOnscreenBullets();
 	    shipExplosion.reset();
-	    setStateTimer(cfg.BETWEEN_LIVES_STATE_TIMER);
+	    setStateTimer(2000);
 	    Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
 	    // TODO aliens should move in BETWEEN_LIVES_STATE, but no shoot or
 	    // collisions
 	}
 
 	// READY_STATE
-	if (state == cfg.BETWEEN_LIVES_STATE && timeUpInState()) {
-	    state = cfg.READY_STATE;
+	if (state == BETWEEN_LIVES_STATE && timeUpInState()) {
+	    state = READY_STATE;
 	    countDown.reset();
 	    score.restoreHealth();
 	    aliens.resetLivingAliens();
@@ -75,24 +84,25 @@ public class State {
 	}
 
 	// WAIT_CLEAR_STATE
-	if (state == cfg.PLAYING_STATE && aliens.levelCleared()) {
-	    state = cfg.WAIT_CLEAR_STATE;
+	if (state == PLAYING_STATE && aliens.levelCleared()) {
+	    state = WAIT_CLEAR_STATE;
 	    setStateTimer(500);
 	    // or wait for bullets
 	    Tools.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
 	}
 
 	// LEVEL_CLEARED_STATE
-	if (state == cfg.WAIT_CLEAR_STATE && timeUpInState()) {
-	    state = cfg.LEVEL_CLEARED_STATE;
+	if (state == WAIT_CLEAR_STATE && timeUpInState()) {
+	    state = LEVEL_CLEARED_STATE;
 	    textFx.reset();
+	    // TODO between state times are magic numbers
 	    setStateTimer(1000);
 	    Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
 	}
 
 	// BONUS_MESSAGE_STATE
-	if (state == cfg.LEVEL_CLEARED_STATE && timeUpInState()) {
-	    state = cfg.BONUS_MESSAGE_STATE;
+	if (state == LEVEL_CLEARED_STATE && timeUpInState()) {
+	    state = BONUS_MESSAGE_STATE;
 	    // score.addLevelBonus();
 	    // score.clearLevelScore();
 	    score.calculateBonus();
@@ -101,16 +111,16 @@ public class State {
 	}
 
 	// BONUS_PAYOUT_STATE
-	if (state == cfg.BONUS_MESSAGE_STATE && timeUpInState()) {
-	    state = cfg.BONUS_PAYOUT_STATE;
+	if (state == BONUS_MESSAGE_STATE && timeUpInState()) {
+	    state = BONUS_PAYOUT_STATE;
 	    setStateTimer(3000);
 	    Tools.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
 	}
 
 	// READY_STATE
-	if (state == cfg.BONUS_PAYOUT_STATE && !score.bonusRemaining()
+	if (state == BONUS_PAYOUT_STATE && !score.bonusRemaining()
 		&& timeUpInState()) {
-	    state = cfg.READY_STATE;
+	    state = READY_STATE;
 	    score.clearLevelScore();
 	    countDown.reset();
 	    changeFormation();
@@ -118,8 +128,8 @@ public class State {
 	}
 
 	// PLAYING_STATE
-	if (state == cfg.READY_STATE && countDown.finished()) {
-	    state = cfg.PLAYING_STATE;
+	if (state == READY_STATE && countDown.finished()) {
+	    state = PLAYING_STATE;
 	    Tools.log("READY_STATE ==> PLAYING_STATE");
 	}
 
