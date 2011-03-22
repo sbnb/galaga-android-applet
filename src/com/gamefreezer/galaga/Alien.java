@@ -6,6 +6,7 @@ public class Alien extends Entity {
     public Alien prev;
     public float relAnchorX;
     public float relAnchorY;
+    private boolean solo = false;
 
     // main constructor called in Aliens()
     // reset.. methods in Formation handle the bulk of the Alien member settings
@@ -29,7 +30,9 @@ public class Alien extends Entity {
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
 	stopIfPartiallyOffScreenTopOrBottom = false;
+	stopIfPartiallyOffScreenLeftOrRight = true;
 	killIfPartiallyOffScreen = false;
+	killIfCompletelyOffScreen = false;
     }
 
     @Override
@@ -37,9 +40,16 @@ public class Alien extends Entity {
 	active = false;
     }
 
-    @Override
     public void setSolo(boolean solo) {
 	this.solo = solo;
+    }
+
+    public boolean isSolo() {
+	return solo;
+    }
+
+    public boolean inFormation() {
+	return active && !solo;
     }
 
     public void flip() {

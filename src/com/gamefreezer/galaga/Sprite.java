@@ -20,6 +20,10 @@ public class Sprite extends AllocGuard {
 	return true;
     }
 
+    public boolean draw(AbstractGraphics graphics, CartesianInt point) {
+	return draw(graphics, point.x, point.y);
+    }
+
     private AbstractBitmap image;
 
 }

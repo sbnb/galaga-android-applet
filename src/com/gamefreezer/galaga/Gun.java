@@ -2,14 +2,19 @@ package com.gamefreezer.galaga;
 
 public class Gun extends AllocGuard {
 
-    private long lastFiredTime = 0;
-    private int minTimeBetweenBullets;
+    private long nextFireTime;
     private final int bulletMovement;
+    private IntRange bulletInterval;
 
-    public Gun(int minTimeBetweenBullets, int bulletMovement) {
+    public Gun(IntRange bulletInterval, int bulletMovement) {
 	super();
-	this.minTimeBetweenBullets = minTimeBetweenBullets;
+	this.bulletInterval = bulletInterval;
 	this.bulletMovement = bulletMovement;
+    }
+
+    public Gun(int fixedBulletInterval, int bulletMovement) {
+	this(new IntRange(fixedBulletInterval, fixedBulletInterval),
+		bulletMovement);
     }
 
     public boolean shoot(Bullets bullets, Location startLocation) {
@@ -17,22 +22,17 @@ public class Gun extends AllocGuard {
 	if (ready()) {
 	    created = bullets.addNewBullet(startLocation, bulletMovement);
 	    if (created) {
-		recordFireTime();
+		calculateNextAllowableFireTime();
 	    }
 	}
 	return created;
     }
 
     public boolean ready() {
-	return (System.currentTimeMillis() - lastFiredTime > minTimeBetweenBullets);
+	return System.currentTimeMillis() > nextFireTime;
     }
 
-    // this is for aliens to randomize the time between bullets
-    public void setMinTimeBetweenBullets(int newTime) {
-	minTimeBetweenBullets = newTime;
-    }
-
-    private void recordFireTime() {
-	lastFiredTime = System.currentTimeMillis();
+    private void calculateNextAllowableFireTime() {
+	nextFireTime = System.currentTimeMillis() + bulletInterval.random();
     }
 }

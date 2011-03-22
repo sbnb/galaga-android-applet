@@ -13,7 +13,6 @@ public class Entity extends AllocGuard {
     protected boolean killIfCompletelyOffScreen = true;
     protected boolean active = true;
     protected boolean exploding = false;
-    protected boolean solo = false;
     protected boolean diveComplete = false;
     protected AnimationFrames animation;
     protected int points = 0;
@@ -130,14 +129,6 @@ public class Entity extends AllocGuard {
 	return maxSpeed;
     }
 
-    public void setSolo(boolean solo) {
-	this.solo = solo;
-    }
-
-    public boolean isSolo() {
-	return solo;
-    }
-
     public void setDiveComplete(boolean diveComplete) {
 	this.diveComplete = diveComplete;
     }
@@ -205,10 +196,6 @@ public class Entity extends AllocGuard {
 
     public void setExploding(boolean exploding) {
 	this.exploding = exploding;
-    }
-
-    public boolean inFormation() {
-	return active && !solo;
     }
 
     public void kill() {
@@ -331,7 +318,6 @@ public class Entity extends AllocGuard {
     @Override
     public String toString() {
 	return this.getClass().getSimpleName() + " [w: " + width + " h: "
-		+ height + " active: " + active + " solo: " + solo + " ] "
-		+ movement;
+		+ height + " active: " + active + " ] " + movement;
     }
 }

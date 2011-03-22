@@ -2,15 +2,14 @@ package com.gamefreezer.galaga;
 
 public class Screen {
 
-    public static int x;
-    public static int y;
-    public static int w;
-    public static int h;
-
     private Constants cfg;
+    public final Border outerBorder;
+    public final Border innerBorder;
 
-    public Screen(Constants cfg) {
+    public Screen(Constants cfg, Border outerBorder, Border innerBorder) {
 	this.cfg = cfg;
+	this.outerBorder = outerBorder;
+	this.innerBorder = innerBorder;
     }
 
     /* Absolute screen width in pixels. */
@@ -20,12 +19,12 @@ public class Screen {
 
     /* Width excluding outer vertical borders. */
     public int drawableWidth() {
-	return width() - outerVerticalBorderWidth() * 2;
+	return width() - (outerBorder.left + outerBorder.right);
     }
 
     /* Width excluding inner and outer vertical borders, where entities roam */
     public int inGameWidth() {
-	return width() - verticalBorderWidths() * 2;
+	return drawableWidth() - (innerBorder.left + innerBorder.right);
     }
 
     /* Absolute screen height in pixels. */
@@ -35,32 +34,32 @@ public class Screen {
 
     /* Width excluding outer vertical borders. */
     public int drawableHeight() {
-	return height() - outerHorizontalBorderWidth() * 2;
+	return height() - (outerBorder.top + outerBorder.bottom);
     }
 
     /* Height excluding inner and outer horizontal borders, where entities roam */
     public int inGameHeight() {
-	return height() - horizontalBorderWidths() * 2;
+	return drawableHeight() - (innerBorder.top + innerBorder.bottom);
     }
 
     /* first y pixel from top of screen in game */
     public int inGameTop() {
-	return horizontalBorderWidths();
+	return outerBorder.top + innerBorder.top;
     }
 
     /* first y pixel from bottom of screen in game */
     public int inGameBottom() {
-	return horizontalBorderWidths() + inGameHeight();
+	return inGameTop() + inGameHeight();
     }
 
     /* first x pixel from left of screen in game */
     public int inGameLeft() {
-	return verticalBorderWidths();
+	return outerBorder.left + innerBorder.left;
     }
 
     /* first x pixel from right of screen in game */
     public int inGameRight() {
-	return verticalBorderWidths() + inGameWidth();
+	return inGameLeft() + inGameWidth();
     }
 
     /* x pixel in middle of screen */
@@ -71,31 +70,5 @@ public class Screen {
     /* y pixel in middle of screen */
     public int middleY() {
 	return height() / 2;
-    }
-
-    /* Combined inner and outer vertical border widths (one side) */
-    public int verticalBorderWidths() {
-	return cfg.OUTER_VERTICAL_BORDER + cfg.INNER_VERTICAL_BORDER;
-    }
-
-    public int outerVerticalBorderWidth() {
-	return cfg.OUTER_VERTICAL_BORDER;
-    }
-
-    public int innerVerticalBorderWidth() {
-	return cfg.INNER_VERTICAL_BORDER;
-    }
-
-    /* Combined inner and outer horizontal widths (top or bottom) */
-    public int horizontalBorderWidths() {
-	return cfg.OUTER_HORIZONTAL_BORDER + cfg.INNER_HORIZONTAL_BORDER;
-    }
-
-    public int outerHorizontalBorderWidth() {
-	return cfg.OUTER_HORIZONTAL_BORDER;
-    }
-
-    public int innerHorizontalBorderWidth() {
-	return cfg.INNER_HORIZONTAL_BORDER;
     }
 }

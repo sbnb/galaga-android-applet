@@ -35,7 +35,7 @@ public class Game extends AllocGuard {
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
 	    InputMessage.INPUT_QUEUE_SIZE);
     private Buttons buttons;
-    private Borders borders;
+    private BorderRenderer borderRenderer;
     private Object inputQueueMutex = new Object();
 
     public Game(Constants cfg) {
@@ -57,8 +57,8 @@ public class Game extends AllocGuard {
 	killPoints = new KillPoints(spriteCache, cfg);
 
 	formations = FormationsFactory.createFormations(spriteCache, cfg);
-	final Speed targettingSpeed = new Speed(cfg.RETURN_SPEED_X,
-		cfg.RETURN_SPEED_Y);
+	final Speed targettingSpeed = new Speed(cfg.SOLO_RETURN_SPEED.x,
+		cfg.SOLO_RETURN_SPEED.y);
 	aliens = new Aliens(spriteCache, cfg, targettingSpeed);
 	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
 		cfg.BULLET_IMAGES, cfg.BULLET_TIMES);
@@ -78,7 +78,8 @@ public class Game extends AllocGuard {
 
 	preloadImages();
 	buttons = new Buttons(cfg);
-	borders = new Borders(cfg);
+	borderRenderer = new BorderRenderer(screen, cfg.OUTER_BORDER_COLOR,
+		cfg.INNER_BORDER_COLOR);
 
 	AllocGuard.guardOn = true;
 	Tools.log("SpriteStore.size(): " + spriteCache.size());
@@ -135,8 +136,8 @@ public class Game extends AllocGuard {
 	if (state.current() == cfg.READY_STATE) {
 	    // TODO better placement of imgs using relative values
 	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
-	    spriteCache.get(cfg.GET_READY).draw(graphics, cfg.GET_READY_X,
-		    cfg.GET_READY_Y);
+	    spriteCache.get(cfg.GET_READY_IMG).draw(graphics,
+		    cfg.GET_READY_TOPLEFT);
 	    // TODO magic numbers
 	    countDown.draw(graphics, 160, 270);
 	}
@@ -147,11 +148,11 @@ public class Game extends AllocGuard {
 	if (state.current() == cfg.BONUS_MESSAGE_STATE
 		|| state.current() == cfg.BONUS_PAYOUT_STATE) {
 	    // TODO keep a copy of the Sprite (in Game, final)
-	    spriteCache.get(cfg.BONUS_DETAILS).draw(graphics,
-		    cfg.BONUS_DETAILS_X, cfg.BONUS_DETAILS_Y);
+	    spriteCache.get(cfg.BONUS_DETAILS_IMG).draw(graphics,
+		    cfg.BONUS_DETAILS_TOPLEFT);
 	    score.drawBonuses(graphics);
 	}
-	borders.draw(graphics);
+	borderRenderer.draw(graphics);
 	buttons.draw(graphics);
 	endProfiler("Game.draw");
     }
@@ -261,10 +262,10 @@ public class Game extends AllocGuard {
 	spriteCache.get(cfg.NUM_7);
 	spriteCache.get(cfg.NUM_8);
 	spriteCache.get(cfg.NUM_9);
-	spriteCache.get(cfg.GET_READY);
+	spriteCache.get(cfg.GET_READY_IMG);
 	textFx.reset(cfg.LEVEL_COMPLETE_IMGS, cfg.LEVEL_COMPLETE_TIMES, true);
 	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, true);
-	spriteCache.get(cfg.BONUS_DETAILS);
+	spriteCache.get(cfg.BONUS_DETAILS_IMG);
 	killPoints.preload();
     }
 }

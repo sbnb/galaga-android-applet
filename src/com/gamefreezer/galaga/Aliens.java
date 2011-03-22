@@ -37,9 +37,9 @@ public class Aliens extends AllocGuard {
 	speed = new Speed();
 	moveDist = new Location();
 	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
-	gun = new Gun(cfg.MIN_TIME_BETWEEN_ALIEN_BULLETS,
-		cfg.ALIEN_BULLET_MOVEMENT);
-	freeMovingAliens = new SoloAliens(cfg);
+	gun = new Gun(cfg.ALIEN_FIRE_RATE, cfg.ALIEN_BULLET_MOVEMENT);
+	freeMovingAliens = new SoloAliens(cfg.SOLO_SPEED_RANGE,
+		cfg.SOLO_RELEASE_RANGE, cfg.LEVEL_DELAY);
 
 	aliens = new Alien[cfg.MAX_FORMATION];
 	for (int i = 0; i < cfg.MAX_FORMATION; i++) {
@@ -105,9 +105,6 @@ public class Aliens extends AllocGuard {
     public void shoot(Bullets bullets) {
 	if (gun.ready()) {
 	    gun.shoot(bullets, getShooterLocation());
-	    gun.setMinTimeBetweenBullets(Util.getRandom(
-		    cfg.MIN_TIME_BETWEEN_ALIEN_BULLETS,
-		    cfg.MAX_TIME_BETWEEN_ALIEN_BULLETS));
 	}
     }
 
@@ -198,8 +195,14 @@ public class Aliens extends AllocGuard {
 		if (!aliens[i].isSolo()) {
 		    // in formation aliens
 		    checkNotGoingOffscreen(aliens[i]);
-		    aliens[i].moveBy(moveDist);
-		    inFormation++;
+		    if (aliens[i].getY() < cfg.STAY_SOLO) {
+			aliens[i].moveBy(moveDist);
+			inFormation++;
+		    } else {
+			// break into solo mode as so low on screen
+			freeMovingAliens.realeaseAnAlien(aliens[i], Util
+				.getRandom(0, 1) == 1 ? RIGHT : LEFT);
+		    }
 		} else {
 		    // solo aliens
 		    offset.setX(anchor.getXAsFloat() + aliens[i].relAnchorX);

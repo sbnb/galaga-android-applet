@@ -2,16 +2,19 @@ package com.gamefreezer.galaga;
 
 public class SoloAliens extends AllocGuard {
 
-    private Constants cfg;
     private long nextFreeMovingAlienReleaseTime;
     private boolean freeMovingAllowed = true;
     private int lastDirection = 1;
+    private final CartesianIntRange speedRange;
+    private final IntRange releaseRange;
 
-    public SoloAliens(Constants cfg) {
+    public SoloAliens(CartesianIntRange speedRange, IntRange releaseRange,
+	    int levelDelay) {
 	super();
-	this.cfg = cfg;
+	this.speedRange = speedRange;
+	this.releaseRange = releaseRange;
 	nextFreeMovingAlienReleaseTime = System.currentTimeMillis()
-		+ cfg.LEVEL_DELAY + cfg.MAX_TIME_BETWEEN_RELEASES;
+		+ levelDelay + releaseRange.max;
     }
 
     public void setFreeMovingallowed(boolean freeMovingAllowed) {
@@ -19,9 +22,9 @@ public class SoloAliens extends AllocGuard {
     }
 
     public void realeaseAnAlien(Alien alien, int theLastDirection) {
+
 	nextFreeMovingAlienReleaseTime = System.currentTimeMillis()
-		+ Util.getRandom(cfg.MIN_TIME_BETWEEN_RELEASES,
-			cfg.MAX_TIME_BETWEEN_RELEASES);
+		+ releaseRange.random();
 	if (!freeMovingAllowed || alien == null) {
 	    return;
 	}
@@ -36,13 +39,10 @@ public class SoloAliens extends AllocGuard {
     }
 
     private int randomYSpeedComponent() {
-	return Util.getRandom(cfg.FREE_ALIEN_Y_SPEED_MIN,
-		cfg.FREE_ALIEN_Y_SPEED_MAX);
+	return speedRange.y.random();
     }
 
     private int randomXSpeedComponent() {
-	return Util.getRandom(cfg.FREE_ALIEN_X_SPEED_MIN,
-		cfg.FREE_ALIEN_X_SPEED_MAX)
-		* lastDirection;
+	return speedRange.x.random() * lastDirection;
     }
 }
