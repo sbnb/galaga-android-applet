@@ -39,7 +39,7 @@ public class Controller extends AllocGuard {
 
     private boolean readyForTarget(Alien alien, Location target) {
 	return alien.diveComplete && !alien.targetting()
-		&& target.getYAsFloat() > staySolo;
+		&& target.getYAsFloat() < staySolo;
     }
 
     private boolean atRightEdge(Alien alien) {
