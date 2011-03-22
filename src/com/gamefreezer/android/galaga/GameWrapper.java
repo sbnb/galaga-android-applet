@@ -11,7 +11,6 @@ import android.view.SurfaceView;
 import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.InputMessage;
-import com.gamefreezer.galaga.Screen;
 import com.gamefreezer.galaga.Tools;
 
 public class GameWrapper implements Runnable {
@@ -69,13 +68,6 @@ public class GameWrapper implements Runnable {
 	Constants cfg = new Constants(fileOpener, log, colorDecoder);
 
 	Tools.log("Tools.log(msg): now available");
-
-	Tools.log("GameWrapper.initGame(): setting Screen.x dimensions");
-	Screen.x = 0;
-	Screen.y = 0;
-	Screen.w = MainActivity.metrics.widthPixels;
-	Screen.y = MainActivity.metrics.heightPixels;
-
 	Tools.log("GameWrapper.initGame(): about to init Game()");
 	game = new Game(cfg);
     }
