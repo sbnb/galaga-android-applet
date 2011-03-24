@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import com.gamefreezer.utilities.Profiler;
+import com.gamefreezer.galaga.State.States;
 
 public class Game extends AllocGuard {
 
@@ -65,7 +66,7 @@ public class Game extends AllocGuard {
 	alienBullets = new Bullets(spriteCache, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
 		cfg.ALIEN_BULLET_TIMES);
-	state = new State(cfg.LEVEL_DELAY, aliens, formations, score,
+	state = new State(cfg.STATE_TIMES, aliens, formations, score,
 		playerBullets, alienBullets, shipExplosion, countDown, textFx);
 
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
@@ -172,6 +173,11 @@ public class Game extends AllocGuard {
 	}
     }
 
+    public boolean withinAreaOfInterest(float x, float y) {
+	return withinLeftButton(x, y) || withinRightButton(x, y)
+		|| withinFireButton(x, y);
+    }
+
     public boolean withinLeftButton(float x, float y) {
 	return buttons.withinLeftButton(x, y);
     }
@@ -224,6 +230,8 @@ public class Game extends AllocGuard {
 		    } else if (input.eventType == InputMessage.LEFT_OFF) {
 			ship.standingStill();
 		    } else if (input.eventType == InputMessage.RIGHT_OFF) {
+			ship.standingStill();
+		    } else if (input.eventType == InputMessage.LEFT_RIGHT_OFF) {
 			ship.standingStill();
 		    } else if (input.eventType == InputMessage.SHOOT_OFF) {
 			ship.fireModeOff();

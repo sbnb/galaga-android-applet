@@ -3,7 +3,12 @@ package com.gamefreezer.galaga;
 import java.util.List;
 
 public class State {
+    public enum States {
+	INTRO, BETWEEN_LIVES, DEAD, GAME_OVER, PLAYING, FROZEN, //
+	LEVEL_CLEARED, BONUS_MESSAGE, READY, WAIT_CLEAR, BONUS_PAYOUT
+    }
 
+    // TODO make this an enum
     public static int INTRO_STATE = 0;
     public static int BETWEEN_LIVES_STATE = 1;
     public static int DEAD_STATE = 2;
@@ -27,11 +32,13 @@ public class State {
     private Aliens aliens;
     private List<Formation> formations;
     private int formationsIndex = 0;
+    private StateTimes stateTimes;
 
-    public State(int levelDelay, Aliens aliens, List<Formation> formations,
-	    Score score, Bullets playerBullets, Bullets alienBullets,
-	    AnimationFrames shipExplosion, AnimationFrames countDown,
-	    AnimationFrames textFx) {
+    public State(StateTimes stateTimes, Aliens aliens,
+	    List<Formation> formations, Score score, Bullets playerBullets,
+	    Bullets alienBullets, AnimationFrames shipExplosion,
+	    AnimationFrames countDown, AnimationFrames textFx) {
+	this.stateTimes = stateTimes;
 	this.aliens = aliens;
 	this.formations = formations;
 	this.score = score;
@@ -42,7 +49,7 @@ public class State {
 	this.textFx = textFx;
 	enforcePreconditions();
 	state = READY_STATE;
-	setStateTimer(levelDelay);
+	setStateTimer(stateTimes.LEVEL_DELAY);
 	changeFormation();
     }
 
@@ -68,7 +75,7 @@ public class State {
 	    playerBullets.killOnscreenBullets();
 	    alienBullets.killOnscreenBullets();
 	    shipExplosion.reset();
-	    setStateTimer(2000);
+	    setStateTimer(stateTimes.BETWEEN_LIVES);
 	    Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
 	    // TODO aliens should move in BETWEEN_LIVES_STATE, but no shoot or
 	    // collisions
@@ -86,7 +93,7 @@ public class State {
 	// WAIT_CLEAR_STATE
 	if (state == PLAYING_STATE && aliens.levelCleared()) {
 	    state = WAIT_CLEAR_STATE;
-	    setStateTimer(500);
+	    setStateTimer(stateTimes.WAIT_CLEAR);
 	    // or wait for bullets
 	    Tools.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
 	}
@@ -96,7 +103,7 @@ public class State {
 	    state = LEVEL_CLEARED_STATE;
 	    textFx.reset();
 	    // TODO between state times are magic numbers
-	    setStateTimer(1000);
+	    setStateTimer(stateTimes.LEVEL_CLEARED);
 	    Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
 	}
 
@@ -106,14 +113,14 @@ public class State {
 	    // score.addLevelBonus();
 	    // score.clearLevelScore();
 	    score.calculateBonus();
-	    setStateTimer(3000);
+	    setStateTimer(stateTimes.BONUS_MESSAGE);
 	    Tools.log("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
 	}
 
 	// BONUS_PAYOUT_STATE
 	if (state == BONUS_MESSAGE_STATE && timeUpInState()) {
 	    state = BONUS_PAYOUT_STATE;
-	    setStateTimer(3000);
+	    setStateTimer(stateTimes.BONUS_PAYOUT);
 	    Tools.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
 	}
 

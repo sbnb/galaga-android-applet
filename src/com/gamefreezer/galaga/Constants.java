@@ -7,8 +7,7 @@ public class Constants {
     public final MyProperties PROPS;
     // DELAY is the tick time of the game
     public final int DELAY;
-    // LEVEL_DELAY is the pause between levels
-    public final int LEVEL_DELAY;
+
     // new screen settings
     public final int SCREEN_WIDTH;
     public final int SCREEN_HEIGHT;
@@ -108,13 +107,14 @@ public class Constants {
     public final AbstractColor OUTER_BORDER_COLOR;
     public final AbstractColor BOTTOM_COLOR;
 
+    public final StateTimes STATE_TIMES;
+
     public Constants(AbstractFileOpener fileOpener, AbstractLog log,
 	    AbstractColor colorDecoder) {
 	CONFIG_FILE = "config.properties";
 	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), log,
 		colorDecoder);
 	DELAY = PROPS.getInt("DELAY");
-	LEVEL_DELAY = PROPS.getInt("LEVEL_DELAY");
 
 	SCREEN_WIDTH = PROPS.getInt("SCREEN_WIDTH");
 	SCREEN_HEIGHT = PROPS.getInt("SCREEN_HEIGHT");
@@ -216,6 +216,11 @@ public class Constants {
 	INNER_BORDER_COLOR = PROPS.getColor("INNER_BORDER_COLOR");
 	OUTER_BORDER_COLOR = PROPS.getColor("OUTER_BORDER_COLOR");
 	BOTTOM_COLOR = PROPS.getColor("BOTTOM_COLOR");
+
+	STATE_TIMES = new StateTimes(PROPS.getInt("LEVEL_DELAY"), PROPS
+		.getInt("BETWEEN_LIVES"), PROPS.getInt("WAIT_CLEAR"), PROPS
+		.getInt("LEVEL_CLEARED"), PROPS.getInt("BONUS_MESSAGE"), PROPS
+		.getInt("BONUS_PAYOUT"));
 
 	SCREEN = new Screen(this, OUTER_BORDER, INNER_BORDER);
     }

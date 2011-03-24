@@ -39,7 +39,7 @@ public class Aliens extends AllocGuard {
 	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
 	gun = new Gun(cfg.ALIEN_FIRE_RATE, cfg.ALIEN_BULLET_MOVEMENT);
 	freeMovingAliens = new SoloAliens(cfg.SOLO_SPEED_RANGE,
-		cfg.SOLO_RELEASE_RANGE, cfg.LEVEL_DELAY);
+		cfg.SOLO_RELEASE_RANGE, cfg.STATE_TIMES.LEVEL_DELAY);
 
 	aliens = new Alien[cfg.MAX_FORMATION];
 	for (int i = 0; i < cfg.MAX_FORMATION; i++) {

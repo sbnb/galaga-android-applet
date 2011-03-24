@@ -14,6 +14,7 @@ public class InputMessage {
     public static final int RIGHT_OFF = 3;
     public static final int SHOOT_ON = 4;
     public static final int SHOOT_OFF = 5;
+    public static final int LEFT_RIGHT_OFF = 6;
 
     public int eventType;
     private ArrayBlockingQueue<InputMessage> pool;
