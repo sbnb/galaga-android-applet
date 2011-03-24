@@ -1,12 +1,12 @@
 package com.gamefreezer.android.galaga;
 
-import com.gamefreezer.galaga.InputMessage;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.gamefreezer.galaga.Game;
 
 public class MySurfaceView extends SurfaceView implements
 	SurfaceHolder.Callback {
@@ -48,25 +48,7 @@ public class MySurfaceView extends SurfaceView implements
 	}
     }
 
-    public void feedInput(InputMessage message) {
-	gameWrapper.feedInput(message);
-
-    }
-
-    public boolean withinAreaOfInterest(float x, float y) {
-	return withinLeftButton(x, y) || withinRightButton(x, y)
-		|| withinFireButton(x, y);
-    }
-
-    public boolean withinLeftButton(float x, float y) {
-	return gameWrapper.withinLeftButton(x, y);
-    }
-
-    public boolean withinRightButton(float x, float y) {
-	return gameWrapper.withinRightButton(x, y);
-    }
-
-    public boolean withinFireButton(float x, float y) {
-	return gameWrapper.withinFireButton(x, y);
+    public Game getGame() {
+	return gameWrapper.getGame();
     }
 }

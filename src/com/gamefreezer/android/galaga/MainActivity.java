@@ -1,12 +1,13 @@
 package com.gamefreezer.android.galaga;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
-import com.gamefreezer.galaga.InputMessage;
-import com.gamefreezer.galaga.Tools;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -15,17 +16,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SensorEventListener {
 
-    private MySurfaceView mySurfaceView;
-    private static final int INPUT_QUEUE_SIZE = 30;
-    private ArrayBlockingQueue<InputMessage> inputMessagePool;
     public static DisplayMetrics metrics;
+    private MySurfaceView mySurfaceView;
+    private InputHandler inputHandler;
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private Sensor orientation;
+    private final String tag = "GALAGA";
 
     public MainActivity() {
 	super();
 	Log.i("GALAGA", "MainActivity(): constructor.");
-	createInputObjectPool();
     }
 
     /** Called when the activity is first created. */
@@ -42,70 +45,59 @@ public class MainActivity extends Activity {
 
 	    metrics = new DisplayMetrics();
 	    getWindowManager().getDefaultDisplay().getMetrics(metrics);
-	    Log.i("GALAGA", "metrics.width: " + metrics.widthPixels
+	    Log.i(tag, "metrics.width: " + metrics.widthPixels
 		    + " metrics.height: " + metrics.heightPixels);
 
 	    mySurfaceView = new MySurfaceView(this);
 	    setContentView(mySurfaceView);
-	    createInputObjectPool();
+	    inputHandler = new InputHandler(mySurfaceView.getGame());
+
+	    sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+	    List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+	    for (Sensor sensor : sensors) {
+		Log.d(tag, "name: " + sensor.getName() + " type: "
+			+ sensor.getType());
+	    }
+
+	    accelerometer = sensorManager
+		    .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	    orientation = sensorManager
+		    .getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
 	} catch (Exception e) {
-	    Log.e("GALAGA", "We have an exception: " + e);
+	    Log.e(tag, "We have an exception: " + e);
 	    String msg = e.getClass().getName() + " " + e.getMessage();
 	    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG)
 		    .show();
 	}
     }
 
-    private void createInputObjectPool() {
-	inputMessagePool = new ArrayBlockingQueue<InputMessage>(
-		INPUT_QUEUE_SIZE);
-	for (int i = 0; i < INPUT_QUEUE_SIZE; i++) {
-	    inputMessagePool.add(new InputMessage(inputMessagePool));
-	}
+    @Override
+    protected void onResume() {
+	super.onResume();
+	sensorManager.registerListener(this, accelerometer,
+		SensorManager.SENSOR_DELAY_GAME);
+	sensorManager.registerListener(this, orientation,
+		SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    protected void onStop() {
+	sensorManager.unregisterListener(this);
+	super.onStop();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-	// determine if is a touch down event
-	if (event.getAction() == MotionEvent.ACTION_DOWN
-		|| event.getAction() == MotionEvent.ACTION_UP) {
-	    float x = event.getX();
-	    float y = event.getY();
-	    int eventType = -1;
-	    if (mySurfaceView.withinAreaOfInterest(x, y)) {
-		if (mySurfaceView.withinLeftButton(x, y)) {
-		    eventType = event.getAction() == MotionEvent.ACTION_DOWN ? InputMessage.LEFT_ON
-			    : InputMessage.LEFT_OFF;
-		} else if (mySurfaceView.withinRightButton(x, y)) {
-		    eventType = event.getAction() == MotionEvent.ACTION_DOWN ? InputMessage.RIGHT_ON
-			    : InputMessage.RIGHT_OFF;
-		} else if (mySurfaceView.withinFireButton(x, y)) {
-		    eventType = event.getAction() == MotionEvent.ACTION_DOWN ? InputMessage.SHOOT_ON
-			    : InputMessage.SHOOT_OFF;
-		}
-
-		// get a message from the pool
-		if (!inputMessagePool.isEmpty()) {
-		    try {
-			InputMessage message = inputMessagePool.take();
-			message.eventType = eventType;
-			mySurfaceView.feedInput(message);
-		    } catch (InterruptedException e) {
-			Tools.log(e.toString());
-		    }
-		} else {
-		    Tools.log("MainActivity.onTouchEvent(): "
-			    + "message pool exhausted!");
-		}
-	    }
-	}
-	// don't allow more than 60 motion events per second
-	try {
-	    Thread.sleep(16);
-	} catch (InterruptedException e) {
-	    // NOP
-	}
-	return true;
+	return inputHandler.handleTouchEvent(event);
     }
+
+    public void onSensorChanged(SensorEvent event) {
+	inputHandler.handleTiltEvent(event);
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
 }

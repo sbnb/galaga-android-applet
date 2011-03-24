@@ -10,7 +10,6 @@ import android.view.SurfaceView;
 
 import com.gamefreezer.galaga.Constants;
 import com.gamefreezer.galaga.Game;
-import com.gamefreezer.galaga.InputMessage;
 import com.gamefreezer.galaga.Tools;
 
 public class GameWrapper implements Runnable {
@@ -83,21 +82,8 @@ public class GameWrapper implements Runnable {
 	canvas.drawCircle(0, MainActivity.metrics.heightPixels, 5, paint);
     }
 
-    public boolean withinLeftButton(float x, float y) {
-	return game.withinLeftButton(x, y);
-    }
-
-    public boolean withinRightButton(float x, float y) {
-	return game.withinRightButton(x, y);
-    }
-
-    public boolean withinFireButton(float x, float y) {
-	return game.withinFireButton(x, y);
-    }
-
-    public void feedInput(InputMessage message) {
-	game.feedInput(message);
-
+    public Game getGame() {
+	return game;
     }
 
 }
