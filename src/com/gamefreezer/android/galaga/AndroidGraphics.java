@@ -9,6 +9,7 @@ import android.graphics.Paint.Style;
 import com.gamefreezer.galaga.AbstractGraphics;
 import com.gamefreezer.galaga.AbstractColor;
 import com.gamefreezer.galaga.AbstractBitmap;
+import com.gamefreezer.galaga.Rectangle;
 
 /*
  * Applet implementation of AbstractGraphics graphics -- 
@@ -43,14 +44,23 @@ public class AndroidGraphics extends AbstractGraphics {
     }
 
     @Override
+    public void drawRect(Rectangle rect) {
+	drawRect(rect.left, rect.top, rect.width(), rect.height());
+    }
+
+    @Override
     public void fillRect(int x, int y, int width, int height) {
 	paint.setStyle(Style.FILL);
 	canvas.drawRect(x, y, (x + width), (y + height), paint);
     }
 
     @Override
+    public void fillRect(Rectangle rect) {
+	fillRect(rect.left, rect.right, rect.width(), rect.height());
+    }
+
+    @Override
     public void fillScreen() {
 	canvas.drawColor(Color.BLACK);
     }
-
 }
