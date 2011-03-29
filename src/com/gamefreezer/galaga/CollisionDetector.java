@@ -58,18 +58,25 @@ public class CollisionDetector extends AllocGuard {
 	}
     }
 
-    private void checkBulletAgainstAllAliens(Entity bullet, Aliens aliens,
+    private void checkBulletAgainstAllAliens(Bullet bullet, Aliens aliens,
 	    Score score, KillPoints killPoints) {
 	Alien[] aliensArray = aliens.getArray();
 	for (int i = 0; i < aliens.size(); i++) {
 	    Alien alien = aliensArray[i];
 	    if (alien.isAlive() && bullet.intersects(alien)) {
-		alien.kill();
-		explosions.newExplosion(alien);
-		bullet.kill();
 		score.incrementHitsMade();
-		score.incrementScore(alien.points());
-		killPoints.add(alien);
+		bullet.kill();
+		alien.decrementHealth(bullet.damage());
+		// TODO visible effect of bullet strike
+
+		if (alien.health() <= 0) { // killed
+		    alien.setHealth(0);
+		    alien.kill();
+		    explosions.newExplosion(alien);
+		    score.incrementScore(alien.points());
+		    killPoints.add(alien);
+		}
+
 		break;
 	    }
 	}

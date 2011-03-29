@@ -2,19 +2,21 @@ package com.gamefreezer.galaga;
 
 public class Screen {
 
-    private Constants cfg;
     public final Border outerBorder;
     public final Border innerBorder;
+    private int width;
+    private int height;
 
-    public Screen(Constants cfg, Border outerBorder, Border innerBorder) {
-	this.cfg = cfg;
+    public Screen(int width, int height, Border outerBorder, Border innerBorder) {
+	this.width = width;
+	this.height = height;
 	this.outerBorder = outerBorder;
 	this.innerBorder = innerBorder;
     }
 
     /* Absolute screen width in pixels. */
     public int width() {
-	return cfg.SCREEN_WIDTH;
+	return width;
     }
 
     /* Width excluding outer vertical borders. */
@@ -29,7 +31,7 @@ public class Screen {
 
     /* Absolute screen height in pixels. */
     public int height() {
-	return cfg.SCREEN_HEIGHT;
+	return height;
     }
 
     /* Width excluding outer vertical borders. */

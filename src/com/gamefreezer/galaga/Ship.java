@@ -6,15 +6,16 @@ public class Ship extends Entity {
     private final Speed LEFT_SPEED;
     private final Speed NO_SPEED;
     private boolean fireMode;
-    private Gun gun;
+    private Gun[] guns;
+    private int currentGunIndex;
     Location gunLocation;
 
     public Ship(SpriteCache spriteStore, Screen screen, String[] imageNames,
-	    int[] imageTimes, Gun gun, Speed rightSpeed, Speed leftSpeed,
+	    int[] imageTimes, Gun[] guns, Speed rightSpeed, Speed leftSpeed,
 	    Speed noSpeed) {
 	super(spriteStore, screen, new Location(), 0, 0, imageNames, imageTimes);
 
-	assert gun != null : "gun is null!";
+	assert guns != null : "guns is null!";
 	assert rightSpeed != null : "rightSpeed is null!";
 	assert leftSpeed != null : "leftSpeed is null!";
 	assert noSpeed != null : "noSpeed is null!";
@@ -23,24 +24,40 @@ public class Ship extends Entity {
 	LEFT_SPEED = leftSpeed;
 	NO_SPEED = noSpeed;
 	fireMode = false;
-	this.gun = gun;
+	this.guns = guns;
 	this.moveTo(screen.middleX(), screen.inGameBottom() - height - 3);
 	gunLocation = new Location(movement.getLocation());
+	currentGunIndex = 0;
     }
 
     /* The start location for bullets fired by the ship. */
-    public Location getGunLocation(int bulletWidth) {
+    public Location getGunLocation() {
 	gunLocation.moveTo(this.getLocation());
-	gunLocation.moveBy(width / 2 - bulletWidth / 2, -5);
+	// TODO this is not right, bullets are variable width
+	gunLocation.moveBy(width / 2, 0);
+	Dimension bullet = guns[currentGunIndex].getBulletDimensions();
+	gunLocation.moveBy(-bullet.width / 2, -bullet.height);
 	return gunLocation;
     }
 
     public void shoot(Bullets bullets, Score score) {
-	boolean firedBullet = gun.shoot(bullets, getGunLocation(bullets
-		.bulletWidth()));
+	boolean firedBullet = guns[currentGunIndex].shoot(bullets,
+		getGunLocation());
 	if (firedBullet) {
 	    score.incremementShotsFired();
 	}
+    }
+
+    public void coolGuns(int timeDelta) {
+	for (Gun gun : guns) {
+	    gun.cool(timeDelta);
+	}
+    }
+
+    @Override
+    public void draw(AbstractGraphics graphics) {
+	super.draw(graphics);
+	guns[currentGunIndex].draw(graphics, this.getGunLocation());
     }
 
     public boolean triggerDown() {
@@ -65,5 +82,20 @@ public class Ship extends Entity {
 
     public void standingStill() {
 	setSpeed(NO_SPEED);
+    }
+
+    // TODO create message for cycling weapons up and down
+    public void cycleWeaponUp() {
+	currentGunIndex++;
+	if (currentGunIndex >= guns.length) {
+	    currentGunIndex = 0;
+	}
+    }
+
+    public void cycleWeaponDown() {
+	currentGunIndex--;
+	if (currentGunIndex < 0) {
+	    currentGunIndex = guns.length - 1;
+	}
     }
 }

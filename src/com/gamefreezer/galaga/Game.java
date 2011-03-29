@@ -8,15 +8,15 @@ import com.gamefreezer.utilities.Profiler;
 
 public class Game extends AllocGuard {
 
-    private static boolean PROFILING = true;
+    private static boolean PROFILING = false;
 
     // objects used in the game
     private SpriteCache spriteCache;
     private FiniteStateMachine fsm;
     private List<Formation> formations;
-    private Ship ship = null;
-    private Bullets playerBullets = null;
-    private Bullets alienBullets = null;
+    private Ship ship;
+    private Bullets playerBullets;
+    private Bullets alienBullets;
     private Aliens aliens;
     private CollisionDetector collisionDetector;
     private Sandbox sandbox;
@@ -24,14 +24,15 @@ public class Game extends AllocGuard {
     private HealthBar healthBar;
     private long cycles = 0; // elapsed cycles during game
     private long lastTime = 0;
-    private AnimationFrames textFx;
-    private AnimationFrames countDown;
-    private AnimationFrames shipExplosion;
+    private Animation textFx;
+    private Animation countDown;
+    private Animation shipExplosion;
     private Explosions explosions;
     private KillPoints killPoints;
 
     private Constants cfg;
     private Screen screen;
+    private int timeDelta;
 
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
 	    InputMessage.INPUT_QUEUE_SIZE);
@@ -46,15 +47,15 @@ public class Game extends AllocGuard {
 
 	this.cfg = cfg;
 	screen = cfg.SCREEN;
-	spriteCache = new SpriteCache(Tools.bitmapReader);
+	spriteCache = cfg.SPRITE_CACHE;
 	explosions = new Explosions(spriteCache, cfg);
 	collisionDetector = new CollisionDetector(cfg, explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
 	score = new Score(spriteCache, cfg);
 	healthBar = new HealthBar(cfg, score);
-	textFx = new AnimationFrames(spriteCache);
-	countDown = new AnimationFrames(spriteCache);
-	shipExplosion = new AnimationFrames(spriteCache);
+	textFx = new Animation(spriteCache);
+	countDown = new Animation(spriteCache);
+	shipExplosion = new Animation(spriteCache);
 	killPoints = new KillPoints(spriteCache, cfg);
 
 	formations = FormationsFactory.createFormations(spriteCache, cfg);
@@ -74,10 +75,9 @@ public class Game extends AllocGuard {
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
 	final Speed NO_SPEED = new Speed(0, 0);
 	// TODO different types of guns (an array of guns?)
-	final Gun gun = new Gun(cfg.MIN_TIME_BETWEEN_BULLETS,
-		cfg.BULLET_MOVEMENT);
+	// cfg.GUNS;
 	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGES, cfg.SHIP_TIMES,
-		gun, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
+		cfg.GUNS, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
 
 	preloadImages();
 	buttons = new Buttons(cfg);
@@ -91,18 +91,18 @@ public class Game extends AllocGuard {
     public void update() {
 	startProfiler("Game.update");
 
-	int timeDelta = getTimeDelta();
+	recordTimeDelta();
 	fsm.update();
 	processInput();
 
 	if (fsm.currentState() == State.PLAYING) {
-	    updatePausablePhysics(timeDelta);
-	    updateUnpausablePhysics(timeDelta);
+	    updateUnpausablePhysics();
+	    updatePausablePhysics();
 	    collisionDetector.checkCollisions(aliens, ship, score,
 		    playerBullets, alienBullets, killPoints);
 	    sandbox.update(timeDelta);
 	} else {
-	    updateUnpausablePhysics(timeDelta);
+	    updateUnpausablePhysics();
 	}
 
 	if (fsm.currentState() == State.BONUS_PAYOUT && score.bonusRemaining()) {
@@ -191,14 +191,15 @@ public class Game extends AllocGuard {
 	return buttons.withinFireButton(x, y);
     }
 
-    private void updateUnpausablePhysics(int timeDelta) {
+    private void updateUnpausablePhysics() {
 	if (fsm.currentState() != State.BETWEEN_LIVES)
 	    ship.move(timeDelta);
+	ship.coolGuns(timeDelta);
 	playerBullets.move(timeDelta);
 	alienBullets.move(timeDelta);
     }
 
-    private void updatePausablePhysics(int timeDelta) {
+    private void updatePausablePhysics() {
 	if (ship.triggerDown()) {
 	    ship.shoot(playerBullets, score);
 	}
@@ -236,6 +237,10 @@ public class Game extends AllocGuard {
 			ship.standingStill();
 		    } else if (input.eventType == InputMessage.SHOOT_OFF) {
 			ship.fireModeOff();
+		    } else if (input.eventType == InputMessage.WEAPONS_DOWN) {
+			ship.cycleWeaponDown();
+		    } else if (input.eventType == InputMessage.WEAPONS_UP) {
+			ship.cycleWeaponUp();
 		    }
 		    input.returnToPool();
 		} catch (InterruptedException e) {
@@ -245,21 +250,19 @@ public class Game extends AllocGuard {
 	}
     }
 
-    private int getTimeDelta() {
-	int tDelta;
+    private void recordTimeDelta() {
 	if (lastTime == 0) {
-	    tDelta = 0;
+	    timeDelta = 0;
 	} else {
-	    tDelta = (int) (System.currentTimeMillis() - lastTime);
+	    timeDelta = (int) (System.currentTimeMillis() - lastTime);
 	    // prevent big jumps in case of massive frame rate degradation
-	    tDelta = tDelta <= 100 ? tDelta : 100;
+	    timeDelta = timeDelta <= 100 ? timeDelta : 100;
 	}
 	lastTime = System.currentTimeMillis();
-	return tDelta;
     }
 
     private void preloadImages() {
-	AnimationFrames explosion = new AnimationFrames(spriteCache);
+	Animation explosion = new Animation(spriteCache);
 	explosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
 	shipExplosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
 	spriteCache.get(cfg.NUM_0);

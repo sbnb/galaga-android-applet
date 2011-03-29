@@ -13,9 +13,9 @@ public class FiniteStateMachine {
     private Score score;
     private Bullets playerBullets;
     private Bullets alienBullets;
-    private AnimationFrames shipExplosion;
-    private AnimationFrames countDown;
-    private AnimationFrames textFx;
+    private Animation shipExplosion;
+    private Animation countDown;
+    private Animation textFx;
     private Aliens aliens;
     private List<Formation> formations;
     private int formationsIndex = 0;
@@ -24,8 +24,8 @@ public class FiniteStateMachine {
 
     public FiniteStateMachine(StateTimes stateTimes, Aliens aliens,
 	    List<Formation> formations, Score score, Bullets playerBullets,
-	    Bullets alienBullets, AnimationFrames shipExplosion,
-	    AnimationFrames countDown, AnimationFrames textFx) {
+	    Bullets alienBullets, Animation shipExplosion,
+	    Animation countDown, Animation textFx) {
 	this.stateTimes = stateTimes;
 	this.aliens = aliens;
 	this.formations = formations;

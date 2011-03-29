@@ -2,12 +2,12 @@ package com.gamefreezer.galaga;
 
 public class Explosion {
 
-    private AnimationFrames animation;
+    private Animation animation;
     boolean isAvailable;
     private Entity entity;
 
     public Explosion(SpriteCache spriteCache, String[] images, int[] frameTimes) {
-	animation = new AnimationFrames(spriteCache, images, frameTimes, true);
+	animation = new Animation(spriteCache, images, frameTimes, true);
 	isAvailable = true;
     }
 

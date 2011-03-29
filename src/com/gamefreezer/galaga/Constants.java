@@ -5,6 +5,7 @@ import java.util.SortedMap;
 public class Constants {
     public final String CONFIG_FILE;
     public final MyProperties PROPS;
+    public final SpriteCache SPRITE_CACHE;
     // DELAY is the tick time of the game
     public final int DELAY;
 
@@ -89,6 +90,9 @@ public class Constants {
     public final String[] BULLET_IMAGES;
     public final int[] BULLET_TIMES;
 
+    public final String[] GUN_REFS;
+    public final Gun[] GUNS;
+
     // alien bullets
     public final int ALIEN_BULLET_MOVEMENT;
     public final int ALIEN_BULLETS_ON_SCREEN;
@@ -114,6 +118,7 @@ public class Constants {
 	CONFIG_FILE = "config.properties";
 	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), log,
 		colorDecoder);
+	SPRITE_CACHE = new SpriteCache(Tools.bitmapReader);
 	DELAY = PROPS.getInt("DELAY");
 
 	SCREEN_WIDTH = PROPS.getInt("SCREEN_WIDTH");
@@ -199,6 +204,35 @@ public class Constants {
 	BULLET_IMAGES = PROPS.getStringArray("BULLET_IMAGES");
 	BULLET_TIMES = PROPS.getIntArray("BULLET_TIMES");
 
+	// distinct guns
+	GUN_REFS = PROPS.getStringArray("GUN_REFS");
+	GUNS = new Gun[GUN_REFS.length];
+	for (int i = 0; i < GUNS.length; i++) {
+	    // TODO read displayBar details from file
+	    Rectangle displayBarRect = new Rectangle(60, 40, 100, 10);
+	    AbstractColor outlineColor = Tools.decodeColor("#AAAAAA");
+	    AbstractColor primaryFillColor = Tools.decodeColor("#6666FF");
+	    AbstractColor secondaryFillColor = Tools.decodeColor("#FF0000");
+	    StatusBar statusBar = new StatusBar(displayBarRect, 100.0f,
+		    outlineColor, primaryFillColor, secondaryFillColor);
+
+	    Animation bulletAnimation = new Animation(SPRITE_CACHE, //
+		    PROPS.getStringArray(GUN_REFS[i] + "_BULLET_IMAGES"), //
+		    PROPS.getIntArray(GUN_REFS[i] + "_BULLET_TIMES"), false);
+	    Animation firingAnimation = new Animation(SPRITE_CACHE, //
+		    PROPS.getStringArray(GUN_REFS[i] + "_FIRING_IMAGES"), //
+		    PROPS.getIntArray(GUN_REFS[i] + "_FIRING_TIMES"), true);
+
+	    GUNS[i] = new Gun( //
+		    PROPS.getInt(GUN_REFS[i] + "_BULLET_SPEED"), //
+		    PROPS.getInt(GUN_REFS[i] + "_RATE_OF_FIRE"), //
+		    PROPS.getInt(GUN_REFS[i] + "_DAMAGE"), //
+		    PROPS.getInt(GUN_REFS[i] + "_HEAT_INCREMENT"), //
+		    PROPS.getInt(GUN_REFS[i] + "_COOLING"), //
+		    bulletAnimation, firingAnimation, statusBar);
+
+	}
+
 	// alien bullets
 	ALIEN_BULLET_MOVEMENT = PROPS.getInt("ALIEN_BULLET_MOVEMENT");
 	ALIEN_BULLETS_ON_SCREEN = PROPS.getInt("ALIEN_BULLETS_ON_SCREEN");
@@ -222,6 +256,7 @@ public class Constants {
 		.getInt("LEVEL_CLEARED"), PROPS.getInt("BONUS_MESSAGE"), PROPS
 		.getInt("BONUS_PAYOUT"));
 
-	SCREEN = new Screen(this, OUTER_BORDER, INNER_BORDER);
+	SCREEN = new Screen(SCREEN_WIDTH, SCREEN_HEIGHT, OUTER_BORDER,
+		INNER_BORDER);
     }
 }

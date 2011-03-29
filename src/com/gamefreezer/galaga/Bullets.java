@@ -39,6 +39,18 @@ public class Bullets extends AllocGuard {
 	return false;
     }
 
+    /* Return true if new bullet added, false if not. */
+    public boolean addNewBullet(Location startPoint, int velocity,
+	    Animation animation, int damage) {
+	for (int i = 0; i < bulletsArray.length; i++) {
+	    if (!(bulletsArray[i].isAlive())) {
+		bulletsArray[i].reset(startPoint, velocity, animation, damage);
+		return true;
+	    }
+	}
+	return false;
+    }
+
     public void killOnscreenBullets() {
 	for (int i = 0; i < bulletsArray.length; i++) {
 	    bulletsArray[i].kill();
@@ -78,4 +90,5 @@ public class Bullets extends AllocGuard {
 	}
 	return buffer;
     }
+
 }

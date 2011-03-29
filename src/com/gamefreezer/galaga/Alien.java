@@ -7,6 +7,9 @@ public class Alien extends Entity {
     public float relAnchorX;
     public float relAnchorY;
     private boolean solo = false;
+    // TODO health should be read from config files, and may be different by
+    // type of alien
+    private int health = 100;
 
     // main constructor called in Aliens()
     // reset.. methods in Formation handle the bulk of the Alien member settings
@@ -38,6 +41,24 @@ public class Alien extends Entity {
     @Override
     public void kill() {
 	active = false;
+    }
+
+    @Override
+    public void regenerate() {
+	active = true;
+	health = 100;
+    }
+
+    public void setHealth(int health) {
+	this.health = health;
+    }
+
+    public void decrementHealth(int amount) {
+	this.health -= amount;
+    }
+
+    public int health() {
+	return health;
     }
 
     public void setSolo(boolean solo) {

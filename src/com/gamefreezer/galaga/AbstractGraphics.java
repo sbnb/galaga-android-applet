@@ -14,7 +14,11 @@ public abstract class AbstractGraphics {
 
     public abstract void drawRect(int x, int y, int width, int height);
 
+    public abstract void drawRect(Rectangle rect);
+
     public abstract void fillRect(int x, int y, int width, int height);
+
+    public abstract void fillRect(Rectangle rect);
 
     public abstract void fillScreen();
 }

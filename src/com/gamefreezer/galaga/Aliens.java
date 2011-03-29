@@ -25,7 +25,7 @@ public class Aliens extends AllocGuard {
     private float targetY;
     private Controller controller;
     private SoloAliens freeMovingAliens;
-    private Gun gun;
+    private OldGun gun;
     private Location anchor = new Location();
     private Constants cfg;
     private final Alien nullAlien;
@@ -37,7 +37,7 @@ public class Aliens extends AllocGuard {
 	speed = new Speed();
 	moveDist = new Location();
 	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
-	gun = new Gun(cfg.ALIEN_FIRE_RATE, cfg.ALIEN_BULLET_MOVEMENT);
+	gun = new OldGun(cfg.ALIEN_FIRE_RATE, cfg.ALIEN_BULLET_MOVEMENT);
 	freeMovingAliens = new SoloAliens(cfg.SOLO_SPEED_RANGE,
 		cfg.SOLO_RELEASE_RANGE, cfg.STATE_TIMES.LEVEL_DELAY);
 

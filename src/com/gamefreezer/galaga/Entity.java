@@ -14,7 +14,7 @@ public class Entity extends AllocGuard {
     protected boolean active = true;
     protected boolean exploding = false;
     protected boolean diveComplete = false;
-    protected AnimationFrames animation;
+    protected Animation animation;
     protected int points = 0;
     protected Screen screen;
 
@@ -32,6 +32,7 @@ public class Entity extends AllocGuard {
 		new Speed(0, 0));
     }
 
+    // TODO dependency injection of animation required
     public Entity(SpriteCache spriteStore, Screen screen, Location location,
 	    int width, int height, int horizontalMovement,
 	    int verticalMovement, String[] imageNames, int[] renderTimes,
@@ -45,7 +46,7 @@ public class Entity extends AllocGuard {
 	this.screen = screen;
 	this.width = width;
 	this.height = height;
-	animation = new AnimationFrames(spriteStore);
+	animation = new Animation(spriteStore);
 	movement = new Movement(location, new Speed(horizontalMovement,
 		verticalMovement), targettingSpeed);
 	this.active = true;

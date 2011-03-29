@@ -1,6 +1,6 @@
 package com.gamefreezer.galaga;
 
-public class AnimationFrames extends AllocGuard {
+public class Animation extends AllocGuard {
 
     private Sprite[] sprites;
     private int[] renderTimes;
@@ -10,12 +10,12 @@ public class AnimationFrames extends AllocGuard {
     private boolean finished = false;
     private SpriteCache spriteStore;
 
-    public AnimationFrames(SpriteCache spriteStore) {
+    public Animation(SpriteCache spriteStore) {
 	super();
 	this.spriteStore = spriteStore;
     }
 
-    public AnimationFrames(SpriteCache spriteCache, String[] images,
+    public Animation(SpriteCache spriteCache, String[] images,
 	    int[] frameTimes, boolean oneShot) {
 	this(spriteCache);
 	reset(images, frameTimes, oneShot);
@@ -67,6 +67,8 @@ public class AnimationFrames extends AllocGuard {
     }
 
     private void loadSprites(String[] imageNames) {
+	// TODO optimise new away in animations
+	// or do not call reset on an animation object?
 	sprites = new Sprite[imageNames.length];
 	for (int i = 0; i < imageNames.length; i++) {
 	    sprites[i] = spriteStore.get(imageNames[i]);
@@ -87,5 +89,9 @@ public class AnimationFrames extends AllocGuard {
 
     private long now() {
 	return System.currentTimeMillis();
+    }
+
+    public Dimension getDimensions() {
+	return sprites[0].getDimensions();
     }
 }
