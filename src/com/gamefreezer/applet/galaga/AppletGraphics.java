@@ -8,6 +8,7 @@ import com.gamefreezer.galaga.AbstractGraphics;
 import com.gamefreezer.galaga.AbstractColor;
 import com.gamefreezer.galaga.AbstractBitmap;
 import com.gamefreezer.galaga.Constants;
+import com.gamefreezer.galaga.Rectangle;
 import com.gamefreezer.galaga.Screen;
 
 /*
@@ -45,9 +46,18 @@ public class AppletGraphics extends AbstractGraphics {
     }
 
     @Override
+    public void drawRect(Rectangle rect) {
+	drawRect(rect.left, rect.top, rect.width(), rect.height());
+    }
+
+    @Override
     public void fillRect(int x, int y, int width, int height) {
 	graphics.fillRect(x, y, width, height);
+    }
 
+    @Override
+    public void fillRect(Rectangle rect) {
+	fillRect(rect.left, rect.top, rect.width(), rect.height());
     }
 
     @Override
@@ -56,4 +66,5 @@ public class AppletGraphics extends AbstractGraphics {
 	// TODO can reduce the blit to inGameWidth or drawableWidth etc
 	graphics.fillRect(0, 0, screen.width(), screen.height());
     }
+
 }

@@ -54,6 +54,8 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
     private static final int LEFT_ARROW = 37;
     private static final int RIGHT_ARROW = 39;
     private static final int SPACE_BAR = 32;
+    private static final int LETTER_C = 67;
+    private static final int LETTER_V = 86;
 
     @Override
     public void init() {
@@ -136,24 +138,45 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	    return;
 	}
 	try {
-	    InputMessage message = inputMessagePool.take();
+	    InputMessage message;
 	    switch (keyEvent.getKeyCode()) {
 	    case LEFT_ARROW:
+		message = inputMessagePool.take();
 		message.eventType = keyPressed ? InputMessage.LEFT_ON
 			: InputMessage.LEFT_OFF;
 		game.feedInput(message);
 		break;
 	    case RIGHT_ARROW:
+		message = inputMessagePool.take();
 		message.eventType = keyPressed ? InputMessage.RIGHT_ON
 			: InputMessage.RIGHT_OFF;
 		game.feedInput(message);
 		break;
 	    case SPACE_BAR:
+		message = inputMessagePool.take();
 		message.eventType = keyPressed ? InputMessage.SHOOT_ON
 			: InputMessage.SHOOT_OFF;
 		game.feedInput(message);
 		break;
+	    case LETTER_C:
+		if (keyPressed) {
+		    message = inputMessagePool.take();
+		    message.eventType = InputMessage.WEAPONS_DOWN;
+		    game.feedInput(message);
+		}
+		break;
+	    case LETTER_V:
+		if (keyPressed) {
+		    message = inputMessagePool.take();
+		    message.eventType = InputMessage.WEAPONS_UP;
+		    game.feedInput(message);
+		}
+		break;
+	    default:
+		// Tools.log("keyCode: " + keyEvent.getKeyCode());
+		break;
 	    }
+
 	} catch (InterruptedException e) {
 	    Tools.log(e.toString());
 	}
