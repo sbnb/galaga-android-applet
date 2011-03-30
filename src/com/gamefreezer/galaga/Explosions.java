@@ -15,8 +15,7 @@ public class Explosions {
     private void initExplosions() {
 	mExplosions = new Explosion[cfg.MAX_EXPLOSIONS];
 	for (int i = 0; i < mExplosions.length; i++) {
-	    mExplosions[i] = new Explosion(spriteCache, cfg.EXPL_IMGS,
-		    cfg.EXPL_TIMES);
+	    mExplosions[i] = new Explosion(spriteCache, cfg.EXPL_ANIM_SRC);
 	}
     }
 

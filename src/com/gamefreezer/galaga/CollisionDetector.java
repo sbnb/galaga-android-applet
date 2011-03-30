@@ -69,7 +69,7 @@ public class CollisionDetector extends AllocGuard {
 		alien.decrementHealth(bullet.damage());
 		// TODO visible effect of bullet strike
 
-		if (alien.health() <= 0) { // killed
+		if (alien.getHealth() <= 0) { // killed
 		    alien.setHealth(0);
 		    alien.kill();
 		    explosions.newExplosion(alien);

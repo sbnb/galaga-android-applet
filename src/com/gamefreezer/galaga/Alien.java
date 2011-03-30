@@ -27,9 +27,9 @@ public class Alien extends Entity {
 	    // this is not chained, and shouldn't be, as it is a dev only
 	    // convenience
 	    int dx, int dy, int baseDx, int baseDy, int points,
-	    String[] imgNames, int[] renderTimes) {
+	    AnimationSource animationSource) {
 
-	super(spriteStore, screen, location, dx, dy, imgNames, renderTimes);
+	super(spriteStore, screen, location, dx, dy, animationSource);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
 	stopIfPartiallyOffScreenTopOrBottom = false;
@@ -57,7 +57,7 @@ public class Alien extends Entity {
 	this.health -= amount;
     }
 
-    public int health() {
+    public int getHealth() {
 	return health;
     }
 

@@ -43,8 +43,8 @@ public class Movement extends AllocGuard {
     // !! changes the value of parameter speed
     public void adjustSpeed(Speed speed, Location src, int targetX, int targetY) {
 
-	int xDist = Math.abs(targetX - src.getX());
-	int yDist = Math.abs(targetY - src.getY());
+	final int xDist = Math.abs(targetX - src.getX());
+	final int yDist = Math.abs(targetY - src.getY());
 
 	// take min of x,y and max speeds dx, dy adjusted for timeDelta
 	int x = Math.min(xDist, targettingSpeed.getDx());
@@ -85,10 +85,6 @@ public class Movement extends AllocGuard {
 	target.moveTo(x, y);
     }
 
-    public void setTarget(float x, float y) {
-	target.moveTo(x, y);
-    }
-
     public void setTarget(Location location) {
 	target.moveTo(location);
     }
@@ -117,12 +113,12 @@ public class Movement extends AllocGuard {
 	location.moveTo(point);
     }
 
-    public void moveBy(float x, float y) {
-	location.moveBy(x, y);
+    public void moveBy(float xDelta, float yDelta) {
+	location.moveBy(xDelta, yDelta);
     }
 
-    public void moveBy(Location anAmount) {
-	location.moveBy(anAmount);
+    public void moveBy(Location delta) {
+	location.moveBy(delta);
     }
 
     public Speed getSpeed() {

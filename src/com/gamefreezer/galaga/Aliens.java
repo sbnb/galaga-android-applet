@@ -4,9 +4,9 @@ import java.util.SortedMap;
 
 public class Aliens extends AllocGuard {
 
-    private Alien[] aliens;
+    private final Alien[] aliensArray;
     private Formation formation;
-    private Speed speed;
+    private final Speed speed;
     private Location moveDist;
     private int currentMaxSpeed = 0;
     private float rightMost;
@@ -23,57 +23,61 @@ public class Aliens extends AllocGuard {
     private static final int RIGHT = 1;
     private static final int LEFT = -1;
     private float targetY;
-    private Controller controller;
-    private SoloAliens freeMovingAliens;
-    private OldGun gun;
+    private final SoloAliens soloAliens;
+    private final OldGun gun;
     private Location anchor = new Location();
-    private Constants cfg;
     private final Alien nullAlien;
+    private Screen screen;
 
-    public Aliens(SpriteCache spriteCache, Constants cfg, Speed targettingSpeed) {
+    public Aliens(SpriteCache spriteCache, Screen screen, OldGun gun,
+	    SoloAliens soloAliens, int maxFormation) {
 	super();
-	this.cfg = cfg;
-	nullAlien = new Alien(spriteCache, cfg.SCREEN, targettingSpeed);
+	this.screen = screen;
+
+	// TODO is this required? it is why the stray bullet appears left screen
+	// at end of level
+	nullAlien = new Alien(spriteCache, screen, soloAliens.soloReturnSpeed());
+
 	speed = new Speed();
 	moveDist = new Location();
-	controller = new Controller(cfg.SCREEN, cfg.STAY_SOLO);
-	gun = new OldGun(cfg.ALIEN_FIRE_RATE, cfg.ALIEN_BULLET_MOVEMENT);
-	freeMovingAliens = new SoloAliens(cfg.SOLO_SPEED_RANGE,
-		cfg.SOLO_RELEASE_RANGE, cfg.STATE_TIMES.LEVEL_DELAY);
 
-	aliens = new Alien[cfg.MAX_FORMATION];
-	for (int i = 0; i < cfg.MAX_FORMATION; i++) {
-	    aliens[i] = new Alien(spriteCache, cfg.SCREEN, targettingSpeed);
-	    aliens[i].kill();
+	this.gun = gun;
+	this.soloAliens = soloAliens;
+
+	aliensArray = new Alien[maxFormation];
+	for (int i = 0; i < maxFormation; i++) {
+	    aliensArray[i] = new Alien(spriteCache, screen, soloAliens
+		    .soloReturnSpeed());
+	    aliensArray[i].kill();
 	}
     }
 
     public void newLevel(Formation aFormation) {
 	this.formation = aFormation;
-	aFormation.createAliens(aliens);
+	aFormation.createAliens(aliensArray);
 	livingAliens = aFormation.size();
 	currentMaxSpeed = aFormation.getAlienSpeeds().get(100);
 	speed.reset(currentMaxSpeed, 0);
-	anchor.moveTo(aliens[0].getLocation());
+	anchor.moveTo(aliensArray[0].getLocation());
 	setRelativeToAnchor();
     }
 
     private void setRelativeToAnchor() {
 	for (int i = 0; i < formation.size(); i++) {
-	    aliens[i].setRelativeToAnchor(anchor);
+	    aliensArray[i].setRelativeToAnchor(anchor);
 	}
     }
 
     // Send existing aliens back to formation at top of screen
     public void resetLivingAliens() {
-	formation.resetLivingAliens(aliens);
+	formation.resetLivingAliens(aliensArray);
 	formation.setAnchor(anchor);
 	livingAliens = formation.size();
 	speed.reset(currentMaxSpeed, 0);
     }
 
     public Alien[] getArray() {
-	return aliens;
+	return aliensArray;
     }
 
     public int size() {
@@ -94,12 +98,12 @@ public class Aliens extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 	for (int i = 0; i < formation.size(); i++) {
-	    aliens[i].draw(graphics);
+	    aliensArray[i].draw(graphics);
 	}
     }
 
     public void setFreeMovingAllowed(boolean freeMovingAllowed) {
-	freeMovingAliens.setFreeMovingallowed(freeMovingAllowed);
+	soloAliens.setFreeMovingallowed(freeMovingAllowed);
     }
 
     public void shoot(Bullets bullets) {
@@ -111,8 +115,8 @@ public class Aliens extends AllocGuard {
     public void update(int delta) {
 	calculateLookups();
 	checkForSpeedIncreaseFromPercentageOfDeadAliens();
-	if (freeMovingAliens.timeForRelease()) {
-	    freeMovingAliens.realeaseAnAlien(getRandomInFormationAlien(),
+	if (soloAliens.timeForRelease()) {
+	    soloAliens.realeaseAnAlien(getRandomInFormationAlien(),
 		    movingLeft ? RIGHT : LEFT);
 	}
 	float dtw = distanceToWall();
@@ -141,37 +145,38 @@ public class Aliens extends AllocGuard {
     // save all expensive calculated variables in one pass through the array
     private void calculateLookups() {
 	rightMost = 0;
-	leftMost = cfg.SCREEN.inGameRight();
-	float lowest = cfg.SCREEN.inGameTop();
-	float highest = cfg.SCREEN.inGameBottom();
+	leftMost = screen.inGameRight();
+	float lowest = screen.inGameTop();
+	float highest = screen.inGameBottom();
 	livingAliens = 0;
 	inFormationAliens = 0;
 
 	for (int i = 0; i < formation.size(); i++) {
-	    if (aliens[i].isVisible()) {
-		leftMost = aliens[i].getLeftHomeSlot(anchor) < leftMost ? aliens[i]
+	    if (aliensArray[i].isVisible()) {
+		leftMost = aliensArray[i].getLeftHomeSlot(anchor) < leftMost ? aliensArray[i]
 			.getLeftHomeSlot(anchor)
 			: leftMost;
-		rightMost = aliens[i].getRightHomeSlot(anchor) > rightMost ? aliens[i]
+		rightMost = aliensArray[i].getRightHomeSlot(anchor) > rightMost ? aliensArray[i]
 			.getRightHomeSlot(anchor)
 			: rightMost;
-		lowest = aliens[i].getYHomeSlot(anchor) > lowest ? aliens[i]
-			.getYHomeSlot(anchor) : lowest;
+		lowest = aliensArray[i].getYHomeSlot(anchor) > lowest ? aliensArray[i]
+			.getYHomeSlot(anchor)
+			: lowest;
 		highest = (int) Math
-			.floor(aliens[i].getYHomeSlot(anchor) < highest ? aliens[i]
+			.floor(aliensArray[i].getYHomeSlot(anchor) < highest ? aliensArray[i]
 				.getYHomeSlot(anchor)
 				: highest);
 	    }
-	    if (aliens[i].isAlive()) {
+	    if (aliensArray[i].isAlive()) {
 		livingAliens++;
 	    }
-	    if (aliens[i].inFormation()) {
+	    if (aliensArray[i].inFormation()) {
 		inFormationAliens++;
 	    }
 	}
 
-	distRight = cfg.SCREEN.inGameRight() - rightMost - 2;
-	distLeft = leftMost - cfg.SCREEN.inGameLeft() - 2;
+	distRight = screen.inGameRight() - rightMost - 2;
+	distLeft = leftMost - screen.inGameLeft() - 2;
 	bottomMost = lowest;
 	movingLeft = speed.getDx() < 0;
 	movingRight = speed.getDx() > 0;
@@ -191,24 +196,26 @@ public class Aliens extends AllocGuard {
     private void updateEachAlien(int delta) {
 	int inFormation = 0;
 	for (int i = 0; i < formation.size(); i++) {
-	    if (aliens[i].isVisible()) {
-		if (!aliens[i].isSolo()) {
+	    if (aliensArray[i].isVisible()) {
+		if (!aliensArray[i].isSolo()) {
 		    // in formation aliens
-		    checkNotGoingOffscreen(aliens[i]);
-		    if (aliens[i].getY() < cfg.STAY_SOLO) {
-			aliens[i].moveBy(moveDist);
+		    checkNotGoingOffscreen(aliensArray[i]);
+		    if (aliensArray[i].getY() < soloAliens.staySolo()) {
+			aliensArray[i].moveBy(moveDist);
 			inFormation++;
 		    } else {
 			// break into solo mode as so low on screen
-			freeMovingAliens.realeaseAnAlien(aliens[i], Util
+			soloAliens.realeaseAnAlien(aliensArray[i], Util
 				.getRandom(0, 1) == 1 ? RIGHT : LEFT);
 		    }
 		} else {
 		    // solo aliens
-		    offset.setX(anchor.getXAsFloat() + aliens[i].relAnchorX);
-		    offset.setY(anchor.getYAsFloat() + aliens[i].relAnchorY);
+		    offset.setX(anchor.getXAsFloat()
+			    + aliensArray[i].relAnchorX);
+		    offset.setY(anchor.getYAsFloat()
+			    + aliensArray[i].relAnchorY);
 		    offset.moveBy(moveDist);
-		    controller.adjust(delta, aliens[i], offset);
+		    soloAliens.adjust(delta, aliensArray[i], offset);
 		}
 	    }
 	}
@@ -218,20 +225,13 @@ public class Aliens extends AllocGuard {
     private void checkNotGoingOffscreen(Alien alien) {
 	int x = alien.getX() + moveDist.getX();
 	int alienR = alien.rightEdge() + moveDist.getX();
-	assert x >= cfg.SCREEN.inGameLeft() : "off screen left: x: " + x
-		+ " s.l: " + cfg.SCREEN.inGameLeft() + "\n" + alien
-		+ "\nMoveDist: " + moveDist + "\ndistLeft: " + distLeft
-		+ "\nleftMost: " + leftMost + "\nrightMost: " + rightMost;
-	assert alienR <= cfg.SCREEN.inGameRight() : "off screen right: alienR: "
-		+ alienR
-		+ " s.r: "
-		+ cfg.SCREEN.inGameRight()
-		+ "\n"
-		+ alien
-		+ "\nMoveDist: "
-		+ moveDist
-		+ "\ndistRight: "
-		+ distRight
+	assert x >= screen.inGameLeft() : "off screen left: x: " + x + " s.l: "
+		+ screen.inGameLeft() + "\n" + alien + "\nMoveDist: "
+		+ moveDist + "\ndistLeft: " + distLeft + "\nleftMost: "
+		+ leftMost + "\nrightMost: " + rightMost;
+	assert alienR <= screen.inGameRight() : "off screen right: alienR: "
+		+ alienR + " s.r: " + screen.inGameRight() + "\n" + alien
+		+ "\nMoveDist: " + moveDist + "\ndistRight: " + distRight
 		+ "\nleftMost: " + leftMost + "\nrightMost: " + rightMost;
     }
 
@@ -284,39 +284,37 @@ public class Aliens extends AllocGuard {
     }
 
     private Alien getRandomLivingAlien() {
-	int count = this.livingAliens;
-	if (count == 0) {
-	    return null;
-	}
-	int r = Util.getRandom(0, count - 1);
-	int x = 0;
-	for (int i = 0; i < formation.size(); i++) {
-	    if (aliens[i].isAlive()) {
-		if (x == r) {
-		    return aliens[i];
-		}
-		x++;
-	    }
-	}
-	return nullAlien;
+	boolean mustBeInFormation = false;
+	boolean mustBeAlive = true;
+	return getRandomAlienWithConditions(nullAlien, livingAliens,
+		mustBeInFormation, mustBeAlive);
     }
 
     private Alien getRandomInFormationAlien() {
-	int count = inFormationAliens;
+	boolean mustBeInFormation = true;
+	boolean mustBeAlive = false;
+	return getRandomAlienWithConditions(null, inFormationAliens,
+		mustBeInFormation, mustBeAlive);
+    }
+
+    private Alien getRandomAlienWithConditions(Alien returnOnFail, int count,
+	    boolean mustBeInFormation, boolean mustBeAlive) {
 	if (count == 0) {
 	    return null;
 	}
 	int r = Util.getRandom(0, count - 1);
 	int x = 0;
+
 	for (int i = 0; i < formation.size(); i++) {
-	    if (aliens[i].inFormation()) {
+	    if ((mustBeInFormation && aliensArray[i].inFormation())
+		    || (mustBeAlive && aliensArray[i].isAlive())) {
 		if (x == r) {
-		    return aliens[i];
+		    return aliensArray[i];
 		}
 		x++;
 	    }
 	}
-	return null;
+	return returnOnFail;
     }
 
     private void checkForSpeedIncreaseFromPercentageOfDeadAliens() {
@@ -347,7 +345,7 @@ public class Aliens extends AllocGuard {
     private int livingAliens() {
 	int living = 0;
 	for (int i = 0; i < formation.size(); i++) {
-	    if (aliens[i].isAlive()) {
+	    if (aliensArray[i].isAlive()) {
 		living++;
 	    }
 	}
@@ -361,7 +359,7 @@ public class Aliens extends AllocGuard {
 		+ currentMaxSpeed + "]");
 	sb.append("\n");
 	for (int i = 0; i < formation.size(); i++) {
-	    sb.append(aliens[i].toString());
+	    sb.append(aliensArray[i].toString());
 	    sb.append("\n");
 	}
 	return sb.toString();

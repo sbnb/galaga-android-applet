@@ -1,6 +1,6 @@
 package com.gamefreezer.galaga;
 
-public class StateTimes {
+public class StateTimes extends AllocGuard {
     public final int BETWEEN_LIVES;
     public final int WAIT_CLEAR;
     public final int LEVEL_CLEARED;
@@ -10,6 +10,7 @@ public class StateTimes {
 
     public StateTimes(int levelDelay, int betweenLives, int waitClear,
 	    int levelCleared, int bonusMessage, int bonusPayout) {
+	super();
 	BETWEEN_LIVES = betweenLives;
 	WAIT_CLEAR = waitClear;
 	LEVEL_CLEARED = levelCleared;

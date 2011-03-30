@@ -123,7 +123,7 @@ public class FiniteStateMachine {
 	}
 
 	// PLAYING_STATE
-	if (currentState == State.READY && countDown.finished()) {
+	if (currentState == State.READY && countDown.isFinished()) {
 	    currentState = State.PLAYING;
 	    Tools.log("READY_STATE ==> PLAYING_STATE");
 	}

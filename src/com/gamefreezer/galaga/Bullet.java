@@ -5,11 +5,9 @@ public class Bullet extends Entity {
     private int damage = 0;
     private Animation hitAnimation;
 
-    // TODO imageName/bulletTimes should always be animationFrames type early
-    public Bullet(SpriteCache spriteStore, Screen screen, String[] imageNames,
-	    int[] bulletTimes) {
-	super(spriteStore, screen, new Location(0, 0), 0, 0, imageNames,
-		bulletTimes);
+    public Bullet(SpriteCache spriteStore, Screen screen,
+	    AnimationSource animationSource) {
+	super(spriteStore, screen, new Location(0, 0), 0, 0, animationSource);
 	stopIfPartiallyOffScreenTopOrBottom = false;
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = true;

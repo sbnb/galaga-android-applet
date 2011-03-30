@@ -7,14 +7,18 @@ public class SoloAliens extends AllocGuard {
     private int lastDirection = 1;
     private final CartesianIntRange speedRange;
     private final IntRange releaseRange;
+    private Speed soloReturnSpeed;
+    private final SoloController soloController;
 
     public SoloAliens(CartesianIntRange speedRange, IntRange releaseRange,
-	    int levelDelay) {
+	    int levelDelay, Speed soloReturnSpeed, SoloController soloController) {
 	super();
 	this.speedRange = speedRange;
 	this.releaseRange = releaseRange;
 	nextFreeMovingAlienReleaseTime = System.currentTimeMillis()
 		+ levelDelay + releaseRange.max;
+	this.soloReturnSpeed = soloReturnSpeed;
+	this.soloController = soloController;
     }
 
     public void setFreeMovingallowed(boolean freeMovingAllowed) {
@@ -36,6 +40,18 @@ public class SoloAliens extends AllocGuard {
 
     public boolean timeForRelease() {
 	return System.currentTimeMillis() > nextFreeMovingAlienReleaseTime;
+    }
+
+    public Speed soloReturnSpeed() {
+	return soloReturnSpeed;
+    }
+
+    public void adjust(int delta, Alien alien, Location target) {
+	soloController.adjust(delta, alien, target);
+    }
+
+    public int staySolo() {
+	return soloController.staySolo();
     }
 
     private int randomYSpeedComponent() {

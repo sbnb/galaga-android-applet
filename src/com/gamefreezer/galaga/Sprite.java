@@ -11,13 +11,16 @@ public class Sprite extends AllocGuard {
 	dimension = new Dimension(image.getWidth(), image.getHeight());
     }
 
-    public int getWidth() {
-	// TODO return dimension.width directly
-	return image.getWidth();
+    public Dimension getDimensions() {
+	return dimension;
     }
 
-    public int getHeight() {
-	return image.getHeight();
+    public int height() {
+	return dimension.height;
+    }
+
+    public int width() {
+	return dimension.width;
     }
 
     public boolean draw(AbstractGraphics graphics, int x, int y) {
@@ -27,9 +30,5 @@ public class Sprite extends AllocGuard {
 
     public boolean draw(AbstractGraphics graphics, CartesianInt point) {
 	return draw(graphics, point.x, point.y);
-    }
-
-    public Dimension getDimensions() {
-	return dimension;
     }
 }

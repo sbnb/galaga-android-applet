@@ -13,9 +13,8 @@ public class AllocGuard {
 
     public AllocGuard() {
 	if (guardOn) {
-	    System.out.println("Allocation warning: "
-		    + this.getClass().getName() + " [objects: " + objectCount
-		    + "]");
+	    Tools.log("Allocation warning: " + this.getClass().getName()
+		    + " [objects: " + objectCount + "]");
 	}
 	objectCount++;
     }

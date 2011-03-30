@@ -60,8 +60,10 @@ public class Gun extends AllocGuard {
     public void draw(AbstractGraphics graphics, Location location) {
 	// draw the gun itself perhaps
 	// draw firing animation if appropriate
-	if (!firingAnimation.finished()) {
-	    firingAnimation.draw(graphics, location.getX(), location.getY());
+	if (!firingAnimation.isFinished()) {
+	    // TODO flash should be moved up its own height
+	    firingAnimation.draw(graphics, location.getX(), location.getY()
+		    - firingAnimation.getDimensions().height);
 	}
 	statusBar.draw(graphics);
     }

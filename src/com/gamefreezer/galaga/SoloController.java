@@ -1,11 +1,11 @@
 package com.gamefreezer.galaga;
 
-public class Controller extends AllocGuard {
+public class SoloController extends AllocGuard {
 
     private Screen screen;
     private int staySolo;
 
-    public Controller(Screen screen, int staySolo) {
+    public SoloController(Screen screen, int staySolo) {
 	super();
 	this.screen = screen;
 	this.staySolo = staySolo;
@@ -30,6 +30,10 @@ public class Controller extends AllocGuard {
 	} else {
 	    alien.move(delta);
 	}
+    }
+
+    public int staySolo() {
+	return staySolo;
     }
 
     private boolean nearEnoughToTarget(Alien alien, Location target, int epsilon) {

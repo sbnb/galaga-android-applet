@@ -31,7 +31,6 @@ public class Game extends AllocGuard {
     private KillPoints killPoints;
 
     private Constants cfg;
-    private Screen screen;
     private int timeDelta;
 
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
@@ -46,7 +45,7 @@ public class Game extends AllocGuard {
 	Tools.log("Game(): constructor.");
 
 	this.cfg = cfg;
-	screen = cfg.SCREEN;
+	final Screen screen = cfg.SCREEN;
 	spriteCache = cfg.SPRITE_CACHE;
 	explosions = new Explosions(spriteCache, cfg);
 	collisionDetector = new CollisionDetector(cfg, explosions);
@@ -59,14 +58,26 @@ public class Game extends AllocGuard {
 	killPoints = new KillPoints(spriteCache, cfg);
 
 	formations = FormationsFactory.createFormations(spriteCache, cfg);
-	final Speed targettingSpeed = new Speed(cfg.SOLO_RETURN_SPEED.x,
+
+	final Speed soloReturnSpeed = new Speed(cfg.SOLO_RETURN_SPEED.x,
 		cfg.SOLO_RETURN_SPEED.y);
-	aliens = new Aliens(spriteCache, cfg, targettingSpeed);
+	final OldGun gun = new OldGun(cfg.ALIEN_FIRE_RATE,
+		cfg.ALIEN_BULLET_MOVEMENT);
+
+	final SoloController soloController = new SoloController(screen,
+		cfg.STAY_SOLO);
+	final SoloAliens soloAliens = new SoloAliens(cfg.SOLO_SPEED_RANGE,
+		cfg.SOLO_RELEASE_RANGE, cfg.STATE_TIMES.LEVEL_DELAY,
+		soloReturnSpeed, soloController);
+
+	aliens = new Aliens(spriteCache, screen, gun, soloAliens,
+		cfg.MAX_FORMATION);
+
 	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
-		cfg.BULLET_IMAGES, cfg.BULLET_TIMES);
+		new AnimationSource(cfg.BULLET_IMAGES, cfg.BULLET_TIMES));
 	alienBullets = new Bullets(spriteCache, screen,
-		cfg.ALIEN_BULLETS_ON_SCREEN, cfg.ALIEN_BULLET_IMAGES,
-		cfg.ALIEN_BULLET_TIMES);
+		cfg.ALIEN_BULLETS_ON_SCREEN, new AnimationSource(
+			cfg.ALIEN_BULLET_IMAGES, cfg.ALIEN_BULLET_TIMES));
 	fsm = new FiniteStateMachine(cfg.STATE_TIMES, aliens, formations,
 		score, playerBullets, alienBullets, shipExplosion, countDown,
 		textFx);
@@ -76,8 +87,9 @@ public class Game extends AllocGuard {
 	final Speed NO_SPEED = new Speed(0, 0);
 	// TODO different types of guns (an array of guns?)
 	// cfg.GUNS;
-	ship = new Ship(spriteCache, screen, cfg.SHIP_IMAGES, cfg.SHIP_TIMES,
-		cfg.GUNS, RIGHT_SPEED, LEFT_SPEED, NO_SPEED);
+	ship = new Ship(spriteCache, screen, new AnimationSource(
+		cfg.SHIP_IMAGES, cfg.SHIP_TIMES), cfg.GUNS, RIGHT_SPEED,
+		LEFT_SPEED, NO_SPEED);
 
 	preloadImages();
 	buttons = new Buttons(cfg);
@@ -122,15 +134,15 @@ public class Game extends AllocGuard {
     public void draw(AbstractGraphics graphics) {
 	startProfiler("Game.draw");
 	graphics.fillScreen();
+	killPoints.draw(graphics);
+	aliens.draw(graphics);
+	playerBullets.draw(graphics);
 	if (fsm.currentState() != State.BETWEEN_LIVES)
 	    ship.draw(graphics);
 	else {
 	    shipExplosion.draw(graphics, ship.getX(), ship.getY());
 	}
-	killPoints.draw(graphics);
-	playerBullets.draw(graphics);
 	alienBullets.draw(graphics);
-	aliens.draw(graphics);
 	explosions.draw(graphics);
 	score.draw(graphics);
 	healthBar.draw(graphics);
@@ -263,8 +275,8 @@ public class Game extends AllocGuard {
 
     private void preloadImages() {
 	Animation explosion = new Animation(spriteCache);
-	explosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
-	shipExplosion.reset(cfg.EXPL_IMGS, cfg.EXPL_TIMES, true);
+	explosion.reset(cfg.EXPL_ANIM_SRC, true);
+	shipExplosion.reset(cfg.EXPL_ANIM_SRC, true);
 	spriteCache.get(cfg.NUM_0);
 	spriteCache.get(cfg.NUM_1);
 	spriteCache.get(cfg.NUM_2);
@@ -276,8 +288,8 @@ public class Game extends AllocGuard {
 	spriteCache.get(cfg.NUM_8);
 	spriteCache.get(cfg.NUM_9);
 	spriteCache.get(cfg.GET_READY_IMG);
-	textFx.reset(cfg.LEVEL_COMPLETE_IMGS, cfg.LEVEL_COMPLETE_TIMES, true);
-	countDown.reset(cfg.COUNTDOWN_IMGS, cfg.COUNTDOWN_TIMES, true);
+	textFx.reset(cfg.LEVEL_COMPLETE_ANIM_SRC, true);
+	countDown.reset(cfg.COUNTDOWN_ANIM_SRC, true);
 	spriteCache.get(cfg.BONUS_DETAILS_IMG);
 	killPoints.preload();
     }

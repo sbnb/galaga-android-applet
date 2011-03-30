@@ -3,45 +3,43 @@ package com.gamefreezer.galaga;
 public class Animation extends AllocGuard {
 
     private Sprite[] sprites;
-    private int[] renderTimes;
-    private int index = 0;
-    private long framesFirstRenderTime = now();
+    private int[] frameTimes;
+    private int idx = 0;
+    private long frameStart = now();
     private boolean oneShot = false;
     private boolean finished = false;
     private SpriteCache spriteStore;
 
-    public Animation(SpriteCache spriteStore) {
+    public Animation(SpriteCache spriteCache) {
 	super();
-	this.spriteStore = spriteStore;
+	this.spriteStore = spriteCache;
     }
 
-    public Animation(SpriteCache spriteCache, String[] images,
-	    int[] frameTimes, boolean oneShot) {
+    public Animation(SpriteCache spriteCache, AnimationSource animationSource,
+	    boolean oneShot) {
 	this(spriteCache);
-	reset(images, frameTimes, oneShot);
+	reset(animationSource, oneShot);
     }
 
-    public void reset(String[] imageNames, int[] renderTimes) {
-	reset(imageNames, renderTimes, false);
-    }
-
-    public void reset(String[] imageNames, int[] renderTimes, boolean oneShot) {
-	loadSprites(imageNames);
-	this.renderTimes = renderTimes;
-
-	// Reset indexes on arrays and reset time
+    public void reset(AnimationSource animationSource, boolean oneShot) {
+	loadSprites(animationSource.names);
+	this.frameTimes = animationSource.times;
 	reset();
 	this.oneShot = oneShot;
     }
 
+    public void reset(AnimationSource animationSource) {
+	reset(animationSource, false);
+    }
+
     public void reset() {
 	// Reset indexes on arrays and reset time
-	index = 0;
-	framesFirstRenderTime = now();
+	idx = 0;
+	frameStart = now();
 	finished = false;
     }
 
-    public boolean finished() {
+    public boolean isFinished() {
 	return finished;
     }
 
@@ -50,19 +48,28 @@ public class Animation extends AllocGuard {
 	    return; // one shot animation over, don't draw anything
 	}
 
-	if (currentFrameTimeIsUp()) {
-	    framesFirstRenderTime = now();
-	    index++;
-	    if (index == sprites.length) {
-		index = 0;
-		if (oneShot) {
-		    finished = true;
-		}
-	    }
+	if (currentFrameFinished()) {
+	    changeFrames();
 	}
 
 	if (!finished) {
-	    sprites[index].draw(graphics, x, y);
+	    sprites[idx].draw(graphics, x, y);
+	}
+    }
+
+    private boolean currentFrameFinished() {
+	if (frameTimes == null || frameTimes.length <= 1) {
+	    return false; // if no times given always stay on frame 1
+	}
+	return now() - frameStart > frameTimes[idx];
+    }
+
+    private void changeFrames() {
+	frameStart = now();
+	idx++;
+	if (idx == sprites.length) {
+	    idx = 0;
+	    finished = oneShot ? true : false;
 	}
     }
 
@@ -75,18 +82,6 @@ public class Animation extends AllocGuard {
 	}
     }
 
-    private boolean currentFrameTimeIsUp() {
-	if (renderTimes != null && renderTimes.length > 1) {
-	    return currentFrameRenderTime() > renderTimes[index];
-	}
-	// if no times given always stay on frame 1
-	return false;
-    }
-
-    private long currentFrameRenderTime() {
-	return now() - framesFirstRenderTime;
-    }
-
     private long now() {
 	return System.currentTimeMillis();
     }
@@ -94,4 +89,13 @@ public class Animation extends AllocGuard {
     public Dimension getDimensions() {
 	return sprites[0].getDimensions();
     }
+
+    public int height() {
+	return sprites[0].height();
+    }
+
+    public int width() {
+	return sprites[0].width();
+    }
+
 }

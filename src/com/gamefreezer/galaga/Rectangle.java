@@ -1,12 +1,13 @@
 package com.gamefreezer.galaga;
 
-public class Rectangle {
+public class Rectangle extends AllocGuard {
     public int left;
     public int right;
     public int top;
     public int bottom;
 
     public Rectangle(int left, int top, int width, int height) {
+	super();
 	this.left = left;
 	this.right = left + width;
 	this.top = top;

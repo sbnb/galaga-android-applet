@@ -30,9 +30,9 @@ public class KillPoints extends AllocGuard {
 		// draw the sprite at alien.location if alien.exploding
 		Sprite sprite = spriteStore.get(cfg.NUM_9);
 		int x = aliens[i].getX() + aliens[i].getWidth() / 2
-			- sprite.getWidth() / 2;
+			- sprite.width() / 2;
 		int y = aliens[i].getY() + aliens[i].getHeight() / 2
-			- sprite.getHeight() / 2;
+			- sprite.height() / 2;
 		sprite.draw(graphics, x, y);
 	    }
 	}

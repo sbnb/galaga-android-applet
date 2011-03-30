@@ -10,10 +10,10 @@ public class Ship extends Entity {
     private int currentGunIndex;
     Location gunLocation;
 
-    public Ship(SpriteCache spriteStore, Screen screen, String[] imageNames,
-	    int[] imageTimes, Gun[] guns, Speed rightSpeed, Speed leftSpeed,
-	    Speed noSpeed) {
-	super(spriteStore, screen, new Location(), 0, 0, imageNames, imageTimes);
+    public Ship(SpriteCache spriteStore, Screen screen,
+	    AnimationSource animationSource, Gun[] guns, Speed rightSpeed,
+	    Speed leftSpeed, Speed noSpeed) {
+	super(spriteStore, screen, new Location(), 0, 0, animationSource);
 
 	assert guns != null : "guns is null!";
 	assert rightSpeed != null : "rightSpeed is null!";
@@ -33,10 +33,9 @@ public class Ship extends Entity {
     /* The start location for bullets fired by the ship. */
     public Location getGunLocation() {
 	gunLocation.moveTo(this.getLocation());
-	// TODO this is not right, bullets are variable width
 	gunLocation.moveBy(width / 2, 0);
 	Dimension bullet = guns[currentGunIndex].getBulletDimensions();
-	gunLocation.moveBy(-bullet.width / 2, -bullet.height);
+	gunLocation.moveBy(-bullet.width / 2, 0);
 	return gunLocation;
     }
 
@@ -56,8 +55,8 @@ public class Ship extends Entity {
 
     @Override
     public void draw(AbstractGraphics graphics) {
-	super.draw(graphics);
 	guns[currentGunIndex].draw(graphics, this.getGunLocation());
+	super.draw(graphics);
     }
 
     public boolean triggerDown() {

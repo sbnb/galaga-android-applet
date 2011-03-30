@@ -6,8 +6,8 @@ public class Explosion {
     boolean isAvailable;
     private Entity entity;
 
-    public Explosion(SpriteCache spriteCache, String[] images, int[] frameTimes) {
-	animation = new Animation(spriteCache, images, frameTimes, true);
+    public Explosion(SpriteCache spriteCache, AnimationSource animationSource) {
+	animation = new Animation(spriteCache, animationSource, true);
 	isAvailable = true;
     }
 
@@ -24,7 +24,7 @@ public class Explosion {
 
     public void draw(AbstractGraphics graphics) {
 	animation.draw(graphics, entity.getX(), entity.getY());
-	if (animation.finished()) {
+	if (animation.isFinished()) {
 	    entity.setExploding(false);
 	    entity = null;
 	    isAvailable = true;

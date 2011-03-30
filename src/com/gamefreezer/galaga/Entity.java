@@ -18,48 +18,50 @@ public class Entity extends AllocGuard {
     protected int points = 0;
     protected Screen screen;
 
-    public Entity(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
-	this(spriteStore, screen, new Location(), 0, 0, 0, 0, null, null,
-		targettingSpeed);
+    public Entity(SpriteCache spriteCache, Screen screen, Speed targettingSpeed) {
+	this(spriteCache, screen, new Location(), 0, 0, 0, 0,
+		new AnimationSource(null, null), targettingSpeed);
     }
 
-    public Entity(SpriteCache spriteStore, Screen screen, Location location,
-	    int horizontalMovement, int verticalMovement, String[] imageNames,
-	    int[] renderTimes) {
-	this(spriteStore, screen, location, Util.widthFromSprite(spriteStore,
-		imageNames), Util.heightFromSprite(spriteStore, imageNames),
-		horizontalMovement, verticalMovement, imageNames, renderTimes,
-		new Speed(0, 0));
+    public Entity(SpriteCache spriteCache, Screen screen, Location location,
+	    int horizontalMovement, int verticalMovement,
+	    AnimationSource animationSource) {
+	this(spriteCache, screen, location, animationSource.width(spriteCache),
+		animationSource.height(spriteCache), horizontalMovement,
+		verticalMovement, animationSource, new Speed(0, 0));
     }
 
     // TODO dependency injection of animation required
-    public Entity(SpriteCache spriteStore, Screen screen, Location location,
+    // TODO as first step, encapsulate names and times as a type
+    public Entity(SpriteCache spriteCache, Screen screen, Location location,
 	    int width, int height, int horizontalMovement,
-	    int verticalMovement, String[] imageNames, int[] renderTimes,
+	    int verticalMovement, AnimationSource animationSource,
 	    Speed targettingSpeed) {
+
 	super();
 
-	assert spriteStore != null : "spriteStore is null!";
+	assert spriteCache != null : "spriteStore is null!";
 	assert location != null : "location is null!";
 	assert targettingSpeed != null : "targettingSpeed is null!";
 
 	this.screen = screen;
 	this.width = width;
 	this.height = height;
-	animation = new Animation(spriteStore);
+
+	animation = new Animation(spriteCache);
+	if (animationSource.names != null) {
+	    animation.reset(animationSource);
+	}
+
 	movement = new Movement(location, new Speed(horizontalMovement,
 		verticalMovement), targettingSpeed);
 	this.active = true;
 
-	if (imageNames != null) {
-	    animation.reset(imageNames, renderTimes);
-	}
     }
 
-    public void setImagePath(String[] imageNames, int[] renderTimes) {
-	assert imageNames != null : "imageNames is null!";
-	assert imageNames.length > 0 : "imageNames is empty!";
-	animation.reset(imageNames, renderTimes);
+    public void setImagePath(AnimationSource animSrc) {
+	assert animSrc != null : "animSrc is null!";
+	animation.reset(animSrc);
     }
 
     public void move(int timeDelta) {
@@ -69,12 +71,12 @@ public class Entity extends AllocGuard {
 	killIfOffScreen();
     }
 
-    public void moveBy(float x, float y) {
-	movement.moveBy(x, y);
+    public void moveBy(float xDelta, float yDelta) {
+	movement.moveBy(xDelta, yDelta);
     }
 
-    public void moveBy(Location anAmount) {
-	movement.moveBy(anAmount);
+    public void moveBy(Location delta) {
+	movement.moveBy(delta);
     }
 
     public void moveTo(int x, int y) {
@@ -105,9 +107,9 @@ public class Entity extends AllocGuard {
 
     /* Align this entities center to other entities center */
     public void alignTo(Entity entity) {
-	int x = entity.getX() + entity.getWidth() / 2 - getWidth() / 2;
-	int y = entity.getY() + entity.getHeight() / 2 - getHeight() / 2;
-	this.moveTo(x, y);
+	final int xDest = entity.getX() + entity.width / 2 - width / 2;
+	final int yDest = entity.getY() + entity.height / 2 - height / 2;
+	this.moveTo(xDest, yDest);
     }
 
     public void setSpeed(Speed speed) {

@@ -70,12 +70,10 @@ public class Constants {
 
     // explosions and text effects
     public final int MAX_EXPLOSIONS;
-    public final String[] EXPL_IMGS;
-    public final int[] EXPL_TIMES;
-    public final String[] LEVEL_COMPLETE_IMGS;
-    public final int[] LEVEL_COMPLETE_TIMES;
-    public final String[] COUNTDOWN_IMGS;
-    public final int[] COUNTDOWN_TIMES;
+    public final AnimationSource EXPL_ANIM_SRC;
+
+    public final AnimationSource LEVEL_COMPLETE_ANIM_SRC;
+    public final AnimationSource COUNTDOWN_ANIM_SRC;
 
     public final String GET_READY_IMG;
     public final CartesianInt GET_READY_TOPLEFT;
@@ -182,12 +180,16 @@ public class Constants {
 
 	// explosions and text effects
 	MAX_EXPLOSIONS = PROPS.getInt("MAX_EXPLOSIONS");
-	EXPL_IMGS = PROPS.getStringArray("EXPL_IMGS");
-	EXPL_TIMES = PROPS.getIntArray("EXPL_TIMES");
-	LEVEL_COMPLETE_IMGS = PROPS.getStringArray("LEVEL_COMPLETE_IMGS");
-	LEVEL_COMPLETE_TIMES = PROPS.getIntArray("LEVEL_COMPLETE_TIMES");
-	COUNTDOWN_IMGS = PROPS.getStringArray("COUNTDOWN_IMGS");
-	COUNTDOWN_TIMES = PROPS.getIntArray("COUNTDOWN_TIMES");
+	EXPL_ANIM_SRC = new AnimationSource(PROPS.getStringArray("EXPL_IMGS"),
+		PROPS.getIntArray("EXPL_TIMES"));
+
+	LEVEL_COMPLETE_ANIM_SRC = new AnimationSource(PROPS
+		.getStringArray("LEVEL_COMPLETE_IMGS"), PROPS
+		.getIntArray("LEVEL_COMPLETE_TIMES"));
+
+	COUNTDOWN_ANIM_SRC = new AnimationSource(PROPS
+		.getStringArray("COUNTDOWN_IMGS"), PROPS
+		.getIntArray("COUNTDOWN_TIMES"));
 
 	GET_READY_IMG = PROPS.getString("GET_READY_IMG");
 	GET_READY_TOPLEFT = new CartesianInt(PROPS
@@ -216,12 +218,17 @@ public class Constants {
 	    StatusBar statusBar = new StatusBar(displayBarRect, 100.0f,
 		    outlineColor, primaryFillColor, secondaryFillColor);
 
-	    Animation bulletAnimation = new Animation(SPRITE_CACHE, //
+	    final AnimationSource bulletAnimationSource = new AnimationSource(
 		    PROPS.getStringArray(GUN_REFS[i] + "_BULLET_IMAGES"), //
-		    PROPS.getIntArray(GUN_REFS[i] + "_BULLET_TIMES"), false);
-	    Animation firingAnimation = new Animation(SPRITE_CACHE, //
+		    PROPS.getIntArray(GUN_REFS[i] + "_BULLET_TIMES"));
+	    Animation bulletAnimation = new Animation(SPRITE_CACHE,
+		    bulletAnimationSource, false);
+
+	    final AnimationSource firingAnimationSource = new AnimationSource(
 		    PROPS.getStringArray(GUN_REFS[i] + "_FIRING_IMAGES"), //
-		    PROPS.getIntArray(GUN_REFS[i] + "_FIRING_TIMES"), true);
+		    PROPS.getIntArray(GUN_REFS[i] + "_FIRING_TIMES"));
+	    Animation firingAnimation = new Animation(SPRITE_CACHE,
+		    firingAnimationSource, true);
 
 	    GUNS[i] = new Gun( //
 		    PROPS.getInt(GUN_REFS[i] + "_BULLET_SPEED"), //

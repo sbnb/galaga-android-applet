@@ -8,9 +8,10 @@ import java.util.SortedMap;
 
 public class Formation extends AllocGuard {
 
-    private SpriteCache spriteStore;
+    private final SpriteCache spriteCache;
+    private final String propertiesFileName;
+    private final Constants cfg;
     private MyProperties props;
-    private String propertiesFileName;
     private String layoutFile;
     private SortedMap<Integer, Integer> alienSpeeds;
     private int spVert;
@@ -18,28 +19,17 @@ public class Formation extends AllocGuard {
     private int vertStep;
 
     private int last = 0;
-    private int[] xLocations;
-    private int[] yLocations;
-    private String[][] imageNamesStore;
-    private int[][] renderTimesStore;
-    private int[] widths;
-    private int[] heights;
-    private int[] pointsStore;
-    private Constants cfg;
+    private DataRecord[] records;
 
     public Formation(SpriteCache spriteStore, Constants cfg,
 	    String propertiesFileName) {
 	super();
 	this.cfg = cfg;
-	this.spriteStore = spriteStore;
+	this.spriteCache = spriteStore;
 	this.propertiesFileName = propertiesFileName;
-	xLocations = new int[cfg.MAX_FORMATION];
-	yLocations = new int[cfg.MAX_FORMATION];
-	imageNamesStore = new String[cfg.MAX_FORMATION][];
-	renderTimesStore = new int[cfg.MAX_FORMATION][];
-	widths = new int[cfg.MAX_FORMATION];
-	heights = new int[cfg.MAX_FORMATION];
-	pointsStore = new int[cfg.MAX_FORMATION];
+
+	records = new DataRecord[cfg.MAX_FORMATION];
+
 	loadProperties();
 	initializeFromProperties();
 	createLayout();
@@ -48,14 +38,14 @@ public class Formation extends AllocGuard {
 
     public void createAliens(Alien[] aliens) {
 	assert allDead(aliens) : "Aliens are not all dead - kill them all!";
-	for (int i = 0; i < last; i++) {
-	    resetAlien(aliens[i], i);
+	for (int idx = 0; idx < last; idx++) {
+	    resetAlien(aliens[idx], records[idx]);
 	}
     }
 
     public void resetLivingAliens(Alien[] aliens) {
-	for (int i = 0; i < last; i++) {
-	    partialReset(aliens[i], i);
+	for (int idx = 0; idx < last; idx++) {
+	    partialReset(aliens[idx], records[idx]);
 	}
     }
 
@@ -63,44 +53,8 @@ public class Formation extends AllocGuard {
 	return last;
     }
 
-    public int getXStart(int i) {
-	return xLocations[i];
-    }
-
-    public int getYStart(int i) {
-	return yLocations[i];
-    }
-
     public void setAnchor(Location anchor) {
-	anchor.moveTo(xLocations[0], yLocations[0]);
-    }
-
-    private void resetAlien(Alien alien, int i) {
-	alien.regenerate();
-	alien.setSolo(false);
-	alien.setDiveComplete(false);
-	alien.setTarget(-1, -1);
-	alien.moveTo(xLocations[i], yLocations[i]);
-	alien.setSpeed(alienSpeeds.get(100), 0);
-	alien.setMaxSpeed(alienSpeeds.get(100), alienSpeeds.get(100));
-	alien.setImagePath(imageNamesStore[i], renderTimesStore[i]);
-	alien.setDimensions(widths[i], heights[i]);
-	alien.setPoints(pointsStore[i]);
-    }
-
-    private void partialReset(Alien alien, int i) {
-	alien.setSolo(false);
-	alien.setDiveComplete(false);
-	alien.setTarget(-1, -1);
-	alien.moveTo(xLocations[i], yLocations[i]);
-    }
-
-    private boolean allDead(Alien[] aliensBetter) {
-	for (Alien alien : aliensBetter) {
-	    if (alien.isAlive())
-		return false;
-	}
-	return true;
+	anchor.moveTo(records[0].xLocation, records[0].yLocation);
     }
 
     public Properties getProperties() {
@@ -113,6 +67,32 @@ public class Formation extends AllocGuard {
 
     public int getVerticalStepDistance() {
 	return vertStep;
+    }
+
+    private void resetAlien(Alien alien, DataRecord record) {
+	alien.regenerate();
+	partialReset(alien, record);
+	alien.setSpeed(alienSpeeds.get(100), 0);
+	alien.setMaxSpeed(alienSpeeds.get(100), alienSpeeds.get(100));
+	alien.setImagePath(record.animationSource);
+	alien.setDimensions(record.width, record.height);
+	alien.setPoints(record.points);
+    }
+
+    private void partialReset(Alien alien, DataRecord record) {
+	alien.setSolo(false);
+	alien.setDiveComplete(false);
+	alien.setTarget(-1, -1);
+	alien.moveTo(record.xLocation, record.yLocation);
+    }
+
+    private boolean allDead(Alien[] aliens) {
+	for (Alien alien : aliens) {
+	    if (alien.isAlive()) {
+		return false;
+	    }
+	}
+	return true;
     }
 
     private void loadProperties() {
@@ -132,21 +112,22 @@ public class Formation extends AllocGuard {
     }
 
     private void createLayout() {
-	assert !layoutFile.equals("") : "No layoutFile supplied in properties file "
+	assert !"".equals(layoutFile) : "No layoutFile supplied in properties file "
 		+ propertiesFileName;
-	InputStream in = Tools.openFile(layoutFile);
+	final InputStream inStream = Tools.openFile(layoutFile);
 	try {
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    final BufferedReader bufferedReader = new BufferedReader(
+		    new InputStreamReader(inStream));
 	    String line;
 	    int x = cfg.SCREEN.inGameLeft();
 	    int y = cfg.SCREEN.inGameTop() + spVert;
 
-	    while ((line = br.readLine()) != null) {
+	    while ((line = bufferedReader.readLine()) != null) {
 		scanALineOfLayout(line, x, y);
 		x = cfg.SCREEN.inGameLeft();
 		y += spVert;
 	    }
-	    in.close();
+	    inStream.close();
 	} catch (Exception e) {
 	    Tools.log("Exception reading layoutfile: " + e);
 	    throw new AssertionError("Cannot read layoutFile at " + layoutFile
@@ -165,51 +146,49 @@ public class Formation extends AllocGuard {
     }
 
     // save the information needed to create each alien in this level later
-    private void saveAlienDetails(int x, int y, char c) {
+    private void saveAlienDetails(int x, int y, char chr) {
 	assert last < cfg.MAX_FORMATION : "MAX_FORMATION(" + cfg.MAX_FORMATION
 		+ ") <= last (" + last + "): increase it.";
 
-	String[] imageNames = getAlienImagePath(c);
-	int[] renderTimes = props.getIntArray(c + "RenderTimes", "0");
-	int width = Util.widthFromSprite(spriteStore, imageNames);
-	int height = Util.heightFromSprite(spriteStore, imageNames);
-	int points = props.getInt(c + "Points");
+	final String[] imageNames = getAlienImagePath(chr);
+	final int[] renderTimes = props.getIntArray(chr + "RenderTimes", "0");
+	final AnimationSource animationSource = new AnimationSource(imageNames,
+		renderTimes);
 
-	xLocations[last] = x;
-	yLocations[last] = y;
-	imageNamesStore[last] = imageNames;
-	renderTimesStore[last] = renderTimes;
-	widths[last] = width;
-	heights[last] = height;
-	pointsStore[last] = points;
+	final DataRecord record = new DataRecord(x, y, animationSource,
+		animationSource.width(spriteCache), animationSource
+			.height(spriteCache), props.getInt(chr + "Points"));
+	records[last] = record;
 	last++;
     }
 
-    private String[] getAlienImagePath(char c) {
-	if (props.containsKey(c + "ImgPath")) {
-	    return props.getStringArray(c + "ImgPath");
+    private String[] getAlienImagePath(char chr) {
+	if (props.containsKey(chr + "ImgPath")) {
+	    return props.getStringArray(chr + "ImgPath");
 	}
-	assert false : c + "ImgPath not found in " + propertiesFileName + "!";
+	assert false : chr + "ImgPath not found in " + propertiesFileName + "!";
 	return null;
     }
 
     private void centerFormation() {
-	int offset = (cfg.SCREEN.inGameWidth() - formationWidth()) / 2;
-	for (int i = 0; i < last; i++) {
-	    xLocations[i] += offset;
+	final int offset = (cfg.SCREEN.inGameWidth() - formationWidth()) / 2;
+	for (int idx = 0; idx < last; idx++) {
+	    records[idx].xLocation += offset;
 	}
     }
 
     private int formationWidth() {
-	assert xLocations.length > 0 : "Formation must have elements";
+	assert records.length > 0 : "Formation must have elements";
 	int leftMin = cfg.SCREEN.inGameRight();
 	int rightMax = cfg.SCREEN.inGameLeft();
-	for (int i = 0; i < last; i++) {
-	    leftMin = xLocations[i] < leftMin ? xLocations[i] : leftMin;
-	    rightMax = xLocations[i] + widths[i] > rightMax ? xLocations[i]
-		    + widths[i] : rightMax;
+	for (int idx = 0; idx < last; idx++) {
+	    leftMin = records[idx].xLocation < leftMin ? records[idx].xLocation
+		    : leftMin;
+	    rightMax = records[idx].xLocation + records[idx].width > rightMax ? records[idx].xLocation
+		    + records[idx].width
+		    : rightMax;
 	}
-	int width = rightMax - leftMin;
+	final int width = rightMax - leftMin;
 	assert width > 0 : "formation width must be positive";
 	return width;
     }

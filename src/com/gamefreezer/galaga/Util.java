@@ -15,29 +15,6 @@ public class Util {
 	return randomGenerator.nextInt(high + 1 - low) + low;
     }
 
-    // static function to return sprite width from imgUrl
-    public static int widthFromSprite(SpriteCache spriteStore,
-	    String[] imageNames) {
-	assert spriteStore != null : "spriteStore is null!";
-	assert imageNames != null : "imageNames is null!";
-	assert imageNames.length != 0 : "imageNames is empty!";
-
-	Sprite aSprite = spriteStore.get(imageNames[0]);
-	return aSprite.getWidth();
-    }
-
-    // static function to return sprite height from imgUrl
-    public static int heightFromSprite(SpriteCache spriteStore,
-	    String[] imageNames) {
-
-	assert spriteStore != null : "spriteStore is null!";
-	assert imageNames != null : "imageNames is null!";
-	assert imageNames.length != 0 : "imageNames is empty!";
-
-	Sprite aSprite = spriteStore.get(imageNames[0]);
-	return aSprite.getHeight();
-    }
-
     public static List<String> getStringAsList(String someNames) {
 	String[] names = someNames.split(" ");
 	return Arrays.asList(names);
