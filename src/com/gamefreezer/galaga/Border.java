@@ -16,5 +16,4 @@ public class Border {
 	bottom = values[2];
 	left = values[3];
     }
-
 }

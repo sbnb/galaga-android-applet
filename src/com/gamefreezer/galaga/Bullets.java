@@ -42,10 +42,16 @@ public class Bullets extends AllocGuard {
 
     /* Return true if new bullet added, false if not. */
     public boolean addNewBullet(Location startPoint, int velocity,
-	    Animation animation, int damage) {
+	    Animation bulletAnim, Animation hitAnim, int damage) {
+
+	if (bulletAnim == null) {
+	    return false; // possible if animation pool was exhausted
+	}
+
 	for (int i = 0; i < bulletsArray.length; i++) {
 	    if (!(bulletsArray[i].isAlive())) {
-		bulletsArray[i].reset(startPoint, velocity, animation, damage);
+		bulletsArray[i].reset(startPoint, velocity, bulletAnim,
+			hitAnim, damage);
 		return true;
 	    }
 	}

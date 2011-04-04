@@ -32,10 +32,8 @@ public class Ship extends Entity {
 
     /* The start location for bullets fired by the ship. */
     public Location getGunLocation() {
-	gunLocation.moveTo(this.getLocation());
+	gunLocation.moveTo(getLocation());
 	gunLocation.moveBy(width / 2, 0);
-	Dimension bullet = guns[currentGunIndex].getBulletDimensions();
-	gunLocation.moveBy(-bullet.width / 2, 0);
 	return gunLocation;
     }
 
@@ -55,7 +53,7 @@ public class Ship extends Entity {
 
     @Override
     public void draw(AbstractGraphics graphics) {
-	guns[currentGunIndex].draw(graphics, this.getGunLocation());
+	guns[currentGunIndex].draw(graphics, getGunLocation());
 	super.draw(graphics);
     }
 

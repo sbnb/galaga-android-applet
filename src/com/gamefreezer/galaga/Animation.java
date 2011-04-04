@@ -9,6 +9,7 @@ public class Animation extends AllocGuard {
     private boolean oneShot = false;
     private boolean finished = false;
     private SpriteCache spriteStore;
+    private AnimationPool pool;
 
     public Animation(SpriteCache spriteCache) {
 	super();
@@ -19,6 +20,12 @@ public class Animation extends AllocGuard {
 	    boolean oneShot) {
 	this(spriteCache);
 	reset(animationSource, oneShot);
+    }
+
+    public Animation(SpriteCache spriteCache, AnimationSource src,
+	    boolean oneShot, AnimationPool pool) {
+	this(spriteCache, src, oneShot);
+	this.pool = pool;
     }
 
     public void reset(AnimationSource animationSource, boolean oneShot) {
@@ -43,8 +50,16 @@ public class Animation extends AllocGuard {
 	return finished;
     }
 
+    /* Not every animation must have a pool. */
+    public void returnToPool() {
+	if (pool != null) {
+	    pool.put(this);
+	}
+    }
+
     public void draw(AbstractGraphics graphics, int x, int y) {
 	if (finished) {
+	    // TODO return to pool?
 	    return; // one shot animation over, don't draw anything
 	}
 

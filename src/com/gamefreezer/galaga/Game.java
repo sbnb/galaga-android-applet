@@ -73,8 +73,9 @@ public class Game extends AllocGuard {
 	aliens = new Aliens(spriteCache, screen, gun, soloAliens,
 		cfg.MAX_FORMATION);
 
-	playerBullets = new Bullets(spriteCache, screen, cfg.BULLETS_ON_SCREEN,
-		new AnimationSource(cfg.BULLET_IMAGES, cfg.BULLET_TIMES));
+	playerBullets = new Bullets(spriteCache, screen,
+		cfg.MAX_BULLETS_ON_SCREEN, new AnimationSource(
+			cfg.BULLET_IMAGES, cfg.BULLET_TIMES));
 	alienBullets = new Bullets(spriteCache, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, new AnimationSource(
 			cfg.ALIEN_BULLET_IMAGES, cfg.ALIEN_BULLET_TIMES));
@@ -85,8 +86,6 @@ public class Game extends AllocGuard {
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
 	final Speed NO_SPEED = new Speed(0, 0);
-	// TODO different types of guns (an array of guns?)
-	// cfg.GUNS;
 	ship = new Ship(spriteCache, screen, new AnimationSource(
 		cfg.SHIP_IMAGES, cfg.SHIP_TIMES), cfg.GUNS, RIGHT_SPEED,
 		LEFT_SPEED, NO_SPEED);

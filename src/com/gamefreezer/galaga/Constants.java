@@ -83,7 +83,7 @@ public class Constants {
 
     // player bullets
     public final int BULLET_MOVEMENT;
-    public final int BULLETS_ON_SCREEN;
+    public final int MAX_BULLETS_ON_SCREEN;
     public final int MIN_TIME_BETWEEN_BULLETS;
     public final String[] BULLET_IMAGES;
     public final int[] BULLET_TIMES;
@@ -201,15 +201,18 @@ public class Constants {
 
 	// player bullets
 	BULLET_MOVEMENT = PROPS.getInt("BULLET_MOVEMENT");
-	BULLETS_ON_SCREEN = PROPS.getInt("BULLETS_ON_SCREEN");
+	// BULLETS_ON_SCREEN = PROPS.getInt("BULLETS_ON_SCREEN");
 	MIN_TIME_BETWEEN_BULLETS = PROPS.getInt("MIN_TIME_BETWEEN_BULLETS");
 	BULLET_IMAGES = PROPS.getStringArray("BULLET_IMAGES");
 	BULLET_TIMES = PROPS.getIntArray("BULLET_TIMES");
 
 	// distinct guns
+	// TODO move to own builder class
 	GUN_REFS = PROPS.getStringArray("GUN_REFS");
 	GUNS = new Gun[GUN_REFS.length];
+	int maxBulletsOnScreen = 0;
 	for (int i = 0; i < GUNS.length; i++) {
+	    final String gunName = GUN_REFS[i];
 	    // TODO read displayBar details from file
 	    Rectangle displayBarRect = new Rectangle(60, 40, 100, 10);
 	    AbstractColor outlineColor = Tools.decodeColor("#AAAAAA");
@@ -218,27 +221,37 @@ public class Constants {
 	    StatusBar statusBar = new StatusBar(displayBarRect, 100.0f,
 		    outlineColor, primaryFillColor, secondaryFillColor);
 
-	    final AnimationSource bulletAnimationSource = new AnimationSource(
-		    PROPS.getStringArray(GUN_REFS[i] + "_BULLET_IMAGES"), //
-		    PROPS.getIntArray(GUN_REFS[i] + "_BULLET_TIMES"));
-	    Animation bulletAnimation = new Animation(SPRITE_CACHE,
-		    bulletAnimationSource, false);
+	    final AnimationSource bulletAnimSrc = new AnimationSource(PROPS
+		    .getStringArray(gunName + "_BULLET_IMAGES"), //
+		    PROPS.getIntArray(gunName + "_BULLET_TIMES"));
+	    int bulletsOnScreen = PROPS.getInt(gunName + "_BULLETS_ON_SCREEN");
+	    maxBulletsOnScreen = Math.max(maxBulletsOnScreen, bulletsOnScreen);
+	    AnimationPool bulletAnimPool = new AnimationPool(SPRITE_CACHE,
+		    bulletAnimSrc, bulletsOnScreen);
+
+	    final AnimationSource hitAnimSrc = new AnimationSource(PROPS
+		    .getStringArray(gunName + "_HIT_IMAGES"), //
+		    PROPS.getIntArray(gunName + "_HIT_TIMES"));
+	    // TODO magic number for size of hit animation pool
+	    AnimationPool hitAnimPool = new AnimationPool(SPRITE_CACHE,
+		    hitAnimSrc, 100);
 
 	    final AnimationSource firingAnimationSource = new AnimationSource(
-		    PROPS.getStringArray(GUN_REFS[i] + "_FIRING_IMAGES"), //
-		    PROPS.getIntArray(GUN_REFS[i] + "_FIRING_TIMES"));
+		    PROPS.getStringArray(gunName + "_FIRING_IMAGES"), //
+		    PROPS.getIntArray(gunName + "_FIRING_TIMES"));
 	    Animation firingAnimation = new Animation(SPRITE_CACHE,
 		    firingAnimationSource, true);
 
 	    GUNS[i] = new Gun( //
-		    PROPS.getInt(GUN_REFS[i] + "_BULLET_SPEED"), //
-		    PROPS.getInt(GUN_REFS[i] + "_RATE_OF_FIRE"), //
-		    PROPS.getInt(GUN_REFS[i] + "_DAMAGE"), //
-		    PROPS.getInt(GUN_REFS[i] + "_HEAT_INCREMENT"), //
-		    PROPS.getInt(GUN_REFS[i] + "_COOLING"), //
-		    bulletAnimation, firingAnimation, statusBar);
+		    PROPS.getInt(gunName + "_BULLET_SPEED"), //
+		    PROPS.getInt(gunName + "_RATE_OF_FIRE"), //
+		    PROPS.getInt(gunName + "_DAMAGE"), //
+		    PROPS.getInt(gunName + "_HEAT_INCREMENT"), //
+		    PROPS.getInt(gunName + "_COOLING"), //
+		    bulletAnimPool, hitAnimPool, firingAnimation, statusBar);
 
 	}
+	MAX_BULLETS_ON_SCREEN = maxBulletsOnScreen;
 
 	// alien bullets
 	ALIEN_BULLET_MOVEMENT = PROPS.getInt("ALIEN_BULLET_MOVEMENT");

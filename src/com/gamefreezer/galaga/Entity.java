@@ -24,19 +24,16 @@ public class Entity extends AllocGuard {
     }
 
     public Entity(SpriteCache spriteCache, Screen screen, Location location,
-	    int horizontalMovement, int verticalMovement,
-	    AnimationSource animationSource) {
+	    int xVelocity, int yVelocity, AnimationSource animationSource) {
 	this(spriteCache, screen, location, animationSource.width(spriteCache),
-		animationSource.height(spriteCache), horizontalMovement,
-		verticalMovement, animationSource, new Speed(0, 0));
+		animationSource.height(spriteCache), xVelocity, yVelocity,
+		animationSource, new Speed(0, 0));
     }
 
     // TODO dependency injection of animation required
-    // TODO as first step, encapsulate names and times as a type
     public Entity(SpriteCache spriteCache, Screen screen, Location location,
-	    int width, int height, int horizontalMovement,
-	    int verticalMovement, AnimationSource animationSource,
-	    Speed targettingSpeed) {
+	    int width, int height, int xVelocity, int yVelocity,
+	    AnimationSource animationSource, Speed targettingSpeed) {
 
 	super();
 
@@ -53,8 +50,8 @@ public class Entity extends AllocGuard {
 	    animation.reset(animationSource);
 	}
 
-	movement = new Movement(location, new Speed(horizontalMovement,
-		verticalMovement), targettingSpeed);
+	movement = new Movement(location, new Speed(xVelocity, yVelocity),
+		targettingSpeed);
 	this.active = true;
 
     }
@@ -206,6 +203,7 @@ public class Entity extends AllocGuard {
     }
 
     public void regenerate() {
+	assert !active : "trying to regenerate living Entity!";
 	active = true;
     }
 

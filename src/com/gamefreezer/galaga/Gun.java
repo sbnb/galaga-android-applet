@@ -11,11 +11,14 @@ public class Gun extends AllocGuard {
     private int cooling;
     private StatusBar statusBar;
     private boolean overheat;
-    private Animation bulletAnimation;
     private Animation firingAnimation;
+    private AnimationPool bulletAnimations;
+    private AnimationPool hitAnimations;
+    private Location adjGunCentre;
 
     public Gun(int bulletSpeed, int rateOfFire, int damage, int heatIncrement,
-	    int cooling, Animation bulletAnimation, Animation firingAnimation,
+	    int cooling, AnimationPool bulletAnimations,
+	    AnimationPool hitAnimations, Animation firingAnimation,
 	    StatusBar statusBar) {
 	this.bulletSpeed = bulletSpeed;
 	this.rateOfFire = rateOfFire;
@@ -24,9 +27,11 @@ public class Gun extends AllocGuard {
 	this.cooling = cooling;
 	heatDegradation = 100.0f;
 	overheat = false;
-	this.bulletAnimation = bulletAnimation;
+	this.bulletAnimations = bulletAnimations;
+	this.hitAnimations = hitAnimations;
 	this.firingAnimation = firingAnimation;
 	this.statusBar = statusBar;
+	adjGunCentre = new Location();
     }
 
     public boolean ready() {
@@ -36,15 +41,16 @@ public class Gun extends AllocGuard {
     public boolean shoot(Bullets bullets, Location gunLocation) {
 	boolean created = false;
 	if (ready()) {
-	    // TODO account for width and height of this bullet
-	    // startLocation is the middle of the barrel
-	    created = bullets.addNewBullet(gunLocation, bulletSpeed,
-		    bulletAnimation, damage);
+	    // gunLocation is the middle of the barrel (nearest pixel)
+	    adjGunCentre.moveTo(gunLocation);
+	    adjGunCentre.moveBy(-getBulletDimensions().width / 2, 0);
+
+	    created = bullets.addNewBullet(adjGunCentre, bulletSpeed,
+		    bulletAnimations.get(), hitAnimations.get(), damage);
 	    if (created) {
 		heatDegradation -= heatIncrement;
 		applyHeatDegradation();
 		calculateNextAllowableFireTime();
-		// TODO display firing animation now
 		firingAnimation.reset();
 	    }
 	}
@@ -61,9 +67,9 @@ public class Gun extends AllocGuard {
 	// draw the gun itself perhaps
 	// draw firing animation if appropriate
 	if (!firingAnimation.isFinished()) {
-	    // TODO flash should be moved up its own height
-	    firingAnimation.draw(graphics, location.getX(), location.getY()
-		    - firingAnimation.getDimensions().height);
+	    firingAnimation.draw(graphics, location.getX()
+		    - firingAnimation.width() / 2, location.getY()
+		    - firingAnimation.height() * 2 / 3);
 	}
 	statusBar.draw(graphics);
     }
@@ -87,6 +93,6 @@ public class Gun extends AllocGuard {
     }
 
     public Dimension getBulletDimensions() {
-	return bulletAnimation.getDimensions();
+	return bulletAnimations.getDimensions();
     }
 }

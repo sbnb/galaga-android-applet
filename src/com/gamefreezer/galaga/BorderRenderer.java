@@ -3,10 +3,10 @@ package com.gamefreezer.galaga;
 public class BorderRenderer {
 
     private final Screen screen;
-    private Border outerBorder;
-    private Border innerBorder;
-    private AbstractColor outerBorderColor;
-    private AbstractColor innerBorderColor;
+    private final Border outerBorder;
+    private final Border innerBorder;
+    private final AbstractColor outerBorderColor;
+    private final AbstractColor innerBorderColor;
 
     public BorderRenderer(Screen screen, AbstractColor outerBorderColor,
 	    AbstractColor innerBorderColor) {
