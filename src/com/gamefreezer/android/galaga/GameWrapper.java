@@ -64,7 +64,7 @@ public class GameWrapper implements Runnable {
 	AndroidFileLister fileLister = new AndroidFileLister(appContext);
 	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
 		fileOpener, fileLister);
-	Constants cfg = new Constants(fileOpener, log, colorDecoder);
+	Constants cfg = new Constants(fileOpener, colorDecoder);
 
 	Tools.log("Tools.log(msg): now available");
 	Tools.log("GameWrapper.initGame(): about to init Game()");
