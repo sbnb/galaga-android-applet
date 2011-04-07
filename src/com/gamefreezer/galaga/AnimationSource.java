@@ -24,4 +24,13 @@ public class AnimationSource {
 	assert names != null : "names is null!";
 	assert names.length != 0 : "names is empty!";
     }
+
+    @Override
+    public String toString() {
+	StringBuilder sb = new StringBuilder();
+	for (int idx = 0; idx < names.length; idx++) {
+	    sb.append(names[idx] + ":" + times[idx] + " ");
+	}
+	return sb.toString();
+    }
 }

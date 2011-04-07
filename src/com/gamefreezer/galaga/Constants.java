@@ -111,11 +111,9 @@ public class Constants {
 
     public final StateTimes STATE_TIMES;
 
-    public Constants(AbstractFileOpener fileOpener, AbstractLog log,
-	    AbstractColor colorDecoder) {
+    public Constants(AbstractFileOpener fileOpener, AbstractColor colorDecoder) {
 	CONFIG_FILE = "config.properties";
-	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), log,
-		colorDecoder);
+	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), colorDecoder);
 	SPRITE_CACHE = new SpriteCache(Tools.bitmapReader);
 	DELAY = PROPS.getInt("DELAY");
 
@@ -123,8 +121,11 @@ public class Constants {
 	SCREEN_HEIGHT = PROPS.getInt("SCREEN_HEIGHT");
 	INNER_BORDER = new Border(PROPS.getIntArray("INNER_BORDER"));
 	OUTER_BORDER = new Border(PROPS.getIntArray("OUTER_BORDER"));
+	SCREEN = new Screen(SCREEN_WIDTH, SCREEN_HEIGHT, OUTER_BORDER,
+		INNER_BORDER);
 
 	// health bar
+	// TODO match health bar configs to the way the heat bar is setup
 	HEALTH_SIDE_INDENT = PROPS.getInt("HEALTH_SIDE_INDENT");
 	HEALTH_BOTTOM_INDENT = PROPS.getInt("HEALTH_BOTTOM_INDENT");
 	HEALTH_BAR_WIDTH = PROPS.getInt("HEALTH_BAR_WIDTH");
@@ -211,30 +212,38 @@ public class Constants {
 	GUN_REFS = PROPS.getStringArray("GUN_REFS");
 	GUNS = new Gun[GUN_REFS.length];
 	int maxBulletsOnScreen = 0;
+	final AbstractColor outlineColor = PROPS.getColor("HEAT_OUTLINE_COL");
+	final AbstractColor primaryFillColor = PROPS
+		.getColor("HEAT_PRIMARY_COL");
+	final AbstractColor secondaryFillColor = PROPS
+		.getColor("HEAT_SECONDARY_COL");
+
 	for (int i = 0; i < GUNS.length; i++) {
 	    final String gunName = GUN_REFS[i];
-	    // TODO read displayBar details from file
-	    Rectangle displayBarRect = new Rectangle(60, 40, 100, 10);
-	    AbstractColor outlineColor = Tools.decodeColor("#AAAAAA");
-	    AbstractColor primaryFillColor = Tools.decodeColor("#6666FF");
-	    AbstractColor secondaryFillColor = Tools.decodeColor("#FF0000");
+
+	    Rectangle displayBarRect = new Rectangle(PROPS
+		    .getIntArray("HEAT_DIMS"));
+	    displayBarRect.translate(SCREEN.inGameLeft(), SCREEN.inGameTop());
+
 	    StatusBar statusBar = new StatusBar(displayBarRect, 100.0f,
 		    outlineColor, primaryFillColor, secondaryFillColor);
 
 	    final AnimationSource bulletAnimSrc = new AnimationSource(PROPS
 		    .getStringArray(gunName + "_BULLET_IMAGES"), //
 		    PROPS.getIntArray(gunName + "_BULLET_TIMES"));
-	    int bulletsOnScreen = PROPS.getInt(gunName + "_BULLETS_ON_SCREEN");
+	    final int bulletsOnScreen = PROPS.getInt(gunName
+		    + "_BULLETS_ON_SCREEN");
 	    maxBulletsOnScreen = Math.max(maxBulletsOnScreen, bulletsOnScreen);
-	    AnimationPool bulletAnimPool = new AnimationPool(SPRITE_CACHE,
-		    bulletAnimSrc, bulletsOnScreen);
+	    AnimationPool bulletAnimPool = new AnimationPool("bullets",
+		    SPRITE_CACHE, bulletAnimSrc, bulletsOnScreen, false);
 
 	    final AnimationSource hitAnimSrc = new AnimationSource(PROPS
 		    .getStringArray(gunName + "_HIT_IMAGES"), //
 		    PROPS.getIntArray(gunName + "_HIT_TIMES"));
-	    // TODO magic number for size of hit animation pool
-	    AnimationPool hitAnimPool = new AnimationPool(SPRITE_CACHE,
-		    hitAnimSrc, 100);
+	    AnimationPool hitAnimPool = new AnimationPool("hits", SPRITE_CACHE,
+		    hitAnimSrc, bulletsOnScreen, true);
+	    Animation anim = hitAnimPool.get();
+	    hitAnimPool.put(anim);
 
 	    final AnimationSource firingAnimationSource = new AnimationSource(
 		    PROPS.getStringArray(gunName + "_FIRING_IMAGES"), //
@@ -275,8 +284,5 @@ public class Constants {
 		.getInt("BETWEEN_LIVES"), PROPS.getInt("WAIT_CLEAR"), PROPS
 		.getInt("LEVEL_CLEARED"), PROPS.getInt("BONUS_MESSAGE"), PROPS
 		.getInt("BONUS_PAYOUT"));
-
-	SCREEN = new Screen(SCREEN_WIDTH, SCREEN_HEIGHT, OUTER_BORDER,
-		INNER_BORDER);
     }
 }

@@ -15,12 +15,10 @@ public class StatusBar {
     };
 
     private MODE mode;
-    private String tag;
 
     public StatusBar(Rectangle outline, float value,
 	    AbstractColor outlineColor, AbstractColor primaryFillColor,
 	    AbstractColor secondaryFillColor) {
-	this.tag = getClass().getSimpleName();
 	this.outline = outline;
 	filled = new Rectangle(outline);
 	this.value = value;
@@ -51,7 +49,6 @@ public class StatusBar {
 	else
 	    graphics.setColor(secondaryFillColor);
 	graphics.fillRect(filled);
-
     }
 
     private void calculateSolidRectangle() {

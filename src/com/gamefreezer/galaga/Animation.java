@@ -8,12 +8,13 @@ public class Animation extends AllocGuard {
     private long frameStart = now();
     private boolean oneShot = false;
     private boolean finished = false;
-    private SpriteCache spriteStore;
+    private SpriteCache spriteCache;
     private AnimationPool pool;
+    private AnimationSource animationSource;
 
     public Animation(SpriteCache spriteCache) {
 	super();
-	this.spriteStore = spriteCache;
+	this.spriteCache = spriteCache;
     }
 
     public Animation(SpriteCache spriteCache, AnimationSource animationSource,
@@ -31,6 +32,7 @@ public class Animation extends AllocGuard {
     public void reset(AnimationSource animationSource, boolean oneShot) {
 	loadSprites(animationSource.names);
 	this.frameTimes = animationSource.times;
+	this.animationSource = animationSource;
 	reset();
 	this.oneShot = oneShot;
     }
@@ -46,6 +48,11 @@ public class Animation extends AllocGuard {
 	finished = false;
     }
 
+    public void reset(boolean oneShot) {
+	reset();
+	this.oneShot = oneShot;
+    }
+
     public boolean isFinished() {
 	return finished;
     }
@@ -57,9 +64,19 @@ public class Animation extends AllocGuard {
 	}
     }
 
+    public int poolSize() {
+	if (pool != null) {
+	    return pool.remaining();
+	}
+	return -1;
+    }
+
+    public void draw(AbstractGraphics graphics, Location loc) {
+	draw(graphics, loc.getX(), loc.getY());
+    }
+
     public void draw(AbstractGraphics graphics, int x, int y) {
 	if (finished) {
-	    // TODO return to pool?
 	    return; // one shot animation over, don't draw anything
 	}
 
@@ -76,7 +93,7 @@ public class Animation extends AllocGuard {
 	if (frameTimes == null || frameTimes.length <= 1) {
 	    return false; // if no times given always stay on frame 1
 	}
-	return now() - frameStart > frameTimes[idx];
+	return now() - frameStart >= frameTimes[idx];
     }
 
     private void changeFrames() {
@@ -91,9 +108,10 @@ public class Animation extends AllocGuard {
     private void loadSprites(String[] imageNames) {
 	// TODO optimise new away in animations
 	// or do not call reset on an animation object?
+	// System.out.println("Animation.loadSprites(): ");
 	sprites = new Sprite[imageNames.length];
 	for (int i = 0; i < imageNames.length; i++) {
-	    sprites[i] = spriteStore.get(imageNames[i]);
+	    sprites[i] = spriteCache.get(imageNames[i]);
 	}
     }
 
@@ -113,4 +131,16 @@ public class Animation extends AllocGuard {
 	return sprites[0].width();
     }
 
+    @Override
+    public String toString() {
+	StringBuilder sb = new StringBuilder();
+	sb.append("[Animation: ");
+	sb.append(animationSource.toString());
+	sb.append(pool == null ? "pool:null" : "pool:set");
+	sb.append(" oneShot:" + oneShot);
+	sb.append(" finished:" + finished);
+	sb.append(" idx:" + idx);
+	sb.append("]");
+	return sb.toString();
+    }
 }

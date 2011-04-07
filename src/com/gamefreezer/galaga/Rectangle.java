@@ -14,6 +14,10 @@ public class Rectangle extends AllocGuard {
 	this.bottom = top + height;
     }
 
+    public Rectangle(int[] dimensions) {
+	this(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+    }
+
     public Rectangle(Rectangle src) {
 	this(src.left, src.top, src.width(), src.height());
     }

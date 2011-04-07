@@ -23,7 +23,7 @@ public class Sandbox extends AllocGuard {
 	alien.move(delta);
     }
 
-    public void draw(AbstractGraphics graphics) {
+    public void draw(@SuppressWarnings("unused") AbstractGraphics graphics) {
 	// alien.draw(graphics);
 	// graphics.drawRect(target.getX(), target.getY(), 1, 1);
     }

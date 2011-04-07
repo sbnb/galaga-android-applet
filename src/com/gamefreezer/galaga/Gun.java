@@ -45,8 +45,8 @@ public class Gun extends AllocGuard {
 	    adjGunCentre.moveTo(gunLocation);
 	    adjGunCentre.moveBy(-getBulletDimensions().width / 2, 0);
 
-	    created = bullets.addNewBullet(adjGunCentre, bulletSpeed,
-		    bulletAnimations.get(), hitAnimations.get(), damage);
+	    created = bullets.addNewBullet(this, adjGunCentre, bulletSpeed,
+		    bulletAnimations.get(), damage);
 	    if (created) {
 		heatDegradation -= heatIncrement;
 		applyHeatDegradation();
@@ -63,6 +63,10 @@ public class Gun extends AllocGuard {
 	applyHeatDegradation();
     }
 
+    public float getHeatDegradation() {
+	return heatDegradation;
+    }
+
     public void draw(AbstractGraphics graphics, Location location) {
 	// draw the gun itself perhaps
 	// draw firing animation if appropriate
@@ -72,6 +76,16 @@ public class Gun extends AllocGuard {
 		    - firingAnimation.height() * 2 / 3);
 	}
 	statusBar.draw(graphics);
+    }
+
+    public Animation getHitAnimation() {
+	// System.out.println("Gun.getHitAnimation(): getting from pool "
+	// + hitAnimations.remaining());
+	return hitAnimations.get();
+    }
+
+    public Dimension getBulletDimensions() {
+	return bulletAnimations.getDimensions();
     }
 
     private void applyHeatDegradation() {
@@ -90,9 +104,5 @@ public class Gun extends AllocGuard {
 
     private void calculateNextAllowableFireTime() {
 	nextFireTime = System.currentTimeMillis() + rateOfFire;
-    }
-
-    public Dimension getBulletDimensions() {
-	return bulletAnimations.getDimensions();
     }
 }

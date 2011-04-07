@@ -42,7 +42,6 @@ public class Game extends AllocGuard {
     public Game(Constants cfg) {
 	super();
 	assert Tools.initialised : "Tools not initialised!";
-	Tools.log("Game(): constructor.");
 
 	this.cfg = cfg;
 	final Screen screen = cfg.SCREEN;
@@ -96,7 +95,6 @@ public class Game extends AllocGuard {
 		cfg.INNER_BORDER_COLOR);
 
 	AllocGuard.guardOn = true;
-	Tools.log("SpriteStore.size(): " + spriteCache.size());
     }
 
     public void update() {

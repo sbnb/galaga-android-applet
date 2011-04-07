@@ -80,12 +80,6 @@ public class Location extends AllocGuard {
 	return yFloat;
     }
 
-    @Override
-    public String toString() {
-	return "Location: x: " + getX() + " y: " + getY() + " fx: " + xFloat
-		+ " fy: " + yFloat;
-    }
-
     public void rotate(Location rotationPoint, float theta) {
 	float x = xFloat - rotationPoint.getX();
 	float y = yFloat - rotationPoint.getY();
@@ -101,6 +95,23 @@ public class Location extends AllocGuard {
 
     private float rotateX(float theta, float x, float y) {
 	return (float) (x * Math.cos(theta) - y * Math.sin(theta));
+    }
+
+    /* Assumes difference.x&y > this.x&y, but no check made. */
+    public void minus(Location difference) {
+	xFloat -= difference.xFloat;
+	yFloat -= difference.yFloat;
+    }
+
+    public void plus(Location addition) {
+	xFloat += addition.xFloat;
+	yFloat += addition.yFloat;
+    }
+
+    @Override
+    public String toString() {
+	return "Location: x: " + getX() + " y: " + getY() + " fx: " + xFloat
+		+ " fy: " + yFloat;
     }
 
 }

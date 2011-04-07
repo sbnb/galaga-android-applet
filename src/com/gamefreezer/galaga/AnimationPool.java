@@ -5,14 +5,17 @@ public class AnimationPool {
     private Animation[] pool;
     private boolean[] available;
     private int free;
+    private String name;
 
-    public AnimationPool(SpriteCache spriteCache, AnimationSource src, int size) {
+    public AnimationPool(String name, SpriteCache spriteCache,
+	    AnimationSource src, int size, boolean oneShot) {
+	this.name = name;
 	pool = new Animation[size];
 	available = new boolean[size];
 	free = size;
 
 	for (int idx = 0; idx < pool.length; idx++) {
-	    pool[idx] = new Animation(spriteCache, src, false, this);
+	    pool[idx] = new Animation(spriteCache, src, oneShot, this);
 	    available[idx] = true;
 	}
     }
@@ -47,6 +50,11 @@ public class AnimationPool {
     public Dimension getDimensions() {
 	assert pool[0] != null : "pool is uninitialised!";
 	return pool[0].getDimensions();
+    }
+
+    @Override
+    public String toString() {
+	return "AnimationPool: " + name + " " + remaining() + "/" + pool.length;
     }
 
 }

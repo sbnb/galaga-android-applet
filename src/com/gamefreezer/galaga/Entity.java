@@ -319,6 +319,7 @@ public class Entity extends AllocGuard {
     @Override
     public String toString() {
 	return this.getClass().getSimpleName() + " [w: " + width + " h: "
-		+ height + " active: " + active + " ] " + movement;
+		+ height + " active: " + active + " ] " + movement + " "
+		+ animation;
     }
 }

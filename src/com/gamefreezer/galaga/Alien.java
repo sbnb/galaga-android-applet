@@ -2,14 +2,11 @@ package com.gamefreezer.galaga;
 
 public class Alien extends Entity {
 
-    public Alien next;
-    public Alien prev;
     public float relAnchorX;
     public float relAnchorY;
     private boolean solo = false;
-    // TODO health should be read from config files, and may be different by
-    // type of alien
-    private int health = 100;
+    private int health;
+    HitRenderer hitRenderer;
 
     // main constructor called in Aliens()
     // reset.. methods in Formation handle the bulk of the Alien member settings
@@ -19,6 +16,8 @@ public class Alien extends Entity {
 	stopIfPartiallyOffScreenLeftOrRight = true;
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = false;
+	// TODO magic number hit renderer size
+	hitRenderer = new HitRenderer(10);
     }
 
     // called by Sandbox.getAlien only, a non essential utility constructor
@@ -41,12 +40,12 @@ public class Alien extends Entity {
     @Override
     public void kill() {
 	active = false;
+	hitRenderer.clear();
     }
 
     @Override
     public void regenerate() {
 	active = true;
-	health = 100;
     }
 
     public void setHealth(int health) {
@@ -100,5 +99,15 @@ public class Alien extends Entity {
 
     public float getYHomeSlot(Location anchor) {
 	return anchor.getYAsFloat() + height + relAnchorY;
+    }
+
+    public void registerHit(Animation newHitAnimation, Location bulletLocation) {
+	hitRenderer.registerHit(newHitAnimation, getLocation(), bulletLocation);
+    }
+
+    @Override
+    public void draw(AbstractGraphics graphics) {
+	super.draw(graphics);
+	hitRenderer.draw(graphics, getLocation());
     }
 }

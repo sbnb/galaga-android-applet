@@ -18,7 +18,7 @@ public class Bullets extends AllocGuard {
 	    bulletsArray[i] = new Bullet(spriteStore, screen, animationSource);
 
 	}
-	bulletWidth = bulletsArray[0].getWidth();
+	bulletWidth = bulletsArray.length > 0 ? bulletsArray[0].getWidth() : 0;
     }
 
     public int bulletWidth() {
@@ -41,8 +41,8 @@ public class Bullets extends AllocGuard {
     }
 
     /* Return true if new bullet added, false if not. */
-    public boolean addNewBullet(Location startPoint, int velocity,
-	    Animation bulletAnim, Animation hitAnim, int damage) {
+    public boolean addNewBullet(Gun gun, Location startPoint, int velocity,
+	    Animation bulletAnim, int damage) {
 
 	if (bulletAnim == null) {
 	    return false; // possible if animation pool was exhausted
@@ -50,8 +50,8 @@ public class Bullets extends AllocGuard {
 
 	for (int i = 0; i < bulletsArray.length; i++) {
 	    if (!(bulletsArray[i].isAlive())) {
-		bulletsArray[i].reset(startPoint, velocity, bulletAnim,
-			hitAnim, damage);
+		bulletsArray[i].reset(gun, startPoint, velocity, bulletAnim,
+			damage);
 		return true;
 	    }
 	}

@@ -3,8 +3,7 @@ package com.gamefreezer.galaga;
 public class Bullet extends Entity {
 
     private int damage = 0;
-    private Animation hitAnimation;
-    private boolean hit = false;
+    private Gun gun;
 
     public Bullet(SpriteCache spriteStore, Screen screen,
 	    AnimationSource animationSource) {
@@ -13,9 +12,10 @@ public class Bullet extends Entity {
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = true;
 	this.kill();
+	gun = null;
     }
 
-    public int damage() {
+    public int getDamage() {
 	return damage;
     }
 
@@ -24,39 +24,24 @@ public class Bullet extends Entity {
 	moveTo(startPoint);
 	regenerate();
 	setSpeed(0, yVelocity);
-	hit = false;
     }
 
     /* Reset bullets visual appearance as well as position. */
-    public void reset(Location startPoint, int yVelocity, Animation bulletAnim,
-	    Animation hitAnim, int damage) {
+    public void reset(Gun gun, Location startPoint, int yVelocity,
+	    Animation bulletAnim, int damage) {
 	reset(startPoint, yVelocity);
-	this.damage = damage;
+	this.gun = gun;
 	animation = bulletAnim;
-	hitAnimation = hitAnim;
-	hit = false;
+	this.damage = damage;
     }
 
     @Override
     public void kill() {
 	super.kill();
 	animation.returnToPool();
-	if (hitAnimation != null) {
-	    hitAnimation.returnToPool();
-	}
     }
 
-    @Override
-    public void draw(AbstractGraphics graphics) {
-	// TODO Auto-generated method stub
-	super.draw(graphics);
-	if (hit) {
-	    hitAnimation.draw(graphics, getX(), getY());
-	}
-    }
-
-    public void markAsHit() {
-	// TODO Auto-generated method stub
-	hit = true;
+    public Animation getHitAnimation() {
+	return gun.getHitAnimation();
     }
 }

@@ -70,7 +70,9 @@ public class Formation extends AllocGuard {
     }
 
     private void resetAlien(Alien alien, DataRecord record) {
+	// TODO set health specific to alien
 	alien.regenerate();
+	alien.setHealth(record.health);
 	partialReset(alien, record);
 	alien.setSpeed(alienSpeeds.get(100), 0);
 	alien.setMaxSpeed(alienSpeeds.get(100), alienSpeeds.get(100));
@@ -96,8 +98,6 @@ public class Formation extends AllocGuard {
     }
 
     private void loadProperties() {
-	Tools.log("Formation.loadProperties(): new MyProperties("
-		+ propertiesFileName + ")");
 	props = new MyProperties(Tools.openFile(propertiesFileName));
     }
 
@@ -157,7 +157,8 @@ public class Formation extends AllocGuard {
 
 	final DataRecord record = new DataRecord(x, y, animationSource,
 		animationSource.width(spriteCache), animationSource
-			.height(spriteCache), props.getInt(chr + "Points"));
+			.height(spriteCache), props.getInt(chr + "Points"),
+		props.getInt(chr + "Health", 100));
 	records[last] = record;
 	last++;
     }

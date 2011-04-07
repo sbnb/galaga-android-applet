@@ -9,20 +9,15 @@ public class MyProperties {
 
     private final Properties properties = new Properties();
     private AbstractColor colorDecoder;
-    private AbstractLog log;
 
     // TODO this is ugly - either pass a full set of Abstract tools or none, and
     // be consistent
-    public MyProperties(InputStream in, AbstractLog log,
-	    AbstractColor colorDecoder) {
+    public MyProperties(InputStream in, AbstractColor colorDecoder) {
 	this.colorDecoder = colorDecoder;
-	this.log = log;
-	this.log.i("GALAGA", "MyProperties(): constructor.");
 	readFromInputStream(in);
     }
 
     public MyProperties(InputStream in) {
-	Tools.log("MyProperties(): constructor.");
 	readFromInputStream(in);
     }
 

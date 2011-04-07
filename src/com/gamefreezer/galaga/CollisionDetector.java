@@ -65,11 +65,10 @@ public class CollisionDetector extends AllocGuard {
 	    Alien alien = aliensArray[i];
 	    if (alien.isAlive() && bullet.intersects(alien)) {
 		score.incrementHitsMade();
+		alien.registerHit(bullet.getHitAnimation(), bullet
+			.getLocation());
 		bullet.kill();
-		alien.decrementHealth(bullet.damage());
-		// TODO visible effect of bullet strike
-		// of course this won't work, bullet is already gone/dead
-		bullet.markAsHit();
+		alien.decrementHealth(bullet.getDamage());
 
 		if (alien.getHealth() <= 0) { // killed
 		    alien.setHealth(0);

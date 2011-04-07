@@ -24,8 +24,8 @@ public class FiniteStateMachine {
 
     public FiniteStateMachine(StateTimes stateTimes, Aliens aliens,
 	    List<Formation> formations, Score score, Bullets playerBullets,
-	    Bullets alienBullets, Animation shipExplosion,
-	    Animation countDown, Animation textFx) {
+	    Bullets alienBullets, Animation shipExplosion, Animation countDown,
+	    Animation textFx) {
 	this.stateTimes = stateTimes;
 	this.aliens = aliens;
 	this.formations = formations;
@@ -65,9 +65,7 @@ public class FiniteStateMachine {
 	    alienBullets.killOnscreenBullets();
 	    shipExplosion.reset();
 	    setStateTimer(stateTimes.BETWEEN_LIVES);
-	    Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
-	    // TODO aliens should move in BETWEEN_LIVES_STATE, but no shoot or
-	    // collisions
+	    // Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
 	}
 
 	// READY_STATE
@@ -76,7 +74,7 @@ public class FiniteStateMachine {
 	    countDown.reset();
 	    score.restoreHealth();
 	    aliens.resetLivingAliens();
-	    Tools.log("BETWEEN_LIVES_STATE ==> READY_STATE");
+	    // Tools.log("BETWEEN_LIVES_STATE ==> READY_STATE");
 	}
 
 	// WAIT_CLEAR_STATE
@@ -84,7 +82,7 @@ public class FiniteStateMachine {
 	    currentState = State.WAIT_CLEAR;
 	    setStateTimer(stateTimes.WAIT_CLEAR);
 	    // or wait for bullets
-	    Tools.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
+	    // Tools.log("PLAYING_STATE ==> WAIT_CLEAR_STATE");
 	}
 
 	// LEVEL_CLEARED_STATE
@@ -92,7 +90,7 @@ public class FiniteStateMachine {
 	    currentState = State.LEVEL_CLEARED;
 	    textFx.reset();
 	    setStateTimer(stateTimes.LEVEL_CLEARED);
-	    Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
+	    // Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
 	}
 
 	// BONUS_MESSAGE_STATE
@@ -102,14 +100,14 @@ public class FiniteStateMachine {
 	    // score.clearLevelScore();
 	    score.calculateBonus();
 	    setStateTimer(stateTimes.BONUS_MESSAGE);
-	    Tools.log("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
+	    // Tools.log("LEVEL_CLEARED_STATE ==> BONUS_MESSAGE_STATE");
 	}
 
 	// BONUS_PAYOUT_STATE
 	if (currentState == State.BONUS_MESSAGE && timeUpInState()) {
 	    currentState = State.BONUS_PAYOUT;
 	    setStateTimer(stateTimes.BONUS_PAYOUT);
-	    Tools.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
+	    // Tools.log("BONUS_MESSAGE_STATE ==> BONUS_PAYOUT_STATE");
 	}
 
 	// READY_STATE
@@ -119,13 +117,13 @@ public class FiniteStateMachine {
 	    score.clearLevelScore();
 	    countDown.reset();
 	    changeFormation();
-	    Tools.log("BONUS_PAYOUT_STATE ==> READY_STATE");
+	    // Tools.log("BONUS_PAYOUT_STATE ==> READY_STATE");
 	}
 
 	// PLAYING_STATE
 	if (currentState == State.READY && countDown.isFinished()) {
 	    currentState = State.PLAYING;
-	    Tools.log("READY_STATE ==> PLAYING_STATE");
+	    // Tools.log("READY_STATE ==> PLAYING_STATE");
 	}
 
     }
