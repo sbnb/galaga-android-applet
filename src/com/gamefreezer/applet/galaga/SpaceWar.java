@@ -72,7 +72,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	AppletFileLister fileLister = new AppletFileLister();
 	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
 		fileOpener, fileLister);
-	cfg = new Constants(fileOpener, log, colorDecoder);
+	cfg = new Constants(fileOpener, colorDecoder);
 	appletGraphics = new AppletGraphics(cfg);
 	game = new Game(cfg);
 	createInputMessagePool();
