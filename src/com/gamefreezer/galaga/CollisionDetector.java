@@ -2,12 +2,10 @@ package com.gamefreezer.galaga;
 
 public class CollisionDetector extends AllocGuard {
 
-    private Constants cfg;
     private Explosions explosions;
 
-    public CollisionDetector(Constants cfg, Explosions explosions) {
+    public CollisionDetector(Explosions explosions) {
 	super();
-	this.cfg = cfg;
 	this.explosions = explosions;
     }
 
@@ -37,7 +35,7 @@ public class CollisionDetector extends AllocGuard {
 	for (int i = 0; i < len; i++) {
 	    if (bulletArray[i].isAlive() && bulletArray[i].intersects(ship)) {
 		bulletArray[i].kill();
-		score.decrementHealth(cfg.HEALTH_HIT_LIGHT);
+		score.applyLightHealthHit();
 	    }
 	}
     }
@@ -50,7 +48,7 @@ public class CollisionDetector extends AllocGuard {
 		if (alien.isSolo()) {
 		    alien.kill();
 		    explosions.newExplosion(alien);
-		    score.decrementHealth(cfg.HEALTH_HIT_SEVERE);
+		    score.applySevereHealthHit();
 		} else {
 		    score.setHealth(0);
 		}

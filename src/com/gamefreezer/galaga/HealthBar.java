@@ -13,10 +13,6 @@ public class HealthBar {
 	this.cfg = cfg;
 	screen = cfg.SCREEN;
 	this.score = score;
-	// healthBarX = screen.inGameLeft() + cfg.HEALTH_SIDE_INDENT;
-	// healthBarY = screen.inGameBottom() + cfg.HEALTH_BOTTOM_INDENT;
-	// healthBarWidth = screen.inGameWidth() - (cfg.HEALTH_SIDE_INDENT * 2);
-
 	healthBarX = screen.inGameRight() - cfg.HEALTH_BAR_WIDTH
 		- cfg.HEALTH_SIDE_INDENT;
 	healthBarY = screen.inGameTop() + cfg.HEALTH_BOTTOM_INDENT;

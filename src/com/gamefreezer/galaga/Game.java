@@ -50,11 +50,13 @@ public class Game extends AllocGuard {
 	this.cfg = cfg;
 	final Screen screen = cfg.SCREEN;
 	spriteCache = cfg.SPRITE_CACHE;
-	explosions = new Explosions(spriteCache, cfg);
+	explosions = cfg.EXPLOSIONS;
+
 	// TODO don't pass cfg here and lower, pass what is needed
-	collisionDetector = new CollisionDetector(cfg, explosions);
+	collisionDetector = new CollisionDetector(explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
-	score = new Score(spriteCache, cfg);
+	score = new Score(spriteCache, cfg, cfg.HEALTH_HIT_LIGHT,
+		cfg.HEALTH_HIT_SEVERE);
 	healthBar = new HealthBar(cfg, score);
 	countDown = cfg.COUNT_DOWN;
 	getReady = cfg.GET_READY;
@@ -273,9 +275,6 @@ public class Game extends AllocGuard {
     }
 
     private void preloadImages() {
-	Animation explosion = new Animation(spriteCache);
-	explosion.reset(cfg.EXPL_ANIM_SRC, true);
-	shipExplosion.reset(cfg.EXPL_ANIM_SRC, true);
 	for (int idx = 0; idx < cfg.DIGITS.length; idx++) {
 	    spriteCache.get(cfg.DIGITS[idx]);
 	}

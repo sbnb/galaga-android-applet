@@ -15,12 +15,18 @@ public class Score extends AllocGuard {
     private int totalHitsMade = 0;
     private int bonus;
     private int bonusDecrement;
+    private int lightHealthHit;
+    private int severeHealthHit;
 
-    public Score(SpriteCache spriteStore, Constants cfg) {
+    // TODO work toward losing cfg being passed to Score
+    public Score(SpriteCache spriteCache, Constants cfg, int lightHealthHit,
+	    int severeHealthHit) {
 	super();
 	this.cfg = cfg;
 	this.screen = cfg.SCREEN;
-	this.spriteStore = spriteStore;
+	this.spriteStore = spriteCache;
+	this.lightHealthHit = lightHealthHit;
+	this.severeHealthHit = severeHealthHit;
     }
 
     public int getScore() {
@@ -55,11 +61,19 @@ public class Score extends AllocGuard {
 	this.health = 100;
     }
 
-    public void decrementHealth(int amount) {
+    private void decrementHealth(int amount) {
 	health -= amount;
 	if (health < 0) {
 	    health = 0;
 	}
+    }
+
+    public void applySevereHealthHit() {
+	decrementHealth(severeHealthHit);
+    }
+
+    public void applyLightHealthHit() {
+	decrementHealth(lightHealthHit);
     }
 
     public void incremementShotsFired(int shots) {

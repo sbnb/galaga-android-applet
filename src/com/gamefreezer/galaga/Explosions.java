@@ -1,22 +1,24 @@
 package com.gamefreezer.galaga;
 
 public class Explosions {
-    private Constants cfg;
     private SpriteCache spriteCache;
     private Explosion[] mExplosions;
+    private AnimationSource explosionSrc;
+    private int maxExplosions;
 
-    // TODO pass in at is needed, lose config from Explosions
-    public Explosions(SpriteCache spriteCache, Constants cfg) {
+    public Explosions(SpriteCache spriteCache, AnimationSource explosionSrc,
+	    int maxExplosions) {
 	this.spriteCache = spriteCache;
-	this.cfg = cfg;
+	this.explosionSrc = explosionSrc;
+	this.maxExplosions = maxExplosions;
 	initExplosions();
     }
 
     // TODO different explosions, even just simple color shifts
     private void initExplosions() {
-	mExplosions = new Explosion[cfg.MAX_EXPLOSIONS];
+	mExplosions = new Explosion[maxExplosions];
 	for (int i = 0; i < mExplosions.length; i++) {
-	    mExplosions[i] = new Explosion(spriteCache, cfg.EXPL_ANIM_SRC);
+	    mExplosions[i] = new Explosion(spriteCache, explosionSrc);
 	}
     }
 
