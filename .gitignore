@@ -4,3 +4,5 @@
 # ignore everything under ~project/bin (class files rebuilt by Eclipse on builds)
 bin/
 .pmd
+data/
+imgs/
