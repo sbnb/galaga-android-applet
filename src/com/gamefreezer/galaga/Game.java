@@ -63,7 +63,7 @@ public class Game extends AllocGuard {
 	bonusDetails = cfg.BONUS_DETAILS;
 	levelComplete = cfg.LEVEL_COMPLETE;
 
-	shipExplosion = new Animation(spriteCache);
+	shipExplosion = new Animation(spriteCache, cfg.EXPLOSION_SRC, true);
 	killPoints = new KillPoints(spriteCache, cfg);
 
 	formations = FormationsFactory.createFormations(spriteCache, cfg);
@@ -278,7 +278,6 @@ public class Game extends AllocGuard {
 	for (int idx = 0; idx < cfg.DIGITS.length; idx++) {
 	    spriteCache.get(cfg.DIGITS[idx]);
 	}
-	// TODO check fixed animations don't need preloading, or do it here
 	killPoints.preload();
     }
 }

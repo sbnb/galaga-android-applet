@@ -70,7 +70,6 @@ public class Formation extends AllocGuard {
     }
 
     private void resetAlien(Alien alien, DataRecord record) {
-	// TODO set health specific to alien
 	alien.regenerate();
 	alien.setHealth(record.health);
 	partialReset(alien, record);

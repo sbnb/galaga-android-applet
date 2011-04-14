@@ -65,7 +65,7 @@ public class FiniteStateMachine {
 	    alienBullets.killOnscreenBullets();
 	    shipExplosion.reset();
 	    setStateTimer(stateTimes.BETWEEN_LIVES);
-	    // Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
+	    Tools.log("PLAYING_STATE ==> BETWEEN_LIVES_STATE");
 	}
 
 	// READY_STATE

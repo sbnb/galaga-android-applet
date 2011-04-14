@@ -62,6 +62,7 @@ public class Constants {
 
     // explosions and text effects
     public final Explosions EXPLOSIONS;
+    public final AnimationSource EXPLOSION_SRC;
 
     public final FixedAnimation COUNT_DOWN;
     public final FixedAnimation GET_READY;
@@ -159,9 +160,9 @@ public class Constants {
 	STAY_SOLO = PROPS.getInt("STAY_SOLO");
 
 	// explosions and text effects
-	AnimationSource explosionSrc = new AnimationSource(PROPS
-		.getStringArray("EXPL_IMGS"), PROPS.getIntArray("EXPL_TIMES"));
-	EXPLOSIONS = new Explosions(SPRITE_CACHE, explosionSrc, PROPS
+	EXPLOSION_SRC = new AnimationSource(PROPS.getStringArray("EXPL_IMGS"),
+		PROPS.getIntArray("EXPL_TIMES"));
+	EXPLOSIONS = new Explosions(SPRITE_CACHE, EXPLOSION_SRC, PROPS
 		.getInt("MAX_EXPLOSIONS"));
 
 	AnimationSource levelCompleteSrc = new AnimationSource(PROPS
