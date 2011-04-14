@@ -14,8 +14,8 @@ public class FiniteStateMachine {
     private Bullets playerBullets;
     private Bullets alienBullets;
     private Animation shipExplosion;
-    private Animation countDown;
-    private Animation textFx;
+    private FixedAnimation countDown;
+    private FixedAnimation levelComplete;
     private Aliens aliens;
     private List<Formation> formations;
     private int formationsIndex = 0;
@@ -24,8 +24,8 @@ public class FiniteStateMachine {
 
     public FiniteStateMachine(StateTimes stateTimes, Aliens aliens,
 	    List<Formation> formations, Score score, Bullets playerBullets,
-	    Bullets alienBullets, Animation shipExplosion, Animation countDown,
-	    Animation textFx) {
+	    Bullets alienBullets, Animation shipExplosion,
+	    FixedAnimation countDown, FixedAnimation levelComplete) {
 	this.stateTimes = stateTimes;
 	this.aliens = aliens;
 	this.formations = formations;
@@ -34,7 +34,7 @@ public class FiniteStateMachine {
 	this.alienBullets = alienBullets;
 	this.shipExplosion = shipExplosion;
 	this.countDown = countDown;
-	this.textFx = textFx;
+	this.levelComplete = levelComplete;
 	enforcePreconditions();
 	currentState = State.READY;
 	setStateTimer(stateTimes.LEVEL_DELAY);
@@ -50,7 +50,7 @@ public class FiniteStateMachine {
 	assert alienBullets != null : "alienBullets is null!";
 	assert shipExplosion != null : "shipExplosion is null!";
 	assert countDown != null : "countDown is null!";
-	assert textFx != null : "textFx is null!";
+	assert levelComplete != null : "levelComplete is null!";
     }
 
     public State currentState() {
@@ -88,7 +88,7 @@ public class FiniteStateMachine {
 	// LEVEL_CLEARED_STATE
 	if (currentState == State.WAIT_CLEAR && timeUpInState()) {
 	    currentState = State.LEVEL_CLEARED;
-	    textFx.reset();
+	    levelComplete.reset();
 	    setStateTimer(stateTimes.LEVEL_CLEARED);
 	    // Tools.log("PLAYING_STATE ==> LEVEL_CLEARED_STATE");
 	}

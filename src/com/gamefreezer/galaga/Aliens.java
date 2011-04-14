@@ -30,13 +30,14 @@ public class Aliens extends AllocGuard {
     private Screen screen;
 
     public Aliens(SpriteCache spriteCache, Screen screen, OldGun gun,
-	    SoloAliens soloAliens, int maxFormation) {
+	    SoloAliens soloAliens, int maxFormation, int hitRendererPoolSize) {
 	super();
 	this.screen = screen;
 
 	// TODO is this required? it is why the stray bullet appears left screen
 	// at end of level
-	nullAlien = new Alien(spriteCache, screen, soloAliens.soloReturnSpeed());
+	nullAlien = new Alien(spriteCache, screen,
+		soloAliens.soloReturnSpeed(), hitRendererPoolSize);
 
 	speed = new Speed();
 	moveDist = new Location();
@@ -47,7 +48,7 @@ public class Aliens extends AllocGuard {
 	aliensArray = new Alien[maxFormation];
 	for (int i = 0; i < maxFormation; i++) {
 	    aliensArray[i] = new Alien(spriteCache, screen, soloAliens
-		    .soloReturnSpeed());
+		    .soloReturnSpeed(), hitRendererPoolSize);
 	    aliensArray[i].kill();
 	}
     }

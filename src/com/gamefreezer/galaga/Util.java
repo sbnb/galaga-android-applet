@@ -70,32 +70,10 @@ public class Util {
 	return (number % (i * 10)) / i;
     }
 
-    public static Sprite getNumeralSprite(SpriteCache spriteStore,
+    public static Sprite getNumeralSprite(SpriteCache spriteCache,
 	    Constants cfg, int n) {
-	switch (n) {
-	case 0:
-	    return spriteStore.get(cfg.NUM_0);
-	case 1:
-	    return spriteStore.get(cfg.NUM_1);
-	case 2:
-	    return spriteStore.get(cfg.NUM_2);
-	case 3:
-	    return spriteStore.get(cfg.NUM_3);
-	case 4:
-	    return spriteStore.get(cfg.NUM_4);
-	case 5:
-	    return spriteStore.get(cfg.NUM_5);
-	case 6:
-	    return spriteStore.get(cfg.NUM_6);
-	case 7:
-	    return spriteStore.get(cfg.NUM_7);
-	case 8:
-	    return spriteStore.get(cfg.NUM_8);
-	case 9:
-	    return spriteStore.get(cfg.NUM_9);
-	}
-	assert false : "fell through switch - impossible. n: " + n;
-	return spriteStore.get(cfg.NUM_0);
+	assert n < cfg.DIGITS.length : "invalid digit " + n;
+	return spriteCache.get(cfg.DIGITS[n]);
     }
 
     public static int numDigits(int number) {

@@ -24,8 +24,12 @@ public class Game extends AllocGuard {
     private HealthBar healthBar;
     private long cycles = 0; // elapsed cycles during game
     private long lastTime = 0;
-    private Animation textFx;
-    private Animation countDown;
+
+    private FixedAnimation countDown;
+    private FixedAnimation getReady;
+    private FixedAnimation bonusDetails;
+    private FixedAnimation levelComplete;
+
     private Animation shipExplosion;
     private Explosions explosions;
     private KillPoints killPoints;
@@ -47,12 +51,16 @@ public class Game extends AllocGuard {
 	final Screen screen = cfg.SCREEN;
 	spriteCache = cfg.SPRITE_CACHE;
 	explosions = new Explosions(spriteCache, cfg);
+	// TODO don't pass cfg here and lower, pass what is needed
 	collisionDetector = new CollisionDetector(cfg, explosions);
 	sandbox = new Sandbox(spriteCache, cfg);
 	score = new Score(spriteCache, cfg);
 	healthBar = new HealthBar(cfg, score);
-	textFx = new Animation(spriteCache);
-	countDown = new Animation(spriteCache);
+	countDown = cfg.COUNT_DOWN;
+	getReady = cfg.GET_READY;
+	bonusDetails = cfg.BONUS_DETAILS;
+	levelComplete = cfg.LEVEL_COMPLETE;
+
 	shipExplosion = new Animation(spriteCache);
 	killPoints = new KillPoints(spriteCache, cfg);
 
@@ -70,7 +78,7 @@ public class Game extends AllocGuard {
 		soloReturnSpeed, soloController);
 
 	aliens = new Aliens(spriteCache, screen, gun, soloAliens,
-		cfg.MAX_FORMATION);
+		cfg.MAX_FORMATION, cfg.HIT_RENDERER_POOL_SIZE);
 
 	playerBullets = new Bullets(spriteCache, screen,
 		cfg.MAX_BULLETS_ON_SCREEN, new AnimationSource(
@@ -80,7 +88,7 @@ public class Game extends AllocGuard {
 			cfg.ALIEN_BULLET_IMAGES, cfg.ALIEN_BULLET_TIMES));
 	fsm = new FiniteStateMachine(cfg.STATE_TIMES, aliens, formations,
 		score, playerBullets, alienBullets, shipExplosion, countDown,
-		textFx);
+		levelComplete);
 
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
@@ -146,22 +154,16 @@ public class Game extends AllocGuard {
 	sandbox.draw(graphics);
 	// text messages drawn last based on state
 	if (fsm.currentState() == State.READY) {
-	    // TODO better placement of imgs using relative values
-	    // spriteCache.get("text_get_ready.png").draw(graphics, 70, 200);
-	    spriteCache.get(cfg.GET_READY_IMG).draw(graphics,
-		    cfg.GET_READY_TOPLEFT);
-	    // TODO magic numbers
-	    countDown.draw(graphics, 160, 270);
+	    getReady.draw(graphics);
+	    countDown.draw(graphics);
 	}
 	if (fsm.currentState() == State.LEVEL_CLEARED
 		|| fsm.currentState() == State.BONUS_MESSAGE) {
-	    textFx.draw(graphics, 28, 100);
+	    levelComplete.draw(graphics);
 	}
 	if (fsm.currentState() == State.BONUS_MESSAGE
 		|| fsm.currentState() == State.BONUS_PAYOUT) {
-	    // TODO keep a copy of the Sprite (in Game, final)
-	    spriteCache.get(cfg.BONUS_DETAILS_IMG).draw(graphics,
-		    cfg.BONUS_DETAILS_TOPLEFT);
+	    bonusDetails.draw(graphics);
 	    score.drawBonuses(graphics);
 	}
 	borderRenderer.draw(graphics);
@@ -274,20 +276,10 @@ public class Game extends AllocGuard {
 	Animation explosion = new Animation(spriteCache);
 	explosion.reset(cfg.EXPL_ANIM_SRC, true);
 	shipExplosion.reset(cfg.EXPL_ANIM_SRC, true);
-	spriteCache.get(cfg.NUM_0);
-	spriteCache.get(cfg.NUM_1);
-	spriteCache.get(cfg.NUM_2);
-	spriteCache.get(cfg.NUM_3);
-	spriteCache.get(cfg.NUM_4);
-	spriteCache.get(cfg.NUM_5);
-	spriteCache.get(cfg.NUM_6);
-	spriteCache.get(cfg.NUM_7);
-	spriteCache.get(cfg.NUM_8);
-	spriteCache.get(cfg.NUM_9);
-	spriteCache.get(cfg.GET_READY_IMG);
-	textFx.reset(cfg.LEVEL_COMPLETE_ANIM_SRC, true);
-	countDown.reset(cfg.COUNTDOWN_ANIM_SRC, true);
-	spriteCache.get(cfg.BONUS_DETAILS_IMG);
+	for (int idx = 0; idx < cfg.DIGITS.length; idx++) {
+	    spriteCache.get(cfg.DIGITS[idx]);
+	}
+	// TODO check fixed animations don't need preloading, or do it here
 	killPoints.preload();
     }
 }

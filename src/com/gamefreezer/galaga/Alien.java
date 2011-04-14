@@ -10,14 +10,14 @@ public class Alien extends Entity {
 
     // main constructor called in Aliens()
     // reset.. methods in Formation handle the bulk of the Alien member settings
-    public Alien(SpriteCache spriteStore, Screen screen, Speed targettingSpeed) {
+    public Alien(SpriteCache spriteStore, Screen screen, Speed targettingSpeed,
+	    int hitRendererPoolSize) {
 	super(spriteStore, screen, targettingSpeed);
 	stopIfPartiallyOffScreenTopOrBottom = false;
 	stopIfPartiallyOffScreenLeftOrRight = true;
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = false;
-	// TODO magic number hit renderer size
-	hitRenderer = new HitRenderer(10);
+	hitRenderer = new HitRenderer(hitRendererPoolSize);
     }
 
     // called by Sandbox.getAlien only, a non essential utility constructor

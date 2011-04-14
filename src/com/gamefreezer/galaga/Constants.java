@@ -36,17 +36,8 @@ public class Constants {
     public final int BONUS_THRESHOLD;
     public final int KILLPOINTS_TRACKED;
 
-    // score fonts
-    public final String NUM_0;
-    public final String NUM_1;
-    public final String NUM_2;
-    public final String NUM_3;
-    public final String NUM_4;
-    public final String NUM_5;
-    public final String NUM_6;
-    public final String NUM_7;
-    public final String NUM_8;
-    public final String NUM_9;
+    // numeric fonts for score, bonus, countdowns
+    public final String[] DIGITS;
 
     // player ship
     public final int SHIP_MOVEMENT;
@@ -61,6 +52,7 @@ public class Constants {
     public final int AL_SP_HORIZ;
     public final int VERT_STEP;
     public final int MAX_FORMATION;
+    public final int HIT_RENDERER_POOL_SIZE;
 
     // solo aliens
     public final CartesianIntRange SOLO_SPEED_RANGE;
@@ -72,14 +64,10 @@ public class Constants {
     public final int MAX_EXPLOSIONS;
     public final AnimationSource EXPL_ANIM_SRC;
 
-    public final AnimationSource LEVEL_COMPLETE_ANIM_SRC;
-    public final AnimationSource COUNTDOWN_ANIM_SRC;
-
-    public final String GET_READY_IMG;
-    public final CartesianInt GET_READY_TOPLEFT;
-
-    public final String BONUS_DETAILS_IMG;
-    public final CartesianInt BONUS_DETAILS_TOPLEFT;
+    public final FixedAnimation COUNT_DOWN;
+    public final FixedAnimation GET_READY;
+    public final FixedAnimation BONUS_DETAILS;
+    public final FixedAnimation LEVEL_COMPLETE;
 
     // player bullets
     public final int BULLET_MOVEMENT;
@@ -144,17 +132,8 @@ public class Constants {
 	BONUS_THRESHOLD = PROPS.getInt("BONUS_THRESHOLD");
 	KILLPOINTS_TRACKED = PROPS.getInt("KILLPOINTS_TRACKED");
 
-	// score fonts
-	NUM_0 = PROPS.getString("NUM_0");
-	NUM_1 = PROPS.getString("NUM_1");
-	NUM_2 = PROPS.getString("NUM_2");
-	NUM_3 = PROPS.getString("NUM_3");
-	NUM_4 = PROPS.getString("NUM_4");
-	NUM_5 = PROPS.getString("NUM_5");
-	NUM_6 = PROPS.getString("NUM_6");
-	NUM_7 = PROPS.getString("NUM_7");
-	NUM_8 = PROPS.getString("NUM_8");
-	NUM_9 = PROPS.getString("NUM_9");
+	// numeric fonts for score, bonus, countdowns
+	DIGITS = PROPS.getStringArray("DIGITS");
 
 	// player ship
 	SHIP_MOVEMENT = PROPS.getInt("SHIP_MOVEMENT");
@@ -169,6 +148,7 @@ public class Constants {
 	AL_SP_HORIZ = PROPS.getInt("ALIEN_SPACING_HORIZONTAL");
 	VERT_STEP = PROPS.getInt("VERTICAL_STEP_DISTANCE");
 	MAX_FORMATION = PROPS.getInt("MAX_FORMATION");
+	HIT_RENDERER_POOL_SIZE = PROPS.getInt("HIT_RENDERER_POOL_SIZE");
 
 	// solo aliens
 	SOLO_SPEED_RANGE = new CartesianIntRange(PROPS
@@ -184,21 +164,29 @@ public class Constants {
 	EXPL_ANIM_SRC = new AnimationSource(PROPS.getStringArray("EXPL_IMGS"),
 		PROPS.getIntArray("EXPL_TIMES"));
 
-	LEVEL_COMPLETE_ANIM_SRC = new AnimationSource(PROPS
+	AnimationSource levelCompleteSrc = new AnimationSource(PROPS
 		.getStringArray("LEVEL_COMPLETE_IMGS"), PROPS
 		.getIntArray("LEVEL_COMPLETE_TIMES"));
+	LEVEL_COMPLETE = FixedAnimation.build(SPRITE_CACHE, levelCompleteSrc,
+		PROPS.getIntArray("LEVEL_COMPLETE_TOPLEFT"));
 
-	COUNTDOWN_ANIM_SRC = new AnimationSource(PROPS
+	AnimationSource countDownSrc = new AnimationSource(PROPS
 		.getStringArray("COUNTDOWN_IMGS"), PROPS
 		.getIntArray("COUNTDOWN_TIMES"));
+	COUNT_DOWN = FixedAnimation.build(SPRITE_CACHE, countDownSrc, PROPS
+		.getIntArray("COUNTDOWN_TOPLEFT"));
 
-	GET_READY_IMG = PROPS.getString("GET_READY_IMG");
-	GET_READY_TOPLEFT = new CartesianInt(PROPS
+	AnimationSource getReadySrc = new AnimationSource(PROPS
+		.getStringArray("GET_READY_IMGS"), PROPS
+		.getIntArray("GET_READY_TIMES"));
+	GET_READY = FixedAnimation.build(SPRITE_CACHE, getReadySrc, PROPS
 		.getIntArray("GET_READY_TOPLEFT"));
 
-	BONUS_DETAILS_IMG = PROPS.getString("BONUS_DETAILS_IMG");
-	BONUS_DETAILS_TOPLEFT = new CartesianInt(PROPS
-		.getIntArray("BONUS_DETAILS_TOPLEFT"));
+	AnimationSource bonusDetailsSrc = new AnimationSource(PROPS
+		.getStringArray("BONUS_DETAILS_IMGS"), PROPS
+		.getIntArray("BONUS_DETAILS_TIMES"));
+	BONUS_DETAILS = FixedAnimation.build(SPRITE_CACHE, bonusDetailsSrc,
+		PROPS.getIntArray("BONUS_DETAILS_TOPLEFT"));
 
 	// player bullets
 	BULLET_MOVEMENT = PROPS.getInt("BULLET_MOVEMENT");

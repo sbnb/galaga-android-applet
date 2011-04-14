@@ -5,6 +5,7 @@ public class Explosions {
     private SpriteCache spriteCache;
     private Explosion[] mExplosions;
 
+    // TODO pass in at is needed, lose config from Explosions
     public Explosions(SpriteCache spriteCache, Constants cfg) {
 	this.spriteCache = spriteCache;
 	this.cfg = cfg;
