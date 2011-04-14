@@ -156,16 +156,25 @@ public class Score extends AllocGuard {
     public void drawBonuses(AbstractGraphics graphics) {
 	// TODO replace magic numbers for bonus details placement
 	// shots fired
-	Util.drawNumber(spriteStore, cfg, graphics, 170, 168,
+	int left = 270;
+	int top = 128;
+	int pixelsDown = 23;
+	Util.drawNumber(spriteStore, cfg, graphics, left, top,
 		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelShotsFired);
+	top += pixelsDown;
+
 	// hits made
-	Util.drawNumber(spriteStore, cfg, graphics, 170, 191,
+	Util.drawNumber(spriteStore, cfg, graphics, left, top,
 		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelHitsMade);
+	top += pixelsDown;
+
 	// accuracy
-	Util.drawNumber(spriteStore, cfg, graphics, 170, 214,
+	Util.drawNumber(spriteStore, cfg, graphics, left, top,
 		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, (int) (accuracy() * 100));
+	top += pixelsDown;
+
 	// bonus
-	Util.drawNumber(spriteStore, cfg, graphics, 170, 237,
+	Util.drawNumber(spriteStore, cfg, graphics, left, top,
 		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, bonus);
 
     }
