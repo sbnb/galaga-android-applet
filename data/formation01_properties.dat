@@ -32,7 +32,7 @@ eHealth = 100
 fImgPath = alien_f_1.png alien_f_2.png alien_f_3.png alien_f_2.png
 fRenderTimes = 2000 200 200 200
 fPoints = 5
-fHealth = 10000
+fHealth = 100
 #
 gImgPath = alien_g.png
 gPoints = 5
