@@ -13,11 +13,13 @@ public class FixedAnimationTest {
     private FixedAnimation fanim;
     private MockGraphics graphics;
     private int[] coords = new int[] { 10, 30 };
+    private int frameTime = 100;
+    private int[] times = new int[] { frameTime, frameTime };
 
     @Before
     public void setUp() throws Exception {
 	fanim = FixedAnimation.build(Helper.buildSpriteCache(), Helper
-		.buildAnimationSource(), coords);
+		.buildAnimationSource(times), coords);
 	graphics = new MockGraphics();
     }
 
@@ -38,7 +40,9 @@ public class FixedAnimationTest {
 
     @Test
     public void animationFinishesAsExpected() {
+	fanim.rewindFrameStart(System.currentTimeMillis() - frameTime);
 	fanim.draw(graphics);
+	fanim.rewindFrameStart(System.currentTimeMillis() - frameTime);
 	fanim.draw(graphics);
 	assertThat(fanim.isFinished(), is(true));
     }

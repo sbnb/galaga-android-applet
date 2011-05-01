@@ -19,9 +19,14 @@ public class Helper {
     }
 
     public static AnimationSource buildAnimationSource() {
-	String[] names = new String[] { "bullet_1.png", "bullet_2.png" };
 	int[] times = new int[] { 0, 0 };
-	return new AnimationSource(names, times);
+	return buildAnimationSource(times);
+    }
+
+    public static AnimationSource buildAnimationSource(int[] times) {
+	String[] names = new String[] { "bullet_1.png", "bullet_2.png" };
+	int[] timesClone = times.clone();
+	return new AnimationSource(names, timesClone);
     }
 
     public static Animation buildAnimation(boolean oneShot) {
@@ -31,4 +36,9 @@ public class Helper {
 	return anim;
     }
 
+    public static Animation buildAnimation(AnimationSource src, boolean oneShot) {
+	SpriteCache spriteCache = Helper.buildSpriteCache();
+	Animation anim = new Animation(spriteCache, src, oneShot);
+	return anim;
+    }
 }

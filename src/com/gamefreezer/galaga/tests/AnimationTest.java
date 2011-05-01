@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.gamefreezer.galaga.AbstractGraphics;
 import com.gamefreezer.galaga.Animation;
+import com.gamefreezer.galaga.AnimationSource;
 
 public class AnimationTest {
 
@@ -31,6 +32,22 @@ public class AnimationTest {
 	anim.draw(graphics, 0, 0);
 	anim.draw(graphics, 0, 0);
 	assertThat(anim.isFinished(), is(true));
+    }
+
+    @Test
+    public void animationFinishes() {
+	int frameTime = 100;
+	int[] times = new int[] { frameTime, frameTime };
+	AnimationSource src = Helper.buildAnimationSource(times);
+	Animation animation = Helper.buildAnimation(src, true);
+
+	animation.rewindFrameStart(System.currentTimeMillis() - frameTime);
+	animation.draw(graphics, 0, 0);
+	assertThat(animation.isFinished(), is(false));
+
+	animation.rewindFrameStart(System.currentTimeMillis() - frameTime);
+	animation.draw(graphics, 0, 0);
+	assertThat(animation.isFinished(), is(true));
     }
 
 }
