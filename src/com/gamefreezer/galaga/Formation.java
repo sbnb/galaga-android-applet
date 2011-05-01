@@ -10,25 +10,29 @@ public class Formation extends AllocGuard {
 
     private final SpriteCache spriteCache;
     private final String propertiesFileName;
-    private final Constants cfg;
     private MyProperties props;
     private String layoutFile;
     private SortedMap<Integer, Integer> alienSpeeds;
-    private int spVert;
-    private int spHoriz;
-    private int vertStep;
-
     private int last = 0;
     private DataRecord[] records;
+    private Screen screen;
+    private int maxFormation;
+    private AlienSpacing defSpacing;
+    private AlienSpacing spacing;
+    private SortedMap<Integer, Integer> defSpeeds;
 
-    public Formation(SpriteCache spriteStore, Constants cfg,
+    public Formation(SpriteCache spriteCache, Screen screen, int maxFormation,
+	    AlienSpacing defSpacing, SortedMap<Integer, Integer> defSpeeds,
 	    String propertiesFileName) {
 	super();
-	this.cfg = cfg;
-	this.spriteCache = spriteStore;
+	this.spriteCache = spriteCache;
+	this.screen = screen;
+	this.maxFormation = maxFormation;
+	this.defSpacing = defSpacing;
+	this.defSpeeds = defSpeeds;
 	this.propertiesFileName = propertiesFileName;
 
-	records = new DataRecord[cfg.MAX_FORMATION];
+	records = new DataRecord[maxFormation];
 
 	loadProperties();
 	initializeFromProperties();
@@ -66,7 +70,7 @@ public class Formation extends AllocGuard {
     }
 
     public int getVerticalStepDistance() {
-	return vertStep;
+	return spacing.vertStep;
     }
 
     private void resetAlien(Alien alien, DataRecord record) {
@@ -102,11 +106,14 @@ public class Formation extends AllocGuard {
 
     private void initializeFromProperties() {
 	assert props.size() > 0 : "properties must be loaded";
-	spVert = props.getInt("spacingVertical", cfg.AL_SP_VERT);
-	spHoriz = props.getInt("spacingHorizontal", cfg.AL_SP_HORIZ);
-	vertStep = props.getInt("verticalStepDistance", cfg.VERT_STEP);
+
+	spacing = new AlienSpacing( //
+		props.getInt("spacingVertical", defSpacing.vertical), //
+		props.getInt("spacingHorizontal", defSpacing.horizontal), //
+		props.getInt("verticalStepDistance", defSpacing.vertStep));
+
 	alienSpeeds = props.getSortedMap(props.getString("alienSpeeds", ""),
-		cfg.ALIEN_SPEEDS);
+		defSpeeds);
 	layoutFile = props.getString("layoutFile", "");
     }
 
@@ -118,13 +125,13 @@ public class Formation extends AllocGuard {
 	    final BufferedReader bufferedReader = new BufferedReader(
 		    new InputStreamReader(inStream));
 	    String line;
-	    int x = cfg.SCREEN.inGameLeft();
-	    int y = cfg.SCREEN.inGameTop() + spVert;
+	    int x = screen.inGameLeft();
+	    int y = screen.inGameTop() + spacing.vertical;
 
 	    while ((line = bufferedReader.readLine()) != null) {
 		scanALineOfLayout(line, x, y);
-		x = cfg.SCREEN.inGameLeft();
-		y += spVert;
+		x = screen.inGameLeft();
+		y += spacing.vertical;
 	    }
 	    inStream.close();
 	} catch (Exception e) {
@@ -140,13 +147,13 @@ public class Formation extends AllocGuard {
 	    if (isAlpha(c)) {
 		saveAlienDetails(xLocal, y, c);
 	    }
-	    xLocal += spHoriz;
+	    xLocal += spacing.horizontal;
 	}
     }
 
     // save the information needed to create each alien in this level later
     private void saveAlienDetails(int x, int y, char chr) {
-	assert last < cfg.MAX_FORMATION : "MAX_FORMATION(" + cfg.MAX_FORMATION
+	assert last < maxFormation : "maxFormation(" + maxFormation
 		+ ") <= last (" + last + "): increase it.";
 
 	final String[] imageNames = getAlienImagePath(chr);
@@ -171,7 +178,7 @@ public class Formation extends AllocGuard {
     }
 
     private void centerFormation() {
-	final int offset = (cfg.SCREEN.inGameWidth() - formationWidth()) / 2;
+	final int offset = (screen.inGameWidth() - formationWidth()) / 2;
 	for (int idx = 0; idx < last; idx++) {
 	    records[idx].xLocation += offset;
 	}
@@ -179,8 +186,8 @@ public class Formation extends AllocGuard {
 
     private int formationWidth() {
 	assert records.length > 0 : "Formation must have elements";
-	int leftMin = cfg.SCREEN.inGameRight();
-	int rightMax = cfg.SCREEN.inGameLeft();
+	int leftMin = screen.inGameRight();
+	int rightMax = screen.inGameLeft();
 	for (int idx = 0; idx < last; idx++) {
 	    leftMin = records[idx].xLocation < leftMin ? records[idx].xLocation
 		    : leftMin;

@@ -17,16 +17,19 @@ public class Constants {
 
     public final Screen SCREEN;
 
-    // health bar
-    public final int HEALTH_SIDE_INDENT;
-    public final int HEALTH_BOTTOM_INDENT;
-    public final int HEALTH_BAR_WIDTH;
-    public final int HEALTH_BAR_HEIGHT;
-    public final float HEALTH_COLOR_CHANGE;
+    // side buttons
+    public final int BTN_WIDTH;
+    public final int BTN_HEIGHT;
+    public final int BTN_OFFSET;
 
-    // health penalties
-    public final int HEALTH_HIT_LIGHT;
-    public final int HEALTH_HIT_SEVERE;
+    // health bar
+    public final Rectangle HEALTH_RECT;
+    public final float HB_CLR_CHANGE;
+    public final int HB_HIT_LIGHT;
+    public final int HB_HIT_SEVERE;
+    public final AbstractColor HB_OUTLINE_CLR;
+    public final AbstractColor HB_HIGH_CLR;
+    public final AbstractColor HB_LOW_CLR;
 
     // score display
     public final int SCORE_LEFT;
@@ -46,11 +49,10 @@ public class Constants {
 
     // aliens
     public final int ALIEN_POOL_SIZE;
-    public SortedMap<Integer, Integer> ALIEN_SPEEDS;
-    public final int ALIEN_MOVEMENT_VERTICAL;
-    public final int AL_SP_VERT;
-    public final int AL_SP_HORIZ;
-    public final int VERT_STEP;
+    public SortedMap<Integer, Integer> AL_SPEEDS;
+
+    public final AlienSpacing AL_SPACING;
+
     public final int MAX_FORMATION;
     public final int HIT_RENDERER_POOL_SIZE;
 
@@ -76,7 +78,6 @@ public class Constants {
     public final String[] BULLET_IMAGES;
     public final int[] BULLET_TIMES;
 
-    public final String[] GUN_REFS;
     public final Gun[] GUNS;
 
     // alien bullets
@@ -87,9 +88,6 @@ public class Constants {
     public final int[] ALIEN_BULLET_TIMES;
 
     // colors
-    public final AbstractColor HEALTH_BAR_OUTLINE;
-    public final AbstractColor HEALTH_BAR_HIGH;
-    public final AbstractColor HEALTH_BAR_LOW;
     public final AbstractColor SCORE;
     public final AbstractColor BACKGROUND;
     public final AbstractColor BUTTON_COLOR;
@@ -112,17 +110,20 @@ public class Constants {
 	SCREEN = new Screen(SCREEN_WIDTH, SCREEN_HEIGHT, OUTER_BORDER,
 		INNER_BORDER);
 
-	// health bar
-	// TODO match health bar configs to the way the heat bar is setup
-	HEALTH_SIDE_INDENT = PROPS.getInt("HEALTH_SIDE_INDENT");
-	HEALTH_BOTTOM_INDENT = PROPS.getInt("HEALTH_BOTTOM_INDENT");
-	HEALTH_BAR_WIDTH = PROPS.getInt("HEALTH_BAR_WIDTH");
-	HEALTH_BAR_HEIGHT = PROPS.getInt("HEALTH_BAR_HEIGHT");
-	HEALTH_COLOR_CHANGE = PROPS.getFloat("HEALTH_COLOR_CHANGE");
+	// side buttons
+	BTN_WIDTH = PROPS.getInt("BTN_WIDTH");
+	BTN_HEIGHT = PROPS.getInt("BTN_HEIGHT");
+	BTN_OFFSET = PROPS.getInt("BTN_OFFSET");
 
-	// health penalties
-	HEALTH_HIT_LIGHT = PROPS.getInt("HEALTH_HIT_LIGHT");
-	HEALTH_HIT_SEVERE = PROPS.getInt("HEALTH_HIT_SEVERE");
+	// health bar
+	HEALTH_RECT = new Rectangle(PROPS.getIntArray("HB_DIMS"));
+	HEALTH_RECT.translate(SCREEN.inGameLeft(), SCREEN.inGameTop());
+	HB_CLR_CHANGE = PROPS.getFloat("HB_CLR_CHANGE");
+	HB_HIT_LIGHT = PROPS.getInt("HB_HIT_LIGHT");
+	HB_HIT_SEVERE = PROPS.getInt("HB_HIT_SEVERE");
+	HB_OUTLINE_CLR = PROPS.getColor("HB_OUTLINE_CLR");
+	HB_HIGH_CLR = PROPS.getColor("HB_HIGH_CLR");
+	HB_LOW_CLR = PROPS.getColor("HB_LOW_CLR");
 
 	// score display
 	SCORE_LEFT = PROPS.getInt("SCORE_LEFT");
@@ -142,11 +143,13 @@ public class Constants {
 
 	// aliens
 	ALIEN_POOL_SIZE = PROPS.getInt("ALIEN_POOL_SIZE");
-	ALIEN_SPEEDS = PROPS.getSortedMap("ALIEN_SPEEDS");
-	ALIEN_MOVEMENT_VERTICAL = PROPS.getInt("ALIEN_MOVEMENT_VERTICAL");
-	AL_SP_VERT = PROPS.getInt("ALIEN_SPACING_VERTICAL");
-	AL_SP_HORIZ = PROPS.getInt("ALIEN_SPACING_HORIZONTAL");
-	VERT_STEP = PROPS.getInt("VERTICAL_STEP_DISTANCE");
+	AL_SPEEDS = PROPS.getSortedMap("ALIEN_SPEEDS");
+
+	AL_SPACING = new AlienSpacing( //
+		PROPS.getInt("ALIEN_SPACING_VERTICAL"), //
+		PROPS.getInt("ALIEN_SPACING_HORIZONTAL"), //
+		PROPS.getInt("VERTICAL_STEP_DISTANCE"));
+
 	MAX_FORMATION = PROPS.getInt("MAX_FORMATION");
 	HIT_RENDERER_POOL_SIZE = PROPS.getInt("HIT_RENDERER_POOL_SIZE");
 
@@ -197,59 +200,9 @@ public class Constants {
 	BULLET_TIMES = PROPS.getIntArray("BULLET_TIMES");
 
 	// distinct guns
-	// TODO move to own builder class
-	GUN_REFS = PROPS.getStringArray("GUN_REFS");
-	GUNS = new Gun[GUN_REFS.length];
-	int maxBulletsOnScreen = 0;
-	final AbstractColor outlineColor = PROPS.getColor("HEAT_OUTLINE_COL");
-	final AbstractColor primaryFillColor = PROPS
-		.getColor("HEAT_PRIMARY_COL");
-	final AbstractColor secondaryFillColor = PROPS
-		.getColor("HEAT_SECONDARY_COL");
-
-	for (int i = 0; i < GUNS.length; i++) {
-	    final String gunName = GUN_REFS[i];
-
-	    Rectangle displayBarRect = new Rectangle(PROPS
-		    .getIntArray("HEAT_DIMS"));
-	    displayBarRect.translate(SCREEN.inGameLeft(), SCREEN.inGameTop());
-
-	    StatusBar statusBar = new StatusBar(displayBarRect, 100.0f,
-		    outlineColor, primaryFillColor, secondaryFillColor);
-
-	    final AnimationSource bulletAnimSrc = new AnimationSource(PROPS
-		    .getStringArray(gunName + "_BULLET_IMAGES"), //
-		    PROPS.getIntArray(gunName + "_BULLET_TIMES"));
-	    final int bulletsOnScreen = PROPS.getInt(gunName
-		    + "_BULLETS_ON_SCREEN");
-	    maxBulletsOnScreen = Math.max(maxBulletsOnScreen, bulletsOnScreen);
-	    AnimationPool bulletAnimPool = new AnimationPool("bullets",
-		    SPRITE_CACHE, bulletAnimSrc, bulletsOnScreen, false);
-
-	    final AnimationSource hitAnimSrc = new AnimationSource(PROPS
-		    .getStringArray(gunName + "_HIT_IMAGES"), //
-		    PROPS.getIntArray(gunName + "_HIT_TIMES"));
-	    AnimationPool hitAnimPool = new AnimationPool("hits", SPRITE_CACHE,
-		    hitAnimSrc, bulletsOnScreen, true);
-	    Animation anim = hitAnimPool.get();
-	    hitAnimPool.put(anim);
-
-	    final AnimationSource firingAnimationSource = new AnimationSource(
-		    PROPS.getStringArray(gunName + "_FIRING_IMAGES"), //
-		    PROPS.getIntArray(gunName + "_FIRING_TIMES"));
-	    Animation firingAnimation = new Animation(SPRITE_CACHE,
-		    firingAnimationSource, true);
-
-	    GUNS[i] = new Gun( //
-		    PROPS.getInt(gunName + "_BULLET_SPEED"), //
-		    PROPS.getInt(gunName + "_RATE_OF_FIRE"), //
-		    PROPS.getInt(gunName + "_DAMAGE"), //
-		    PROPS.getInt(gunName + "_HEAT_INCREMENT"), //
-		    PROPS.getInt(gunName + "_COOLING"), //
-		    bulletAnimPool, hitAnimPool, firingAnimation, statusBar);
-
-	}
-	MAX_BULLETS_ON_SCREEN = maxBulletsOnScreen;
+	GunBuilder gunBuilder = new GunBuilder(PROPS, SCREEN, SPRITE_CACHE);
+	GUNS = gunBuilder.getGuns();
+	MAX_BULLETS_ON_SCREEN = gunBuilder.getMaxBulletsOnScreen();
 
 	// alien bullets
 	ALIEN_BULLET_MOVEMENT = PROPS.getInt("ALIEN_BULLET_MOVEMENT");
@@ -259,9 +212,6 @@ public class Constants {
 	ALIEN_BULLET_TIMES = PROPS.getIntArray("ALIEN_BULLET_TIMES");
 
 	// colors
-	HEALTH_BAR_OUTLINE = PROPS.getColor("HEALTH_BAR_OUTLINE");
-	HEALTH_BAR_HIGH = PROPS.getColor("HEALTH_BAR_HIGH");
-	HEALTH_BAR_LOW = PROPS.getColor("HEALTH_BAR_LOW");
 	SCORE = PROPS.getColor("SCORE");
 	BACKGROUND = PROPS.getColor("BACKGROUND");
 	BUTTON_COLOR = PROPS.getColor("BUTTON_COLOR");

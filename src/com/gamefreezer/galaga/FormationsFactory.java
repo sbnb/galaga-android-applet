@@ -17,7 +17,9 @@ public class FormationsFactory {
 
 	for (String name : names) {
 	    if (fileNameOk(name)) {
-		formations.add(new Formation(spriteStore, cfg, name));
+		formations.add(new Formation(spriteStore, cfg.SCREEN,
+			cfg.MAX_FORMATION, cfg.AL_SPACING, cfg.AL_SPEEDS,
+			name));
 	    }
 	}
 	return formations;

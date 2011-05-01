@@ -2,19 +2,18 @@ package com.gamefreezer.galaga;
 
 public class Sandbox extends AllocGuard {
 
-    private Constants cfg;
     private SpriteCache spriteStore;
     private Alien alien;
     Location start;
     @SuppressWarnings("unused")
     private Location target;
+    private Screen screen;
 
-    public Sandbox(SpriteCache spriteStore, Constants cfg) {
+    public Sandbox(SpriteCache spriteStore, Screen screen) {
 	super();
 	this.spriteStore = spriteStore;
-	this.cfg = cfg;
-	start = new Location(cfg.SCREEN.inGameLeft(),
-		cfg.SCREEN.inGameTop() - 10);
+	this.screen = screen;
+	start = new Location(screen.inGameLeft(), screen.inGameTop() - 10);
 	target = new Location(200, 200);
 	alien = getAlien(start);
     }
@@ -38,7 +37,7 @@ public class Sandbox extends AllocGuard {
 	AnimationSource animSrc = new AnimationSource(imgNames, renderTimes);
 	int points = 10;
 
-	return new Alien(spriteStore, cfg.SCREEN, location, dx, dy, baseDx,
-		baseDy, points, animSrc);
+	return new Alien(spriteStore, screen, location, dx, dy, baseDx, baseDy,
+		points, animSrc);
     }
 }

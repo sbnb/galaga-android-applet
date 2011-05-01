@@ -3,14 +3,15 @@ package com.gamefreezer.galaga;
 public class KillPoints extends AllocGuard {
     private boolean ACTIVE = false;
     private Alien[] aliens;
-    private SpriteCache spriteStore;
-    private Constants cfg;
+    private SpriteCache spriteCache;
+    private String[] digits;
 
-    public KillPoints(SpriteCache spriteStore, Constants cfg) {
+    public KillPoints(SpriteCache spriteCache, int killPointsTracked,
+	    String[] digits) {
 	super();
-	this.spriteStore = spriteStore;
-	this.cfg = cfg;
-	aliens = new Alien[cfg.KILLPOINTS_TRACKED];
+	this.spriteCache = spriteCache;
+	aliens = new Alien[killPointsTracked];
+	this.digits = digits;
     }
 
     public void preload() {
@@ -28,7 +29,7 @@ public class KillPoints extends AllocGuard {
 		// TODO zoom effects - should use AnimationFrames, not Sprite
 		// only draw some point text (solo? above X?)
 		// draw the sprite at alien.location if alien.exploding
-		Sprite sprite = spriteStore.get(cfg.DIGITS[8]);
+		Sprite sprite = spriteCache.get(digits[8]);
 		int x = aliens[i].getX() + aliens[i].getWidth() / 2
 			- sprite.width() / 2;
 		int y = aliens[i].getY() + aliens[i].getHeight() / 2

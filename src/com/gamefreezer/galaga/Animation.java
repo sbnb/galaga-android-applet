@@ -41,7 +41,6 @@ public class Animation extends AllocGuard {
 	reset(animationSource, false);
     }
 
-    // TODO a reset(long time) makes testing time linked functionality easier
     public void reset() {
 	// Reset indexes on arrays and reset time
 	idx = 0;
@@ -56,6 +55,10 @@ public class Animation extends AllocGuard {
 
     public boolean isFinished() {
 	return finished;
+    }
+
+    public void rewindFrameStart(long toTime) {
+	frameStart = toTime;
     }
 
     /* Not every animation must have a pool. */

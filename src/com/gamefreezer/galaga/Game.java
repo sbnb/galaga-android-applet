@@ -54,17 +54,19 @@ public class Game extends AllocGuard {
 
 	// TODO don't pass cfg here and lower, pass what is needed
 	collisionDetector = new CollisionDetector(explosions);
-	sandbox = new Sandbox(spriteCache, cfg);
-	score = new Score(spriteCache, cfg, cfg.HEALTH_HIT_LIGHT,
-		cfg.HEALTH_HIT_SEVERE);
-	healthBar = new HealthBar(cfg, score);
+	sandbox = new Sandbox(spriteCache, screen);
+	score = new Score(spriteCache, cfg, screen, cfg.BONUS_THRESHOLD,
+		cfg.HB_HIT_LIGHT, cfg.HB_HIT_SEVERE);
+	healthBar = new HealthBar(cfg.HEALTH_RECT, score, cfg.HB_OUTLINE_CLR,
+		cfg.HB_HIGH_CLR, cfg.HB_LOW_CLR, cfg.HB_CLR_CHANGE);
 	countDown = cfg.COUNT_DOWN;
 	getReady = cfg.GET_READY;
 	bonusDetails = cfg.BONUS_DETAILS;
 	levelComplete = cfg.LEVEL_COMPLETE;
 
 	shipExplosion = new Animation(spriteCache, cfg.EXPLOSION_SRC, true);
-	killPoints = new KillPoints(spriteCache, cfg);
+	killPoints = new KillPoints(spriteCache, cfg.KILLPOINTS_TRACKED,
+		cfg.DIGITS);
 
 	formations = FormationsFactory.createFormations(spriteCache, cfg);
 
@@ -100,7 +102,8 @@ public class Game extends AllocGuard {
 		LEFT_SPEED, NO_SPEED);
 
 	preloadImages();
-	buttons = new Buttons(cfg);
+	buttons = new Buttons(screen, cfg.BUTTON_COLOR, cfg.BTN_WIDTH,
+		cfg.BTN_HEIGHT, cfg.BTN_OFFSET);
 	borderRenderer = new BorderRenderer(screen, cfg.OUTER_BORDER_COLOR,
 		cfg.INNER_BORDER_COLOR);
 

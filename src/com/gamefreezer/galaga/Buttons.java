@@ -1,20 +1,14 @@
 package com.gamefreezer.galaga;
 
 public class Buttons {
-    private Constants cfg;
-    private Screen screen;
     private Rectangle leftButton;
     private Rectangle rightButton;
     private Rectangle fireButton;
+    private AbstractColor buttonClr;
 
-    public Buttons(Constants cfg) {
-	this.cfg = cfg;
-	this.screen = cfg.SCREEN;
-
-	// TODO magic numbers for buttons
-	int width = 30;
-	int height = 60;
-	int offset = 10;
+    public Buttons(Screen screen, AbstractColor buttonClr, int width,
+	    int height, int offset) {
+	this.buttonClr = buttonClr;
 
 	leftButton = new Rectangle(0, 0, width, height);
 	leftButton.translate(offset, screen.height() - height - offset);
@@ -26,7 +20,7 @@ public class Buttons {
     }
 
     public void draw(AbstractGraphics graphics) {
-	graphics.setColor(cfg.BUTTON_COLOR);
+	graphics.setColor(buttonClr);
 	graphics.fillRect(leftButton.left, leftButton.top, leftButton.width(),
 		leftButton.height());
 	graphics.fillRect(rightButton.left, rightButton.top, rightButton

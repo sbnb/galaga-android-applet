@@ -2,38 +2,37 @@ package com.gamefreezer.galaga;
 
 public class HealthBar {
 
-    private Constants cfg;
-    private Screen screen;
-    private int healthBarX;
-    private int healthBarY;
-    private int healthBarWidth;
+    private Rectangle rect;
     private Score score;
+    private AbstractColor outlineClr;
+    private AbstractColor highClr;
+    private AbstractColor lowClr;
+    private float clrChange;
 
-    public HealthBar(Constants cfg, Score score) {
-	this.cfg = cfg;
-	screen = cfg.SCREEN;
+    public HealthBar(Rectangle rect, Score score, AbstractColor outlineClr,
+	    AbstractColor highClr, AbstractColor lowClr, float clrChange) {
+	this.rect = rect;
 	this.score = score;
-	healthBarX = screen.inGameRight() - cfg.HEALTH_BAR_WIDTH
-		- cfg.HEALTH_SIDE_INDENT;
-	healthBarY = screen.inGameTop() + cfg.HEALTH_BOTTOM_INDENT;
-	healthBarWidth = cfg.HEALTH_BAR_WIDTH;
+	this.outlineClr = outlineClr;
+	this.highClr = highClr;
+	this.lowClr = lowClr;
+	this.clrChange = clrChange;
     }
 
     public void draw(AbstractGraphics graphics) {
-	graphics.setColor(cfg.HEALTH_BAR_OUTLINE);
-	graphics.drawRect(healthBarX, healthBarY, healthBarWidth + 1,
-		cfg.HEALTH_BAR_HEIGHT);
+	graphics.setColor(outlineClr);
+	graphics.drawRect(rect);
 
-	int newHealthBarWidth = healthBarWidth + 1;
+	int newHealthBarWidth = rect.width() + 1;
 	float percentageHealth = score.getHealth() / 100f;
 	newHealthBarWidth = (int) (newHealthBarWidth * percentageHealth);
 
-	graphics.setColor(cfg.HEALTH_BAR_HIGH);
-	if (percentageHealth < cfg.HEALTH_COLOR_CHANGE) {
-	    graphics.setColor(cfg.HEALTH_BAR_LOW);
+	graphics.setColor(highClr);
+	if (percentageHealth < clrChange) {
+	    graphics.setColor(lowClr);
 	}
-	graphics.fillRect(healthBarX + 1, healthBarY + 1,
-		newHealthBarWidth - 1, cfg.HEALTH_BAR_HEIGHT - 1);
+	graphics.fillRect(rect.left, rect.top, //
+		newHealthBarWidth, rect.height());
     }
 
 }

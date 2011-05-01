@@ -27,4 +27,8 @@ public class FixedAnimation {
     public void reset() {
 	animation.reset();
     }
+
+    public void rewindFrameStart(long toTime) {
+	animation.rewindFrameStart(toTime);
+    }
 }

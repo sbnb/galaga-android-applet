@@ -17,14 +17,16 @@ public class Score extends AllocGuard {
     private int bonusDecrement;
     private int lightHealthHit;
     private int severeHealthHit;
+    private int bonusThreshold;
 
     // TODO work toward losing cfg being passed to Score
-    public Score(SpriteCache spriteCache, Constants cfg, int lightHealthHit,
-	    int severeHealthHit) {
+    public Score(SpriteCache spriteCache, Constants cfg, Screen screen,
+	    int bonusThreshold, int lightHealthHit, int severeHealthHit) {
 	super();
 	this.cfg = cfg;
-	this.screen = cfg.SCREEN;
+	this.screen = screen;
 	this.spriteStore = spriteCache;
+	this.bonusThreshold = bonusThreshold;
 	this.lightHealthHit = lightHealthHit;
 	this.severeHealthHit = severeHealthHit;
     }
@@ -104,10 +106,10 @@ public class Score extends AllocGuard {
     public void calculateBonus() {
 	bonus = bonus();
 	bonusDecrement = 1;
-	if (bonus < cfg.BONUS_THRESHOLD) {
+	if (bonus < bonusThreshold) {
 	    bonusDecrement = 1;
 	} else {
-	    bonusDecrement = bonus / cfg.BONUS_THRESHOLD;
+	    bonusDecrement = bonus / bonusThreshold;
 	}
     }
 
@@ -145,6 +147,8 @@ public class Score extends AllocGuard {
 	return accuracy;
     }
 
+    // TODO consider a better way to draw digits (a drawer object? passed around
+    // where needed?)
     public void draw(AbstractGraphics graphics) {
 	// Util.drawNumber(spriteStore, cfg, graphics, cfg.SCORE_LEFT,
 	// cfg.SCORE_TOP, cfg.SCORE_SPACING, cfg.SCORE_COMMAS, totalScore);
