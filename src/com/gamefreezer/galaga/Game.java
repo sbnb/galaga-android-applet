@@ -57,7 +57,8 @@ public class Game extends AllocGuard {
 	DigitRenderer digitRenderer = new DigitRenderer(spriteCache,
 		cfg.DIGITS, cfg.SCORE_SPACING, cfg.SCORE_COMMAS);
 	score = new Score(screen, digitRenderer, cfg.BONUS_THRESHOLD,
-		cfg.HB_HIT_LIGHT, cfg.HB_HIT_SEVERE);
+		cfg.HB_HIT_LIGHT, cfg.HB_HIT_SEVERE, cfg.SCORE_LEFT,
+		cfg.SCORE_TOP);
 	healthBar = new HealthBar(cfg.HEALTH_RECT, score, cfg.HB_OUTLINE_CLR,
 		cfg.HB_HIGH_CLR, cfg.HB_LOW_CLR, cfg.HB_CLR_CHANGE);
 	countDown = cfg.COUNT_DOWN;

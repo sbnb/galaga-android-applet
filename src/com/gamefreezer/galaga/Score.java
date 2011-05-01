@@ -17,15 +17,20 @@ public class Score extends AllocGuard {
     private int severeHealthHit;
     private int bonusThreshold;
     private DigitRenderer digitRenderer;
+    private int xOffset;
+    private int yOffset;
 
     public Score(Screen screen, DigitRenderer digitRenderer,
-	    int bonusThreshold, int lightHealthHit, int severeHealthHit) {
+	    int bonusThreshold, int lightHealthHit, int severeHealthHit,
+	    int xOffSet, int yOffset) {
 	super();
 	this.screen = screen;
 	this.digitRenderer = digitRenderer;
 	this.bonusThreshold = bonusThreshold;
 	this.lightHealthHit = lightHealthHit;
 	this.severeHealthHit = severeHealthHit;
+	this.xOffset = xOffSet;
+	this.yOffset = yOffset;
     }
 
     public int getScore() {
@@ -138,16 +143,16 @@ public class Score extends AllocGuard {
     }
 
     private float accuracy() {
-	if (levelShotsFired == 0)
+	if (levelShotsFired == 0) {
 	    return 0f;
+	}
 	float accuracy = (float) levelHitsMade / (float) levelShotsFired;
 	return accuracy;
     }
 
     public void draw(AbstractGraphics graphics) {
-	// TODO magic number for score placement
-	digitRenderer.draw(graphics, screen.inGameLeft(),
-		screen.inGameTop() + 5, totalScore);
+	digitRenderer.draw(graphics, screen.inGameLeft() + xOffset, //
+		screen.inGameTop() + yOffset, totalScore);
     }
 
     public void drawBonuses(AbstractGraphics graphics) {
