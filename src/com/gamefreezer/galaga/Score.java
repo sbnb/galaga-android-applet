@@ -2,8 +2,6 @@ package com.gamefreezer.galaga;
 
 public class Score extends AllocGuard {
 
-    private SpriteCache spriteStore;
-    private Constants cfg;
     private Screen screen;
     private int lives = 0;
     private int health = 100;
@@ -18,14 +16,13 @@ public class Score extends AllocGuard {
     private int lightHealthHit;
     private int severeHealthHit;
     private int bonusThreshold;
+    private DigitRenderer digitRenderer;
 
-    // TODO work toward losing cfg being passed to Score
-    public Score(SpriteCache spriteCache, Constants cfg, Screen screen,
+    public Score(Screen screen, DigitRenderer digitRenderer,
 	    int bonusThreshold, int lightHealthHit, int severeHealthHit) {
 	super();
-	this.cfg = cfg;
 	this.screen = screen;
-	this.spriteStore = spriteCache;
+	this.digitRenderer = digitRenderer;
 	this.bonusThreshold = bonusThreshold;
 	this.lightHealthHit = lightHealthHit;
 	this.severeHealthHit = severeHealthHit;
@@ -147,14 +144,10 @@ public class Score extends AllocGuard {
 	return accuracy;
     }
 
-    // TODO consider a better way to draw digits (a drawer object? passed around
-    // where needed?)
     public void draw(AbstractGraphics graphics) {
-	// Util.drawNumber(spriteStore, cfg, graphics, cfg.SCORE_LEFT,
-	// cfg.SCORE_TOP, cfg.SCORE_SPACING, cfg.SCORE_COMMAS, totalScore);
-	Util.drawNumber(spriteStore, cfg, graphics, screen.inGameLeft(), screen
-		.inGameTop() + 5, cfg.SCORE_SPACING, cfg.SCORE_COMMAS,
-		totalScore);
+	// TODO magic number for score placement
+	digitRenderer.draw(graphics, screen.inGameLeft(),
+		screen.inGameTop() + 5, totalScore);
     }
 
     public void drawBonuses(AbstractGraphics graphics) {
@@ -163,23 +156,18 @@ public class Score extends AllocGuard {
 	int left = 270;
 	int top = 128;
 	int pixelsDown = 23;
-	Util.drawNumber(spriteStore, cfg, graphics, left, top,
-		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelShotsFired);
+	digitRenderer.draw(graphics, left, top, levelShotsFired);
 	top += pixelsDown;
 
 	// hits made
-	Util.drawNumber(spriteStore, cfg, graphics, left, top,
-		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, levelHitsMade);
+	digitRenderer.draw(graphics, left, top, levelHitsMade);
 	top += pixelsDown;
 
 	// accuracy
-	Util.drawNumber(spriteStore, cfg, graphics, left, top,
-		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, (int) (accuracy() * 100));
+	digitRenderer.draw(graphics, left, top, (int) (accuracy() * 100));
 	top += pixelsDown;
 
 	// bonus
-	Util.drawNumber(spriteStore, cfg, graphics, left, top,
-		cfg.SCORE_SPACING, cfg.SCORE_COMMAS, bonus);
-
+	digitRenderer.draw(graphics, left, top, bonus);
     }
 }

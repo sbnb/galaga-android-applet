@@ -52,10 +52,11 @@ public class Game extends AllocGuard {
 	spriteCache = cfg.SPRITE_CACHE;
 	explosions = cfg.EXPLOSIONS;
 
-	// TODO don't pass cfg here and lower, pass what is needed
 	collisionDetector = new CollisionDetector(explosions);
 	sandbox = new Sandbox(spriteCache, screen);
-	score = new Score(spriteCache, cfg, screen, cfg.BONUS_THRESHOLD,
+	DigitRenderer digitRenderer = new DigitRenderer(spriteCache,
+		cfg.DIGITS, cfg.SCORE_SPACING, cfg.SCORE_COMMAS);
+	score = new Score(screen, digitRenderer, cfg.BONUS_THRESHOLD,
 		cfg.HB_HIT_LIGHT, cfg.HB_HIT_SEVERE);
 	healthBar = new HealthBar(cfg.HEALTH_RECT, score, cfg.HB_OUTLINE_CLR,
 		cfg.HB_HIGH_CLR, cfg.HB_LOW_CLR, cfg.HB_CLR_CHANGE);
