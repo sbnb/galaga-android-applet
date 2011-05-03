@@ -36,6 +36,7 @@ public class GunTest {
     private StatusBar statusBar;
     private AnimationPool hitAnimPool;
     private int hitPoolSize = 10;
+    private int maxFrames = 5;
 
     @Before
     public void setUp() {
@@ -45,13 +46,15 @@ public class GunTest {
 	bulletTimes = new int[] { 10, 10 };
 	bulletAnimSrc = new AnimationSource(bulletImages, bulletTimes);
 	AnimationPool bulletAnimPool = new AnimationPool("bullets",
-		spriteCache, bulletAnimSrc, numBulletsOnScreen, false);
-	hitAnimPool = new AnimationPool("hits", spriteCache, bulletAnimSrc,
-		hitPoolSize, true);
-	Animation firingAnim = new Animation(spriteCache, bulletAnimSrc, true);
+		spriteCache, maxFrames, bulletAnimSrc, numBulletsOnScreen,
+		false);
+	hitAnimPool = new AnimationPool("hits", spriteCache, maxFrames,
+		bulletAnimSrc, hitPoolSize, true);
+	Animation firingAnim = new Animation(spriteCache, maxFrames,
+		bulletAnimSrc, true);
 
-	bullets = new Bullets(spriteCache, screen, numBulletsOnScreen,
-		bulletAnimSrc);
+	bullets = new Bullets(spriteCache, maxFrames, screen,
+		numBulletsOnScreen, bulletAnimSrc);
 
 	statusBar = new StatusBar(new Rectangle(10, 10, 10, 10), 100, null,
 		null, null);

@@ -23,6 +23,7 @@ public class AnimationPoolTest {
     private String[] names;
     private int[] times;
     int size;
+    int maxFrames;
 
     @Before
     public void setUp() {
@@ -32,7 +33,9 @@ public class AnimationPoolTest {
 	times = new int[] { 10, 10 };
 	src = new AnimationSource(names, times);
 	size = 10;
-	pool = new AnimationPool("test", spriteCache, src, size, true);
+	maxFrames = 5;
+	pool = new AnimationPool("test", spriteCache, maxFrames, src, size,
+		true);
     }
 
     @Test

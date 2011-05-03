@@ -15,11 +15,12 @@ public class FixedAnimationTest {
     private int[] coords = new int[] { 10, 30 };
     private int frameTime = 100;
     private int[] times = new int[] { frameTime, frameTime };
+    private int maxFrames = 5;
 
     @Before
     public void setUp() throws Exception {
-	fanim = FixedAnimation.build(Helper.buildSpriteCache(), Helper
-		.buildAnimationSource(times), coords);
+	fanim = FixedAnimation.build(Helper.buildSpriteCache(), maxFrames,
+		Helper.buildAnimationSource(times), coords);
 	graphics = new MockGraphics();
     }
 

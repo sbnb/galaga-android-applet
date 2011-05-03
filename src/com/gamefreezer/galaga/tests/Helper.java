@@ -32,13 +32,13 @@ public class Helper {
     public static Animation buildAnimation(boolean oneShot) {
 	AnimationSource src = Helper.buildAnimationSource();
 	SpriteCache spriteCache = Helper.buildSpriteCache();
-	Animation anim = new Animation(spriteCache, src, oneShot);
+	Animation anim = new Animation(spriteCache, 10, src, oneShot);
 	return anim;
     }
 
     public static Animation buildAnimation(AnimationSource src, boolean oneShot) {
 	SpriteCache spriteCache = Helper.buildSpriteCache();
-	Animation anim = new Animation(spriteCache, src, oneShot);
+	Animation anim = new Animation(spriteCache, 10, src, oneShot);
 	return anim;
     }
 }

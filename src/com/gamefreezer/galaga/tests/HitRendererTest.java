@@ -21,13 +21,14 @@ public class HitRendererTest {
     int rendererSize = 10;
     int poolSize = 10;
     Location origin;
+    int maxFrames = 5;
 
     @Before
     public void setUp() throws Exception {
 	hitRenderer = new HitRenderer(rendererSize);
 	hitAnim = Helper.buildAnimation(true);
-	pool = new AnimationPool("hits", Helper.buildSpriteCache(), Helper
-		.buildAnimationSource(), poolSize, true);
+	pool = new AnimationPool("hits", Helper.buildSpriteCache(), maxFrames,
+		Helper.buildAnimationSource(), poolSize, true);
 	graphics = new MockGraphics();
 	origin = new Location();
     }

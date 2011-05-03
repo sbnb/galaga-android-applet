@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.gamefreezer.galaga.AbstractGraphics;
 import com.gamefreezer.galaga.Alien;
+import com.gamefreezer.galaga.Animation;
 import com.gamefreezer.galaga.AnimationPool;
 import com.gamefreezer.galaga.AnimationSource;
 import com.gamefreezer.galaga.Location;
@@ -18,17 +19,20 @@ public class AlienTest {
     private Alien alien;
     private AnimationPool pool;
     int size;
+    int maxFrames;
 
     @Before
     public void setUp() {
 	graphics = new MockGraphics();
 	size = 10;
+	maxFrames = 5;
 	int hitRendererPoolSize = 10;
 	SpriteCache spriteCache = Helper.buildSpriteCache();
 	AnimationSource src = Helper.buildAnimationSource();
-	pool = new AnimationPool("test", spriteCache, Helper
+	pool = new AnimationPool("test", spriteCache, maxFrames, Helper
 		.buildAnimationSource(), size, true);
-	alien = new Alien(spriteCache, null, null, hitRendererPoolSize);
+	Animation animation = new Animation(spriteCache, maxFrames);
+	alien = new Alien(animation, null, null, hitRendererPoolSize);
 	alien.setImagePath(src);
     }
 
