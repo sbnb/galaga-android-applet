@@ -17,6 +17,9 @@ public class Constants {
 
     public final Screen SCREEN;
 
+    // general animations
+    public final int MAX_FRAMES;
+
     // side buttons
     public final int BTN_WIDTH;
     public final int BTN_HEIGHT;
@@ -110,6 +113,9 @@ public class Constants {
 	SCREEN = new Screen(SCREEN_WIDTH, SCREEN_HEIGHT, OUTER_BORDER,
 		INNER_BORDER);
 
+	// general animations
+	MAX_FRAMES = PROPS.getInt("MAX_FRAMES");
+
 	// side buttons
 	BTN_WIDTH = PROPS.getInt("BTN_WIDTH");
 	BTN_HEIGHT = PROPS.getInt("BTN_HEIGHT");
@@ -165,32 +171,32 @@ public class Constants {
 	// explosions and text effects
 	EXPLOSION_SRC = new AnimationSource(PROPS.getStringArray("EXPL_IMGS"),
 		PROPS.getIntArray("EXPL_TIMES"));
-	EXPLOSIONS = new Explosions(SPRITE_CACHE, EXPLOSION_SRC, PROPS
-		.getInt("MAX_EXPLOSIONS"));
+	EXPLOSIONS = new Explosions(SPRITE_CACHE, MAX_FRAMES, EXPLOSION_SRC,
+		PROPS.getInt("MAX_EXPLOSIONS"));
 
 	AnimationSource levelCompleteSrc = new AnimationSource(PROPS
 		.getStringArray("LEVEL_COMPLETE_IMGS"), PROPS
 		.getIntArray("LEVEL_COMPLETE_TIMES"));
-	LEVEL_COMPLETE = FixedAnimation.build(SPRITE_CACHE, levelCompleteSrc,
-		PROPS.getIntArray("LEVEL_COMPLETE_TOPLEFT"));
+	LEVEL_COMPLETE = FixedAnimation.build(SPRITE_CACHE, MAX_FRAMES,
+		levelCompleteSrc, PROPS.getIntArray("LEVEL_COMPLETE_TOPLEFT"));
 
 	AnimationSource countDownSrc = new AnimationSource(PROPS
 		.getStringArray("COUNTDOWN_IMGS"), PROPS
 		.getIntArray("COUNTDOWN_TIMES"));
-	COUNT_DOWN = FixedAnimation.build(SPRITE_CACHE, countDownSrc, PROPS
-		.getIntArray("COUNTDOWN_TOPLEFT"));
+	COUNT_DOWN = FixedAnimation.build(SPRITE_CACHE, MAX_FRAMES,
+		countDownSrc, PROPS.getIntArray("COUNTDOWN_TOPLEFT"));
 
 	AnimationSource getReadySrc = new AnimationSource(PROPS
 		.getStringArray("GET_READY_IMGS"), PROPS
 		.getIntArray("GET_READY_TIMES"));
-	GET_READY = FixedAnimation.build(SPRITE_CACHE, getReadySrc, PROPS
-		.getIntArray("GET_READY_TOPLEFT"));
+	GET_READY = FixedAnimation.build(SPRITE_CACHE, MAX_FRAMES, getReadySrc,
+		PROPS.getIntArray("GET_READY_TOPLEFT"));
 
 	AnimationSource bonusDetailsSrc = new AnimationSource(PROPS
 		.getStringArray("BONUS_DETAILS_IMGS"), PROPS
 		.getIntArray("BONUS_DETAILS_TIMES"));
-	BONUS_DETAILS = FixedAnimation.build(SPRITE_CACHE, bonusDetailsSrc,
-		PROPS.getIntArray("BONUS_DETAILS_TOPLEFT"));
+	BONUS_DETAILS = FixedAnimation.build(SPRITE_CACHE, MAX_FRAMES,
+		bonusDetailsSrc, PROPS.getIntArray("BONUS_DETAILS_TOPLEFT"));
 
 	// player bullets
 	BULLET_MOVEMENT = PROPS.getInt("BULLET_MOVEMENT");
@@ -200,7 +206,8 @@ public class Constants {
 	BULLET_TIMES = PROPS.getIntArray("BULLET_TIMES");
 
 	// distinct guns
-	GunBuilder gunBuilder = new GunBuilder(PROPS, SCREEN, SPRITE_CACHE);
+	GunBuilder gunBuilder = new GunBuilder(PROPS, MAX_FRAMES, SCREEN,
+		SPRITE_CACHE);
 	GUNS = gunBuilder.getGuns();
 	MAX_BULLETS_ON_SCREEN = gunBuilder.getMaxBulletsOnScreen();
 

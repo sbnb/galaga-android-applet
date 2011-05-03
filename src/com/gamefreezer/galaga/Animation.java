@@ -4,7 +4,8 @@ public class Animation extends AllocGuard {
 
     private Sprite[] sprites;
     private int[] frameTimes;
-    private int idx = 0;
+    private int curFrameIdx = 0;
+    private int frameLength;
     private long frameStart = now();
     private boolean oneShot = false;
     private boolean finished = false;
@@ -12,20 +13,21 @@ public class Animation extends AllocGuard {
     private AnimationPool pool;
     private AnimationSource animationSource;
 
-    public Animation(SpriteCache spriteCache) {
+    public Animation(SpriteCache spriteCache, int maxFrames) {
 	super();
 	this.spriteCache = spriteCache;
+	sprites = new Sprite[maxFrames];
     }
 
-    public Animation(SpriteCache spriteCache, AnimationSource animationSource,
-	    boolean oneShot) {
-	this(spriteCache);
+    public Animation(SpriteCache spriteCache, int maxFrames,
+	    AnimationSource animationSource, boolean oneShot) {
+	this(spriteCache, maxFrames);
 	reset(animationSource, oneShot);
     }
 
-    public Animation(SpriteCache spriteCache, AnimationSource src,
-	    boolean oneShot, AnimationPool pool) {
-	this(spriteCache, src, oneShot);
+    public Animation(SpriteCache spriteCache, int maxFrames,
+	    AnimationSource src, boolean oneShot, AnimationPool pool) {
+	this(spriteCache, maxFrames, src, oneShot);
 	this.pool = pool;
     }
 
@@ -43,7 +45,7 @@ public class Animation extends AllocGuard {
 
     public void reset() {
 	// Reset indexes on arrays and reset time
-	idx = 0;
+	curFrameIdx = 0;
 	frameStart = now();
 	finished = false;
     }
@@ -89,7 +91,7 @@ public class Animation extends AllocGuard {
 	}
 
 	if (!finished) {
-	    sprites[idx].draw(graphics, x, y);
+	    sprites[curFrameIdx].draw(graphics, x, y);
 	}
     }
 
@@ -97,25 +99,25 @@ public class Animation extends AllocGuard {
 	if (frameTimes == null || frameTimes.length <= 1) {
 	    return false; // if no times given always stay on frame 1
 	}
-	return now() - frameStart >= frameTimes[idx];
+	return now() - frameStart >= frameTimes[curFrameIdx];
     }
 
     private void changeFrames() {
 	frameStart = now();
-	idx++;
-	if (idx == sprites.length) {
-	    idx = 0;
+	curFrameIdx++;
+	// if (curFrameIdx == sprites.length) {
+	if (curFrameIdx == frameLength) {
+	    curFrameIdx = 0;
 	    finished = oneShot ? true : false;
 	}
     }
 
     private void loadSprites(String[] imageNames) {
-	// TODO optimise new away in animations
-	// or do not call reset on an animation object?
-	// System.out.println("Animation.loadSprites(): ");
-	sprites = new Sprite[imageNames.length];
-	for (int i = 0; i < imageNames.length; i++) {
-	    sprites[i] = spriteCache.get(imageNames[i]);
+	assert imageNames.length <= sprites.length : "animation too long! "
+		+ imageNames.length;
+	frameLength = imageNames.length;
+	for (int idx = 0; idx < imageNames.length; idx++) {
+	    sprites[idx] = spriteCache.get(imageNames[idx]);
 	}
     }
 
@@ -143,7 +145,7 @@ public class Animation extends AllocGuard {
 	sb.append(pool == null ? "pool:null" : "pool:set");
 	sb.append(" oneShot:" + oneShot);
 	sb.append(" finished:" + finished);
-	sb.append(" idx:" + idx);
+	sb.append(" idx:" + curFrameIdx);
 	sb.append("]");
 	return sb.toString();
     }

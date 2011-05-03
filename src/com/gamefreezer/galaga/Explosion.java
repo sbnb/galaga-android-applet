@@ -6,8 +6,8 @@ public class Explosion {
     boolean isAvailable;
     private Entity entity;
 
-    public Explosion(SpriteCache spriteCache, AnimationSource animationSource) {
-	animation = new Animation(spriteCache, animationSource, true);
+    public Explosion(Animation animation) {
+	this.animation = animation;
 	isAvailable = true;
     }
 

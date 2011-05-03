@@ -6,11 +6,14 @@ public class GunBuilder {
     private int maxBulletsOnScreen;
     private MyProperties props;
     private SpriteCache spriteCache;
+    private int maxFrames;
     private Screen screen;
 
-    public GunBuilder(MyProperties props, Screen screen, SpriteCache spriteCache) {
+    public GunBuilder(MyProperties props, int maxFrames, Screen screen,
+	    SpriteCache spriteCache) {
 	this.props = props;
 	this.spriteCache = spriteCache;
+	this.maxFrames = maxFrames;
 	this.screen = screen;
 
 	String[] gunRefs = props.getStringArray("GUN_REFS");
@@ -51,7 +54,7 @@ public class GunBuilder {
 		props.getStringArray(gunName + "_BULLET_IMAGES"), //
 		props.getIntArray(gunName + "_BULLET_TIMES"));
 	AnimationPool bulletAnimPool = new AnimationPool("bullets",
-		spriteCache, bulletAnimSrc, bulletsOnScreen, false);
+		spriteCache, maxFrames, bulletAnimSrc, bulletsOnScreen, false);
 	return bulletAnimPool;
     }
 
@@ -60,7 +63,7 @@ public class GunBuilder {
 		props.getStringArray(gunName + "_HIT_IMAGES"), //
 		props.getIntArray(gunName + "_HIT_TIMES"));
 	AnimationPool hitAnimPool = new AnimationPool("hits", spriteCache,
-		hitAnimSrc, bulletsOnScreen, true);
+		maxFrames, hitAnimSrc, bulletsOnScreen, true);
 	return hitAnimPool;
     }
 
@@ -68,7 +71,8 @@ public class GunBuilder {
 	final AnimationSource firingAnimSrc = new AnimationSource( //
 		props.getStringArray(gunName + "_FIRING_IMAGES"), //
 		props.getIntArray(gunName + "_FIRING_TIMES"));
-	Animation firingAnim = new Animation(spriteCache, firingAnimSrc, true);
+	Animation firingAnim = new Animation(spriteCache, maxFrames,
+		firingAnimSrc, true);
 	return firingAnim;
     }
 

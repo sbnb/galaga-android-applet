@@ -10,9 +10,9 @@ public class Alien extends Entity {
 
     // main constructor called in Aliens()
     // reset.. methods in Formation handle the bulk of the Alien member settings
-    public Alien(SpriteCache spriteStore, Screen screen, Speed targettingSpeed,
+    public Alien(Animation animation, Screen screen, Speed targettingSpeed,
 	    int hitRendererPoolSize) {
-	super(spriteStore, screen, targettingSpeed);
+	super(animation, screen, targettingSpeed);
 	stopIfPartiallyOffScreenTopOrBottom = false;
 	stopIfPartiallyOffScreenLeftOrRight = true;
 	killIfPartiallyOffScreen = false;
@@ -21,14 +21,12 @@ public class Alien extends Entity {
     }
 
     // called by Sandbox.getAlien only, a non essential utility constructor
-    public Alien(SpriteCache spriteStore, Screen screen,
-	    Location location,
-	    // this is not chained, and shouldn't be, as it is a dev only
+    public Alien(Animation animation, Screen screen, Location location,
+    // this is not chained, and shouldn't be, as it is a dev only
 	    // convenience
-	    int dx, int dy, int baseDx, int baseDy, int points,
-	    AnimationSource animationSource) {
+	    int dx, int dy, int baseDx, int baseDy, int points) {
 
-	super(spriteStore, screen, location, dx, dy, animationSource);
+	super(animation, screen, location, dx, dy);
 	this.setMaxSpeed(baseDx, baseDy);
 	this.points = points;
 	stopIfPartiallyOffScreenTopOrBottom = false;

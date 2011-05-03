@@ -5,10 +5,12 @@ public class Explosions {
     private Explosion[] mExplosions;
     private AnimationSource explosionSrc;
     private int maxExplosions;
+    private int maxFrames;
 
-    public Explosions(SpriteCache spriteCache, AnimationSource explosionSrc,
-	    int maxExplosions) {
+    public Explosions(SpriteCache spriteCache, int maxFrames,
+	    AnimationSource explosionSrc, int maxExplosions) {
 	this.spriteCache = spriteCache;
+	this.maxFrames = maxFrames;
 	this.explosionSrc = explosionSrc;
 	this.maxExplosions = maxExplosions;
 	initExplosions();
@@ -18,7 +20,9 @@ public class Explosions {
     private void initExplosions() {
 	mExplosions = new Explosion[maxExplosions];
 	for (int i = 0; i < mExplosions.length; i++) {
-	    mExplosions[i] = new Explosion(spriteCache, explosionSrc);
+	    Animation animation = new Animation(spriteCache, maxFrames,
+		    explosionSrc, true);
+	    mExplosions[i] = new Explosion(animation);
 	}
     }
 

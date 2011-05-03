@@ -66,7 +66,8 @@ public class Game extends AllocGuard {
 	bonusDetails = cfg.BONUS_DETAILS;
 	levelComplete = cfg.LEVEL_COMPLETE;
 
-	shipExplosion = new Animation(spriteCache, cfg.EXPLOSION_SRC, true);
+	shipExplosion = new Animation(spriteCache, cfg.MAX_FRAMES,
+		cfg.EXPLOSION_SRC, true);
 	killPoints = new KillPoints(spriteCache, cfg.KILLPOINTS_TRACKED,
 		cfg.DIGITS);
 
@@ -83,13 +84,13 @@ public class Game extends AllocGuard {
 		cfg.SOLO_RELEASE_RANGE, cfg.STATE_TIMES.LEVEL_DELAY,
 		soloReturnSpeed, soloController);
 
-	aliens = new Aliens(spriteCache, screen, gun, soloAliens,
-		cfg.MAX_FORMATION, cfg.HIT_RENDERER_POOL_SIZE);
+	aliens = new Aliens(spriteCache, cfg.MAX_FRAMES, screen, gun,
+		soloAliens, cfg.MAX_FORMATION, cfg.HIT_RENDERER_POOL_SIZE);
 
-	playerBullets = new Bullets(spriteCache, screen,
+	playerBullets = new Bullets(spriteCache, cfg.MAX_FRAMES, screen,
 		cfg.MAX_BULLETS_ON_SCREEN, new AnimationSource(
 			cfg.BULLET_IMAGES, cfg.BULLET_TIMES));
-	alienBullets = new Bullets(spriteCache, screen,
+	alienBullets = new Bullets(spriteCache, cfg.MAX_FRAMES, screen,
 		cfg.ALIEN_BULLETS_ON_SCREEN, new AnimationSource(
 			cfg.ALIEN_BULLET_IMAGES, cfg.ALIEN_BULLET_TIMES));
 	fsm = new FiniteStateMachine(cfg.STATE_TIMES, aliens, formations,
@@ -99,9 +100,10 @@ public class Game extends AllocGuard {
 	final Speed RIGHT_SPEED = new Speed(cfg.SHIP_MOVEMENT, 0);
 	final Speed LEFT_SPEED = new Speed(-cfg.SHIP_MOVEMENT, 0);
 	final Speed NO_SPEED = new Speed(0, 0);
-	ship = new Ship(spriteCache, screen, new AnimationSource(
-		cfg.SHIP_IMAGES, cfg.SHIP_TIMES), cfg.GUNS, RIGHT_SPEED,
-		LEFT_SPEED, NO_SPEED);
+	Animation animation = new Animation(spriteCache, cfg.MAX_FRAMES,
+		new AnimationSource(cfg.SHIP_IMAGES, cfg.SHIP_TIMES), false);
+	ship = new Ship(animation, screen, cfg.GUNS, RIGHT_SPEED, LEFT_SPEED,
+		NO_SPEED);
 
 	preloadImages();
 	buttons = new Buttons(screen, cfg.BUTTON_COLOR, cfg.BTN_WIDTH,

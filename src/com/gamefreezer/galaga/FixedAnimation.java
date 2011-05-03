@@ -10,10 +10,10 @@ public class FixedAnimation {
 	this.coords = coords;
     }
 
-    public static FixedAnimation build(SpriteCache spriteCache,
+    public static FixedAnimation build(SpriteCache spriteCache, int maxFrames,
 	    AnimationSource animSrc, int[] coords) {
-	return new FixedAnimation(new Animation(spriteCache, animSrc, true),
-		new CartesianInt(coords));
+	return new FixedAnimation(new Animation(spriteCache, maxFrames,
+		animSrc, true), new CartesianInt(coords));
     }
 
     public void draw(AbstractGraphics graphics) {

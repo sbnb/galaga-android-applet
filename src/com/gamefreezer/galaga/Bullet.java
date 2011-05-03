@@ -5,9 +5,8 @@ public class Bullet extends Entity {
     private int damage = 0;
     private Gun gun;
 
-    public Bullet(SpriteCache spriteStore, Screen screen,
-	    AnimationSource animationSource) {
-	super(spriteStore, screen, new Location(0, 0), 0, 0, animationSource);
+    public Bullet(Animation animation, Screen screen) {
+	super(animation, screen, new Location(0, 0), 0, 0);
 	stopIfPartiallyOffScreenTopOrBottom = false;
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = true;

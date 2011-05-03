@@ -10,10 +10,9 @@ public class Ship extends Entity {
     private int currentGunIndex;
     Location gunLocation;
 
-    public Ship(SpriteCache spriteStore, Screen screen,
-	    AnimationSource animationSource, Gun[] guns, Speed rightSpeed,
-	    Speed leftSpeed, Speed noSpeed) {
-	super(spriteStore, screen, new Location(), 0, 0, animationSource);
+    public Ship(Animation animation, Screen screen, Gun[] guns,
+	    Speed rightSpeed, Speed leftSpeed, Speed noSpeed) {
+	super(animation, screen, new Location(), 0, 0);
 
 	assert guns != null : "guns is null!";
 	assert rightSpeed != null : "rightSpeed is null!";

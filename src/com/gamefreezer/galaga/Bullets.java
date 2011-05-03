@@ -5,8 +5,7 @@ public class Bullets extends AllocGuard {
     private Bullet[] bulletsArray;
     private int bulletWidth;
 
-    // TODO DI animation for bullets direct, or use none at all
-    public Bullets(SpriteCache spriteStore, Screen screen,
+    public Bullets(SpriteCache spriteCache, int maxFrames, Screen screen,
 	    int numBulletsOnScreen, AnimationSource animationSource) {
 	super();
 
@@ -15,7 +14,9 @@ public class Bullets extends AllocGuard {
 
 	this.bulletsArray = new Bullet[numBulletsOnScreen];
 	for (int i = 0; i < bulletsArray.length; i++) {
-	    bulletsArray[i] = new Bullet(spriteStore, screen, animationSource);
+	    final Animation anim = new Animation(spriteCache, maxFrames,
+		    animationSource, false);
+	    bulletsArray[i] = new Bullet(anim, screen);
 
 	}
 	bulletWidth = bulletsArray.length > 0 ? bulletsArray[0].getWidth() : 0;

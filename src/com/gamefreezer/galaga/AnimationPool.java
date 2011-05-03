@@ -7,7 +7,7 @@ public class AnimationPool {
     private int free;
     private String name;
 
-    public AnimationPool(String name, SpriteCache spriteCache,
+    public AnimationPool(String name, SpriteCache spriteCache, int maxFrames,
 	    AnimationSource src, int size, boolean oneShot) {
 	this.name = name;
 	pool = new Animation[size];
@@ -15,7 +15,8 @@ public class AnimationPool {
 	free = size;
 
 	for (int idx = 0; idx < pool.length; idx++) {
-	    pool[idx] = new Animation(spriteCache, src, oneShot, this);
+	    pool[idx] = new Animation(spriteCache, maxFrames, src, oneShot,
+		    this);
 	    available[idx] = true;
 	}
     }
