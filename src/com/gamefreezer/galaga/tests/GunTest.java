@@ -60,7 +60,7 @@ public class GunTest {
 		null, null);
 
 	gun = new Gun(bulletSpeed, rateOfFire, damage, heatIncrement, cooling,
-		bulletAnimPool, hitAnimPool, firingAnim, statusBar);
+		bulletAnimPool, hitAnimPool, firingAnim, null, statusBar);
     }
 
     @Test
