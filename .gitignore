@@ -5,8 +5,9 @@
 bin/
 gen/
 .pmd
-data/
-imgs/
+assets/
+res/
+libs/
 
 # created by android tool, not to be checked into src control
 local.properties
