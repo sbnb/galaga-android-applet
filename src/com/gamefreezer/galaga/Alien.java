@@ -100,6 +100,7 @@ public class Alien extends Entity {
     }
 
     public void registerHit(Animation newHitAnimation, Location bulletLocation) {
+	// TODO pull the hit in toward center of alien a little
 	hitRenderer.registerHit(newHitAnimation, getLocation(), bulletLocation);
     }
 

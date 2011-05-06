@@ -15,11 +15,12 @@ public class Gun extends AllocGuard {
     private AnimationPool bulletAnimations;
     private AnimationPool hitAnimations;
     private Location adjGunCentre;
+    private Animation hudAnimation;
 
     public Gun(int bulletSpeed, int rateOfFire, int damage, int heatIncrement,
 	    int cooling, AnimationPool bulletAnimations,
 	    AnimationPool hitAnimations, Animation firingAnimation,
-	    StatusBar statusBar) {
+	    Animation hudAnimation, StatusBar statusBar) {
 	this.bulletSpeed = bulletSpeed;
 	this.rateOfFire = rateOfFire;
 	this.damage = damage;
@@ -30,6 +31,7 @@ public class Gun extends AllocGuard {
 	this.bulletAnimations = bulletAnimations;
 	this.hitAnimations = hitAnimations;
 	this.firingAnimation = firingAnimation;
+	this.hudAnimation = hudAnimation;
 	this.statusBar = statusBar;
 	adjGunCentre = new Location();
     }
@@ -104,5 +106,9 @@ public class Gun extends AllocGuard {
 
     private void calculateNextAllowableFireTime() {
 	nextFireTime = System.currentTimeMillis() + rateOfFire;
+    }
+
+    public Animation getHudAnimation() {
+	return hudAnimation;
     }
 }

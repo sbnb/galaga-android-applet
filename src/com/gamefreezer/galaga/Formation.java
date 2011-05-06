@@ -3,14 +3,13 @@ package com.gamefreezer.galaga;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Properties;
 import java.util.SortedMap;
 
 public class Formation extends AllocGuard {
 
     private final SpriteCache spriteCache;
-    private final String propertiesFileName;
-    private MyProperties props;
+    private final MyProperties levelProps;
+    private final MyProperties alienProps;
     private String layoutFile;
     private SortedMap<Integer, Integer> alienSpeeds;
     private int last = 0;
@@ -23,18 +22,17 @@ public class Formation extends AllocGuard {
 
     public Formation(SpriteCache spriteCache, Screen screen, int maxFormation,
 	    AlienSpacing defSpacing, SortedMap<Integer, Integer> defSpeeds,
-	    String propertiesFileName) {
+	    MyProperties levelProps, MyProperties alienProps) {
 	super();
 	this.spriteCache = spriteCache;
 	this.screen = screen;
 	this.maxFormation = maxFormation;
 	this.defSpacing = defSpacing;
 	this.defSpeeds = defSpeeds;
-	this.propertiesFileName = propertiesFileName;
-
+	this.levelProps = levelProps;
+	this.alienProps = alienProps;
 	records = new DataRecord[maxFormation];
 
-	loadProperties();
 	initializeFromProperties();
 	createLayout();
 	centerFormation();
@@ -59,10 +57,6 @@ public class Formation extends AllocGuard {
 
     public void setAnchor(Location anchor) {
 	anchor.moveTo(records[0].xLocation, records[0].yLocation);
-    }
-
-    public Properties getProperties() {
-	return props.getProperties();
     }
 
     public SortedMap<Integer, Integer> getAlienSpeeds() {
@@ -100,26 +94,21 @@ public class Formation extends AllocGuard {
 	return true;
     }
 
-    private void loadProperties() {
-	props = new MyProperties(Tools.openFile(propertiesFileName));
-    }
-
     private void initializeFromProperties() {
-	assert props.size() > 0 : "properties must be loaded";
+	assert levelProps.size() > 0 : "properties must be loaded";
 
 	spacing = new AlienSpacing( //
-		props.getInt("spacingVertical", defSpacing.vertical), //
-		props.getInt("spacingHorizontal", defSpacing.horizontal), //
-		props.getInt("verticalStepDistance", defSpacing.vertStep));
+		levelProps.getInt("spacingVertical", defSpacing.vertical), //
+		levelProps.getInt("spacingHorizontal", defSpacing.horizontal), //
+		levelProps.getInt("verticalStepDistance", defSpacing.vertStep));
 
-	alienSpeeds = props.getSortedMap(props.getString("alienSpeeds", ""),
-		defSpeeds);
-	layoutFile = props.getString("layoutFile", "");
+	alienSpeeds = levelProps.getSortedMap(levelProps.getString(
+		"alienSpeeds", ""), defSpeeds);
+	layoutFile = levelProps.getString("layoutFile", "");
     }
 
     private void createLayout() {
-	assert !"".equals(layoutFile) : "No layoutFile supplied in properties file "
-		+ propertiesFileName;
+	assert !"".equals(layoutFile) : "No layoutFile supplied in properties";
 	final InputStream inStream = Tools.openFile(layoutFile);
 	try {
 	    final BufferedReader bufferedReader = new BufferedReader(
@@ -156,25 +145,30 @@ public class Formation extends AllocGuard {
 	assert last < maxFormation : "maxFormation(" + maxFormation
 		+ ") <= last (" + last + "): increase it.";
 
-	final String[] imageNames = getAlienImagePath(chr);
-	final int[] renderTimes = props.getIntArray(chr + "RenderTimes", "0");
-	final AnimationSource animationSource = new AnimationSource(imageNames,
-		renderTimes);
+	final AnimationSource animSrc = new AnimationSource(getImages(chr),
+		getRenderTimes(chr));
 
-	final DataRecord record = new DataRecord(x, y, animationSource,
-		animationSource.width(spriteCache), animationSource
-			.height(spriteCache), props.getInt(chr + "Points"),
-		props.getInt(chr + "Health", 100));
+	final DataRecord record = new DataRecord(x, y, animSrc, animSrc
+		.width(spriteCache), animSrc.height(spriteCache),
+		getPoints(chr), getHealth(chr));
 	records[last] = record;
 	last++;
     }
 
-    private String[] getAlienImagePath(char chr) {
-	if (props.containsKey(chr + "ImgPath")) {
-	    return props.getStringArray(chr + "ImgPath");
-	}
-	assert false : chr + "ImgPath not found in " + propertiesFileName + "!";
-	return null;
+    private int getHealth(char chr) {
+	return alienProps.getInt(chr + "Health", 100);
+    }
+
+    private int getPoints(char chr) {
+	return alienProps.getInt(chr + "Points");
+    }
+
+    private int[] getRenderTimes(char chr) {
+	return alienProps.getIntArray(chr + "RenderTimes", "0");
+    }
+
+    private String[] getImages(char chr) {
+	return alienProps.getStringArray(chr + "ImgPath");
     }
 
     private void centerFormation() {

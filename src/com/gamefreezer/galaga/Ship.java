@@ -9,8 +9,9 @@ public class Ship extends Entity {
     private Gun[] guns;
     private int currentGunIndex;
     Location gunLocation;
+    private GunHud gunHud;
 
-    public Ship(Animation animation, Screen screen, Gun[] guns,
+    public Ship(Animation animation, Screen screen, Gun[] guns, GunHud gunHud,
 	    Speed rightSpeed, Speed leftSpeed, Speed noSpeed) {
 	super(animation, screen, new Location(), 0, 0);
 
@@ -24,6 +25,7 @@ public class Ship extends Entity {
 	NO_SPEED = noSpeed;
 	fireMode = false;
 	this.guns = guns;
+	this.gunHud = gunHud;
 	this.moveTo(screen.middleX(), screen.inGameBottom() - height - 3);
 	gunLocation = new Location(movement.getLocation());
 	currentGunIndex = 0;
@@ -53,6 +55,7 @@ public class Ship extends Entity {
     @Override
     public void draw(AbstractGraphics graphics) {
 	guns[currentGunIndex].draw(graphics, getGunLocation());
+	gunHud.draw(graphics);
 	super.draw(graphics);
     }
 
@@ -80,12 +83,12 @@ public class Ship extends Entity {
 	setSpeed(NO_SPEED);
     }
 
-    // TODO create message for cycling weapons up and down
     public void cycleWeaponUp() {
 	currentGunIndex++;
 	if (currentGunIndex >= guns.length) {
 	    currentGunIndex = 0;
 	}
+	gunHud.setAnimation(guns[currentGunIndex].getHudAnimation());
     }
 
     public void cycleWeaponDown() {
@@ -93,5 +96,6 @@ public class Ship extends Entity {
 	if (currentGunIndex < 0) {
 	    currentGunIndex = guns.length - 1;
 	}
+	gunHud.setAnimation(guns[currentGunIndex].getHudAnimation());
     }
 }

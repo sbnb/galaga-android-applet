@@ -9,17 +9,21 @@ public class FormationsFactory {
 
     // return a list<Formation> scanned from a directory
     // containing files formatted: formation??properties.dat
-    public static List<Formation> createFormations(SpriteCache spriteStore,
+    public static List<Formation> createFormations(SpriteCache spriteCache,
 	    Constants cfg) {
 	List<Formation> formations = new ArrayList<Formation>();
 	List<String> names = Arrays.asList(Tools.listFiles());
 	Collections.sort(names);
 
+	MyProperties alienProps = new MyProperties(Tools
+		.openFile(cfg.ALIEN_DETAILS_FILE));
+
 	for (String name : names) {
 	    if (fileNameOk(name)) {
-		formations.add(new Formation(spriteStore, cfg.SCREEN,
+		MyProperties levelProps = new MyProperties(Tools.openFile(name));
+		formations.add(new Formation(spriteCache, cfg.SCREEN,
 			cfg.MAX_FORMATION, cfg.AL_SPACING, cfg.AL_SPEEDS,
-			name));
+			levelProps, alienProps));
 	    }
 	}
 	return formations;

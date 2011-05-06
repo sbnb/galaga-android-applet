@@ -4,6 +4,7 @@ import java.util.SortedMap;
 
 public class Constants {
     public final String CONFIG_FILE;
+    public final String ALIEN_DETAILS_FILE;
     public final MyProperties PROPS;
     public final SpriteCache SPRITE_CACHE;
     // DELAY is the tick time of the game
@@ -49,6 +50,7 @@ public class Constants {
     public final int SHIP_MOVEMENT;
     public final String[] SHIP_IMAGES;
     public final int[] SHIP_TIMES;
+    public final CartesianInt GUN_HUD_TOPLEFT;
 
     // aliens
     public final int ALIEN_POOL_SIZE;
@@ -103,6 +105,7 @@ public class Constants {
     public Constants(AbstractFileOpener fileOpener, AbstractColor colorDecoder) {
 	CONFIG_FILE = "config.properties";
 	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), colorDecoder);
+	ALIEN_DETAILS_FILE = PROPS.getString("ALIEN_DETAILS_FILE");
 	SPRITE_CACHE = new SpriteCache(Tools.bitmapReader);
 	DELAY = PROPS.getInt("DELAY");
 
@@ -146,6 +149,7 @@ public class Constants {
 	SHIP_MOVEMENT = PROPS.getInt("SHIP_MOVEMENT");
 	SHIP_IMAGES = PROPS.getStringArray("SHIP_IMAGES");
 	SHIP_TIMES = PROPS.getIntArray("SHIP_TIMES");
+	GUN_HUD_TOPLEFT = new CartesianInt(PROPS.getIntArray("GUN_HUD_TOPLEFT"));
 
 	// aliens
 	ALIEN_POOL_SIZE = PROPS.getInt("ALIEN_POOL_SIZE");

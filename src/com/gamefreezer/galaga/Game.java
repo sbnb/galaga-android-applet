@@ -102,8 +102,9 @@ public class Game extends AllocGuard {
 	final Speed NO_SPEED = new Speed(0, 0);
 	Animation animation = new Animation(spriteCache, cfg.MAX_FRAMES,
 		new AnimationSource(cfg.SHIP_IMAGES, cfg.SHIP_TIMES), false);
-	ship = new Ship(animation, screen, cfg.GUNS, RIGHT_SPEED, LEFT_SPEED,
-		NO_SPEED);
+	GunHud gunHud = new GunHud(cfg.GUN_HUD_TOPLEFT);
+	ship = new Ship(animation, screen, cfg.GUNS, gunHud, RIGHT_SPEED,
+		LEFT_SPEED, NO_SPEED);
 
 	preloadImages();
 	buttons = new Buttons(screen, cfg.BUTTON_COLOR, cfg.BTN_WIDTH,

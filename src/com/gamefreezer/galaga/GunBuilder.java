@@ -29,6 +29,7 @@ public class GunBuilder {
 	    AnimationPool bulletPool = buildBulletPool(gunName, bulletsOnScreen);
 	    AnimationPool hitPool = buildHitPool(gunName, bulletsOnScreen);
 	    Animation firingAnim = buildFiringAnim(gunName);
+	    Animation hudDisplay = buildHudDisplay(gunName);
 	    StatusBar statusBar = buildStatusBar();
 
 	    guns[i] = new Gun( //
@@ -37,7 +38,7 @@ public class GunBuilder {
 		    props.getInt(gunName + "_DAMAGE"), //
 		    props.getInt(gunName + "_HEAT_INCREMENT"), //
 		    props.getInt(gunName + "_COOLING"), //
-		    bulletPool, hitPool, firingAnim, statusBar);
+		    bulletPool, hitPool, firingAnim, hudDisplay, statusBar);
 	}
     }
 
@@ -74,6 +75,15 @@ public class GunBuilder {
 	Animation firingAnim = new Animation(spriteCache, maxFrames,
 		firingAnimSrc, true);
 	return firingAnim;
+    }
+
+    private Animation buildHudDisplay(String gunName) {
+	final AnimationSource hudAnimSrc = new AnimationSource( //
+		props.getStringArray(gunName + "_HUD_IMAGES"), //
+		props.getIntArray(gunName + "_HUD_TIMES"));
+	Animation hudAnim = new Animation(spriteCache, maxFrames, hudAnimSrc,
+		true);
+	return hudAnim;
     }
 
     private StatusBar buildStatusBar() {
