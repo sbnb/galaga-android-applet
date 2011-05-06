@@ -1,0 +1,20 @@
+aImgPath = alien_a.png
+aPoints = 10
+aHealth = 100
+#
+bImgPath = alien_b.png
+bPoints = 5
+bHealth = 100
+
+Create a seperate file for all alien type declarations.
+
+Load it as a MyProperties class.
+
+Pass this into Formation object creation.
+
+Slot in the new myprops object where currently using props.
+
+May need to rearrange some methods to take paramaters.
+
+Or just use a differently named attribute in the Formation class.
+
