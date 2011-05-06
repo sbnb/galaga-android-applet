@@ -11,6 +11,7 @@
 
 	<target name="dist" depends="copy-imgs,copy-config">
 		<echo>"Distributing assets to galaga_android and galaga_applet"</echo>
+		<sleep milliseconds="200"/>
 	</target>
 
 	<!-- Copy img files -->

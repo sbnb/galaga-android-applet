@@ -1,43 +1,6 @@
-#
-#
 alienWidth = 20
 alienHeight = 20
 spacingVertical = 25
 spacingHorizontal = 25
 #
 layoutFile = formation01_layout.dat
-#
-aImgPath = alien_a.png
-aPoints = 10
-aHealth = 100
-#
-bImgPath = alien_b.png
-bPoints = 5
-bHealth = 100
-#
-cImgPath = alien_c_1.png alien_c_2.png
-cRenderTimes = 1000 300
-cPoints = 15
-cHealth = 100
-#
-dImgPath = alien_d_1.png alien_d_2.png
-dRenderTimes = 300 300
-dPoints = 15
-dHealth = 100
-#
-eImgPath = alien_e.png
-ePoints = 5
-eHealth = 100
-#
-fImgPath = alien_f_1.png alien_f_2.png alien_f_3.png alien_f_2.png
-fRenderTimes = 2000 200 200 200
-fPoints = 5
-fHealth = 100
-#
-gImgPath = alien_g.png
-gPoints = 5
-gHealth = 100
-#
-hImgPath = alien_h.png
-hPoints = 5
-hHealth = 100
