@@ -33,6 +33,7 @@ public class Alien extends Entity {
 	stopIfPartiallyOffScreenLeftOrRight = true;
 	killIfPartiallyOffScreen = false;
 	killIfCompletelyOffScreen = false;
+	hitRenderer = new HitRenderer(10);
     }
 
     @Override

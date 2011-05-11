@@ -2,7 +2,7 @@ package com.gamefreezer.galaga;
 
 import java.util.SortedMap;
 
-public class Constants {
+public class Config {
     public final String CONFIG_FILE;
     public final String ALIEN_DETAILS_FILE;
     public final MyProperties PROPS;
@@ -102,7 +102,7 @@ public class Constants {
 
     public final StateTimes STATE_TIMES;
 
-    public Constants(AbstractFileOpener fileOpener, AbstractColor colorDecoder) {
+    public Config(AbstractFileOpener fileOpener, AbstractColor colorDecoder) {
 	CONFIG_FILE = "config.properties";
 	PROPS = new MyProperties(fileOpener.open(CONFIG_FILE), colorDecoder);
 	ALIEN_DETAILS_FILE = PROPS.getString("ALIEN_DETAILS_FILE");

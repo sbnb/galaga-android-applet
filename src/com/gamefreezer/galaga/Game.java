@@ -34,7 +34,7 @@ public class Game extends AllocGuard {
     private Explosions explosions;
     private KillPoints killPoints;
 
-    private Constants cfg;
+    private Config cfg;
     private int timeDelta;
 
     private ArrayBlockingQueue<InputMessage> inputQueue = new ArrayBlockingQueue<InputMessage>(
@@ -43,7 +43,7 @@ public class Game extends AllocGuard {
     private BorderRenderer borderRenderer;
     private Object inputQueueMutex = new Object();
 
-    public Game(Constants cfg) {
+    public Game(Config cfg) {
 	super();
 	assert Tools.initialised : "Tools not initialised!";
 
@@ -71,7 +71,9 @@ public class Game extends AllocGuard {
 	killPoints = new KillPoints(spriteCache, cfg.KILLPOINTS_TRACKED,
 		cfg.DIGITS);
 
-	formations = FormationsFactory.createFormations(spriteCache, cfg);
+	formations = FormationsFactory.createFormations(spriteCache,
+		cfg.SCREEN, cfg.ALIEN_DETAILS_FILE, cfg.MAX_FORMATION,
+		cfg.AL_SPACING, cfg.AL_SPEEDS);
 
 	final Speed soloReturnSpeed = new Speed(cfg.SOLO_RETURN_SPEED.x,
 		cfg.SOLO_RETURN_SPEED.y);

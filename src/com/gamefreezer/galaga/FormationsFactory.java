@@ -4,26 +4,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
 
 public class FormationsFactory {
 
     // return a list<Formation> scanned from a directory
     // containing files formatted: formation??properties.dat
     public static List<Formation> createFormations(SpriteCache spriteCache,
-	    Constants cfg) {
+	    Screen screen, String alienDetailsFile, int maxFormation,
+	    AlienSpacing alienSpacing, SortedMap<Integer, Integer> alienSpeeds) {
 	List<Formation> formations = new ArrayList<Formation>();
 	List<String> names = Arrays.asList(Tools.listFiles());
 	Collections.sort(names);
 
 	MyProperties alienProps = new MyProperties(Tools
-		.openFile(cfg.ALIEN_DETAILS_FILE));
+		.openFile(alienDetailsFile));
 
 	for (String name : names) {
 	    if (fileNameOk(name)) {
 		MyProperties levelProps = new MyProperties(Tools.openFile(name));
-		formations.add(new Formation(spriteCache, cfg.SCREEN,
-			cfg.MAX_FORMATION, cfg.AL_SPACING, cfg.AL_SPEEDS,
-			levelProps, alienProps));
+		formations.add(new Formation(spriteCache, screen, maxFormation,
+			alienSpacing, alienSpeeds, levelProps, alienProps));
 	    }
 	}
 	return formations;

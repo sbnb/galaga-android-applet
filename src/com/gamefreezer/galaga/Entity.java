@@ -2,7 +2,7 @@ package com.gamefreezer.galaga;
 
 public class Entity extends AllocGuard {
 
-    protected Constants cfg;
+    protected Config cfg;
     protected Movement movement;
     protected Speed maxSpeed = new Speed();
     protected int width = 0;
@@ -17,6 +17,8 @@ public class Entity extends AllocGuard {
     protected Animation animation;
     protected int points = 0;
     protected Screen screen;
+    private float rotation;
+    private RotationSprites rotationSprites;
 
     public Entity(Animation animation, Screen screen, Speed targettingSpeed) {
 	this(animation, screen, new Location(), 0, 0, 0, 0, targettingSpeed);
@@ -82,6 +84,15 @@ public class Entity extends AllocGuard {
 	movement.rotate(location, theta);
     }
 
+    /* Rotate supplied degrees around own center point: changes sprite. */
+    public void rotateSelf(float degrees) {
+	this.rotation = degrees;
+    }
+
+    public void setRotationSprites(RotationSprites rotationSprites) {
+	this.rotationSprites = rotationSprites;
+    }
+
     public boolean intersects(Entity entity) {
 	if (intersectsOnXAxis(entity) && intersectsOnYaxis(entity)) {
 	    return true;
@@ -91,7 +102,11 @@ public class Entity extends AllocGuard {
 
     public void draw(AbstractGraphics graphics) {
 	if (active) {
-	    animation.draw(graphics, getX(), getY());
+	    if (rotation > 0 && rotationSprites != null) {
+		rotationSprites.draw(graphics, getX(), getY(), rotation);
+	    } else {
+		animation.draw(graphics, getX(), getY());
+	    }
 	}
     }
 
