@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.gamefreezer.galaga.Constants;
+import com.gamefreezer.galaga.Config;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.Tools;
 
@@ -64,7 +64,7 @@ public class GameWrapper implements Runnable {
 	AndroidFileLister fileLister = new AndroidFileLister(appContext);
 	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
 		fileOpener, fileLister);
-	Constants cfg = new Constants(fileOpener, colorDecoder);
+	Config cfg = new Config(fileOpener, colorDecoder);
 
 	Tools.log("Tools.log(msg): now available");
 	Tools.log("GameWrapper.initGame(): about to init Game()");
