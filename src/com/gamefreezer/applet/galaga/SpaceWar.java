@@ -16,7 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.gamefreezer.galaga.Constants;
+import com.gamefreezer.galaga.Config;
 import com.gamefreezer.galaga.Game;
 import com.gamefreezer.galaga.InputMessage;
 import com.gamefreezer.galaga.Tools;
@@ -26,7 +26,7 @@ import com.gamefreezer.utilities.Profiler;
 public class SpaceWar extends Applet implements Runnable, KeyListener {
 
     public final static String DATA_DIR = "data";
-    private Constants cfg;
+    private Config cfg;
 
     // Thread control variables.
     private volatile Thread loadThread;
@@ -72,7 +72,7 @@ public class SpaceWar extends Applet implements Runnable, KeyListener {
 	AppletFileLister fileLister = new AppletFileLister();
 	Tools.setAbstractInterfaceVars(log, bitmapReader, colorDecoder,
 		fileOpener, fileLister);
-	cfg = new Constants(fileOpener, colorDecoder);
+	cfg = new Config(fileOpener, colorDecoder);
 	appletGraphics = new AppletGraphics(cfg);
 	game = new Game(cfg);
 	createInputMessagePool();

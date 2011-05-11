@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import com.gamefreezer.galaga.AbstractGraphics;
 import com.gamefreezer.galaga.AbstractColor;
 import com.gamefreezer.galaga.AbstractBitmap;
-import com.gamefreezer.galaga.Constants;
+import com.gamefreezer.galaga.Config;
 import com.gamefreezer.galaga.Rectangle;
 import com.gamefreezer.galaga.Screen;
 
@@ -21,7 +21,7 @@ public class AppletGraphics extends AbstractGraphics {
     private Screen screen;
     private Graphics graphics;
 
-    public AppletGraphics(Constants cfg) {
+    public AppletGraphics(Config cfg) {
 	this.screen = cfg.SCREEN;
     }
 
