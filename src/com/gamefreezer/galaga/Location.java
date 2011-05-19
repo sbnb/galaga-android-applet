@@ -80,17 +80,17 @@ public class Location extends AllocGuard {
 	return yFloat;
     }
 
-    public void rotate(Location rotationPoint, float theta) {
+    public void rotate(Location rotationPoint, float radians) {
 	float x = xFloat - rotationPoint.getX();
 	float y = yFloat - rotationPoint.getY();
-	float xComponent = rotateX(theta, x, y);
-	float yComponent = rotateY(theta, x, y);
+	float xComponent = rotateX(radians, x, y);
+	float yComponent = rotateY(radians, x, y);
 	xFloat = xComponent + rotationPoint.getX();
 	yFloat = yComponent + rotationPoint.getY();
     }
 
-    private float rotateY(float theta, float x, float y) {
-	return (float) (x * Math.sin(theta) + y * Math.cos(theta));
+    private float rotateY(float radians, float x, float y) {
+	return (float) (x * Math.sin(radians) + y * Math.cos(radians));
     }
 
     private float rotateX(float theta, float x, float y) {

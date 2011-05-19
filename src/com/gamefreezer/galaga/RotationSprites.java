@@ -39,9 +39,13 @@ public class RotationSprites {
 		+ suffix;
     }
 
-    public void draw(AbstractGraphics graphics, CartesianInt point,
+    public void drawCenteredAt(AbstractGraphics graphics, Location center,
 	    float rotation) {
-	draw(graphics, point.x, point.y, rotation);
+	final String name = mapRotationToName(rotation);
+	Sprite sprite = spriteCache.get(name);
+	int x = (int) (center.getXAsFloat() - sprite.width() / 2);
+	int y = (int) (center.getYAsFloat() - sprite.height() / 2);
+	sprite.draw(graphics, x, y);
     }
 
     public void draw(AbstractGraphics graphics, int x, int y, float rotation) {

@@ -19,6 +19,7 @@ public class Entity extends AllocGuard {
     protected Screen screen;
     private float rotation;
     private RotationSprites rotationSprites;
+    private Location center;
 
     public Entity(Animation animation, Screen screen, Speed targettingSpeed) {
 	this(animation, screen, new Location(), 0, 0, 0, 0, targettingSpeed);
@@ -48,7 +49,7 @@ public class Entity extends AllocGuard {
 	movement = new Movement(location, new Speed(xVelocity, yVelocity),
 		targettingSpeed);
 	this.active = true;
-
+	center = new Location();
     }
 
     public void setImagePath(AnimationSource animSrc) {
@@ -79,18 +80,38 @@ public class Entity extends AllocGuard {
 	movement.moveTo(point);
     }
 
-    /* Rotate entity theta degrees around point location. */
-    public void rotate(Location location, float theta) {
-	movement.rotate(location, theta);
+    public void moveCenterTo(Location point) {
+	movement.moveTo(point);
+	movement.moveBy(-width / 2, -height / 2);
+    }
+
+    /* Rotate entity around rotPoint. */
+    public void rotate(Location rotPoint, float radians) {
+	// set current center of entity
+	setToCenter(center);
+	// rotate center around rotPoint
+	center.rotate(rotPoint, radians);
+	// translate entity so that is centered at new rotated center
+	moveCenterTo(center);
     }
 
     /* Rotate supplied degrees around own center point: changes sprite. */
-    public void rotateSelf(float degrees) {
+    public void setRotation(float degrees) {
 	this.rotation = degrees;
+    }
+
+    public float getRotation() {
+	return rotation;
     }
 
     public void setRotationSprites(RotationSprites rotationSprites) {
 	this.rotationSprites = rotationSprites;
+    }
+
+    /* Set the passed in location to center point of this entity. */
+    public void setToCenter(Location loc) {
+	loc.moveTo(getLocation());
+	loc.moveBy((float) width / 2, (float) height / 2);
     }
 
     public boolean intersects(Entity entity) {
@@ -103,7 +124,8 @@ public class Entity extends AllocGuard {
     public void draw(AbstractGraphics graphics) {
 	if (active) {
 	    if (rotation > 0 && rotationSprites != null) {
-		rotationSprites.draw(graphics, getX(), getY(), rotation);
+		setToCenter(center);
+		rotationSprites.drawCenteredAt(graphics, center, rotation);
 	    } else {
 		animation.draw(graphics, getX(), getY());
 	    }
