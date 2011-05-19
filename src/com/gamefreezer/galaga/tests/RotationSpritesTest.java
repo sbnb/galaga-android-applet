@@ -23,12 +23,12 @@ public class RotationSpritesTest {
 
     @Test
     public void mappingRotationToSpriteNames() {
-	assertThat(rotationSprites.mapRotationToName(0), is("s0.png"));
-	assertThat(rotationSprites.mapRotationToName(1), is("s0.png"));
-	assertThat(rotationSprites.mapRotationToName(5), is("s10.png"));
-	assertThat(rotationSprites.mapRotationToName(46), is("s50.png"));
+	assertThat(rotationSprites.mapRotationToName(0), is("s000.png"));
+	assertThat(rotationSprites.mapRotationToName(1), is("s000.png"));
+	assertThat(rotationSprites.mapRotationToName(5), is("s010.png"));
+	assertThat(rotationSprites.mapRotationToName(46), is("s050.png"));
 	assertThat(rotationSprites.mapRotationToName(354.9f), is("s350.png"));
-	assertThat(rotationSprites.mapRotationToName(355), is("s0.png"));
+	assertThat(rotationSprites.mapRotationToName(355), is("s000.png"));
     }
 
 }
