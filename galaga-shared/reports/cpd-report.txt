@@ -1,0 +1,54 @@
+Found a 5 line (44 tokens) duplication in the following files: 
+Starting at line 45 of D:\workspace\galaga\src\com\gamefreezer\galaga\CollisionDetector.java
+Starting at line 62 of D:\workspace\galaga\src\com\gamefreezer\galaga\CollisionDetector.java
+
+	    Score score, KillPoints killPoints) {
+	Alien[] aliensArray = aliens.getArray();
+	for (int i = 0; i < aliens.size(); i++) {
+	    Alien alien = aliensArray[i];
+	    if (alien.isAlive() && bullet.intersects(alien)) {
+=====================================================================
+Found a 4 line (42 tokens) duplication in the following files: 
+Starting at line 33 of D:\workspace\galaga\src\com\gamefreezer\galaga\Bullets.java
+Starting at line 45 of D:\workspace\galaga\src\com\gamefreezer\galaga\Bullets.java
+
+	    Animation animation, int damage) {
+	for (int i = 0; i < bulletsArray.length; i++) {
+	    if (!(bulletsArray[i].isAlive())) {
+		bulletsArray[i].reset(startPoint, velocity, animation, damage);
+=====================================================================
+Found a 4 line (33 tokens) duplication in the following files: 
+Starting at line 23 of D:\workspace\galaga\src\com\gamefreezer\galaga\CollisionDetector.java
+Starting at line 35 of D:\workspace\galaga\src\com\gamefreezer\galaga\CollisionDetector.java
+
+	Bullet[] bulletArray = alienBullets.getArray();
+	int len = bulletArray.length;
+	for (int i = 0; i < len; i++) {
+	    if (bulletArray[i].isAlive() && bulletArray[i].intersects(ship)) {
+=====================================================================
+Found a 3 line (31 tokens) duplication in the following files: 
+Starting at line 152 of D:\workspace\galaga\src\com\gamefreezer\galaga\Aliens.java
+Starting at line 196 of D:\workspace\galaga\src\com\gamefreezer\galaga\Aliens.java
+
+	int inFormation = 0;
+	for (int i = 0; i < formation.size(); i++) {
+	    if (aliens[i].isVisible()) {
+=====================================================================
+Found a 6 line (29 tokens) duplication in the following files: 
+Starting at line 130 of D:\workspace\galaga\src\com\gamefreezer\galaga\MyProperties.java
+Starting at line 137 of D:\workspace\galaga\src\com\gamefreezer\galaga\MyProperties.java
+
+	    return parseSortedMap(properties.getProperty(key));
+	}
+	throw new IllegalArgumentException("Key doesn't exist: " + key);
+    }
+
+    public SortedMap<Integer, Integer> getSortedMap(String key,
+=====================================================================
+Found a 3 line (26 tokens) duplication in the following files: 
+Starting at line 152 of D:\workspace\galaga\src\com\gamefreezer\galaga\Aliens.java
+Starting at line 343 of D:\workspace\galaga\src\com\gamefreezer\galaga\Aliens.java
+
+	int living = 0;
+	for (int i = 0; i < formation.size(); i++) {
+	    if (aliens[i].isAlive()) {
