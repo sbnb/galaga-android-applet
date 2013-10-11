@@ -1,0 +1,24 @@
+copy src.png smiley000.png
+convert -background #000000 src.png -rotate 15 smiley015.png
+convert -background #000000 src.png -rotate 30 smiley030.png
+convert -background #000000 src.png -rotate 45 smiley045.png
+convert -background #000000 src.png -rotate 60 smiley060.png
+convert -background #000000 src.png -rotate 75 smiley075.png
+convert -background #000000 src.png -rotate 90 smiley090.png
+convert -background #000000 src.png -rotate 105 smiley105.png
+convert -background #000000 src.png -rotate 120 smiley120.png
+convert -background #000000 src.png -rotate 135 smiley135.png
+convert -background #000000 src.png -rotate 150 smiley150.png
+convert -background #000000 src.png -rotate 165 smiley165.png
+convert -background #000000 src.png -rotate 180 smiley180.png
+convert -background #000000 src.png -rotate 195 smiley195.png
+convert -background #000000 src.png -rotate 210 smiley210.png
+convert -background #000000 src.png -rotate 225 smiley225.png
+convert -background #000000 src.png -rotate 240 smiley240.png
+convert -background #000000 src.png -rotate 255 smiley255.png
+convert -background #000000 src.png -rotate 270 smiley270.png
+convert -background #000000 src.png -rotate 285 smiley285.png
+convert -background #000000 src.png -rotate 300 smiley300.png
+convert -background #000000 src.png -rotate 315 smiley315.png
+convert -background #000000 src.png -rotate 330 smiley330.png
+convert -background #000000 src.png -rotate 345 smiley345.png
