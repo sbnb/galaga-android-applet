@@ -1,0 +1,6 @@
+alienWidth = 20
+alienHeight = 20
+spacingVertical = 25
+spacingHorizontal = 25
+#
+layoutFile = formation02_layout.dat

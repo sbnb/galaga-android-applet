@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="galaga_applet" default="dist" basedir=".">
+	
+	<property name="SRC_IMGS" value="../galaga_resources/imgs" />
+	<property name="ANDROID_IMGS" value="../galaga_android/res/drawable" />
+	<property name="APPLET_IMGS" value="../galaga_applet/src/com/gamefreezer/applet/galaga/imgs" />
+	
+	<property name="SRC_CONFIG" value="../galaga_resources/data" />
+	<property name="ANDROID_CONFIG" value="../galaga_android/assets/data" />
+	<property name="APPLET_CONFIG" value="../galaga_applet/src/com/gamefreezer/applet/galaga/data" />
+
+	<target name="dist" depends="copy-imgs,copy-config">
+		<echo>"Distributing assets to galaga_android and galaga_applet"</echo>
+		<sleep milliseconds="2000"/>
+	</target>
+
+	<!-- Copy img files -->
+	<target name="copy-imgs" depends="clean-imgs" description="copy images from galaga_resources to galaga_android and galaga_applet">
+		<echo>"Copying *.png from ${SRC_IMGS} to ${ANDROID_IMGS}"</echo>
+		<copy todir="${ANDROID_IMGS}">
+			<fileset dir="${SRC_IMGS}">
+				<include name="*.png" />
+			</fileset>
+		</copy>
+		<echo>"Copying *.png from ${SRC_IMGS} to ${APPLET_IMGS}"</echo>
+		<copy todir="${APPLET_IMGS}">
+			<fileset dir="${SRC_IMGS}">
+				<include name="*.png" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Copy config files -->
+	<target name="copy-config" depends="clean-config" description="copy config files from galaga_resources to galaga_android and galaga_applet">
+		<echo>"Copying *.* from ${SRC_CONFIG} to ${ANDROID_CONFIG}"</echo>
+		<copy todir="${ANDROID_CONFIG}">
+			<fileset dir="${SRC_CONFIG}">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<echo>"Copying *.* from ${SRC_CONFIG} to ${APPLET_CONFIG}"</echo>
+		<copy todir="${APPLET_CONFIG}">
+			<fileset dir="${SRC_CONFIG}">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Delete img files -->
+	<target name="clean-imgs" description="clean imgs dir">
+		<echo>"Deleting *.png in ${ANDROID_IMGS}"</echo>
+		<delete>
+			<fileset dir="${ANDROID_IMGS}" includes="*.png" />
+		</delete>
+		<echo>"Deleting *.png in ${APPLET_IMGS}"</echo>
+		<delete>
+			<fileset dir="${APPLET_IMGS}" includes="*.png" />
+		</delete>
+	</target>
+
+	<!-- Delete config files -->
+	<target name="clean-config" description="clean raw dir">
+		<echo>"Deleting *.* in ${ANDROID_CONFIG}"</echo>
+		<delete>
+			<fileset dir="${ANDROID_CONFIG}" includes="*.*" />
+		</delete>
+		<echo>"Deleting *.* in ${APPLET_CONFIG}"</echo>
+		<delete>
+			<fileset dir="${APPLET_CONFIG}" includes="*.*" />
+		</delete>
+	</target>
+
+</project>
